@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'findbugs'
+mainClassName = "agh.edu.pl.Main"
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+task fatJar(type: Jar) {
+	manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+dependencies {
+}
