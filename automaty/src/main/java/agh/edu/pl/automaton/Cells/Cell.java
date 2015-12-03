@@ -2,8 +2,7 @@ package agh.edu.pl.automaton.cells;
 
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
-
-import java.util.Map;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 /**
  * Created by Dominik on 2015-11-29.
@@ -12,6 +11,12 @@ public class Cell
 {
     private CellState state;
     private CellCoordinates coords;
+
+    public Cell(CellState state, CellCoordinates coords)
+    {
+        this.state = state;
+        this.coords = coords;
+    }
 
 
     public CellState getState()
@@ -24,28 +29,23 @@ public class Cell
         return coords;
     }
 
-    public static class CellIterator implements java.util.Iterator<Cell>
+    @Override
+    public int hashCode()
     {
-        // TODO WTF? Nie powinno być CellState?
-        private CellCoordinates currentCoord;
-        private Map<CellCoordinates, CellState> cells;
+        return coords.hashCode();
+    }
 
-        public CellIterator(Map<CellCoordinates, CellState> cells)
-        {
-            this.cells = cells;
-        }
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(!(obj instanceof Cell))
+            return false;
+        if(obj == this)
+            return true;
+        Cell cell = (Cell)obj;
 
-        public boolean hasNext()
-        {
-
-        }
-        public Cell next()
-        {
-
-        }
-        public void setState(CellState state)
-        {
-
-        }
+        return new EqualsBuilder()
+                .append(this.coords, cell.coords)
+                .isEquals();
     }
 }
