@@ -49,4 +49,10 @@ public class Coords2D implements CellCoordinates
                 append(y, coords2D.y)
                 .isEquals();
     }
+
+    @Override
+    public String toString()
+    {
+        return "X: " + x + " Y: " + y;
+    }
 }
