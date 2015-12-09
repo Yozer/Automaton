@@ -2,7 +2,7 @@ package agh.edu.pl.automaton;
 
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
-import agh.edu.pl.automaton.cells.states.CellState;
+import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
 import java.util.Set;
@@ -17,12 +17,31 @@ public class WireWorld extends Automaton2Dim
     @Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
-        return null;
+        return new WireWorld(getWidth(), getHeight(), cellStateFactory, cellNeighborhood);
     }
 
     @Override
     protected CellState nextCellState(CellState currentState, Set<Cell> neighborsStates)
     {
-        return null;
+        WireElectronState state = ((WireElectronState) currentState);
+
+        if(state == WireElectronState.ELECTRON_HEAD)
+        {
+            return WireElectronState.ELECTRON_TAIL;
+        }
+        else if(state == WireElectronState.ELECTRON_TAIL)
+        {
+            return WireElectronState.WIRE;
+        }
+        else if(state == WireElectronState.WIRE)
+        {
+            int headCount = (int) neighborsStates.stream().
+                    filter(t -> t.getState() == WireElectronState.ELECTRON_HEAD).
+                    count();
+            if(headCount == 1 || headCount == 2)
+                return WireElectronState.ELECTRON_HEAD;
+        }
+
+        return currentState;
     }
 }
