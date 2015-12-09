@@ -1,9 +1,11 @@
 package agh.edu.pl.automaton.cells.neighborhoods;
 
+import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Dominik on 2015-12-08.
@@ -32,5 +34,15 @@ public class WrapCoordinatesHelper
         }
 
         return coords;
+    }
+
+    public static Set<Coords1D> fixCoords(Set<Coords1D> coords, boolean wrap, int width)
+    {
+        return  fixCoords(coords.stream().
+                            map(t -> new Coords2D(t.getX(), 0)).
+                            collect(Collectors.toSet()), wrap, width, 1).
+                stream().
+                map(t -> new Coords1D(t.getX())).
+                collect(Collectors.toSet());
     }
 }
