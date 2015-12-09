@@ -30,9 +30,10 @@ public class GameOfLife extends Automaton2Dim
     }
 
     @Override
-    protected CellState nextCellState(CellState currentState, Set<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, Set<Cell> neighborsStates)
     {
         int countAlive = (int) neighborsStates.stream().filter(t -> t.getState() == BinaryState.ALIVE).count();
+        CellState currentState = cell.getState();
 
         if(currentState == BinaryState.DEAD && comeAliveFactors.contains(countAlive))
             return BinaryState.ALIVE;

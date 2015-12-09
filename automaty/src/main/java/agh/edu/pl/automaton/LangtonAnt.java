@@ -18,18 +18,12 @@ public class LangtonAnt extends Automaton2Dim
     @Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
-        return null;
+        return new LangtonAnt(getWidth(), getHeight(), cellStateFactory, cellNeighborhood);
     }
 
     @Override
-    protected CellCoordinates initialCoordinates()
+    protected CellState nextCellState(Cell cell, Set<Cell> neighborsStates)
     {
-        return null;
-    }
 
-    @Override
-    protected CellState nextCellState(CellState currentState, Set<Cell> neighborsStates)
-    {
-        return null;
     }
 }

@@ -17,9 +17,10 @@ public class QuadLife extends GameOfLife
     }
 
     @Override
-    protected CellState nextCellState(CellState currentState, Set<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, Set<Cell> neighborsStates)
     {
         List<Cell> aliveCells = neighborsStates.stream().filter(t -> t.getState() != QuadState.DEAD).collect(Collectors.toList());
+        CellState currentState = cell.getState();
 
         if(currentState == QuadState.DEAD && super.comeAliveFactors.contains(aliveCells.size()))
         {

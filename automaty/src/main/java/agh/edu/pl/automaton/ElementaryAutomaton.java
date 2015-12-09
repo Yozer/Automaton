@@ -33,9 +33,9 @@ public class ElementaryAutomaton extends Automaton1Dim
     }
 
     @Override
-    protected CellState nextCellState(CellState currentState, Set<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, Set<Cell> neighborsStates)
     {
-        OneDimensionalNeighbors states = new OneDimensionalNeighbors(neighborsStates, (BinaryState) currentState);
+        OneDimensionalNeighbors states = new OneDimensionalNeighbors(neighborsStates, (BinaryState) cell.getState());
         return ruleMapper.get(states);
     }
 
