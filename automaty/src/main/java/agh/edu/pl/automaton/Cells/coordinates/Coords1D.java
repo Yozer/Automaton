@@ -37,4 +37,10 @@ public class Coords1D implements CellCoordinates
         Coords1D coords1D = (Coords1D)obj;
         return coords1D.getX() == this.getX();
     }
+
+    @Override
+    public String toString()
+    {
+        return "X: " + x;
+    }
 }

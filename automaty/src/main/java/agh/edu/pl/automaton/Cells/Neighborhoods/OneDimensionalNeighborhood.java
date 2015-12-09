@@ -13,9 +13,13 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
     private boolean wrap;
     private int width;
 
+    public OneDimensionalNeighborhood(boolean wrap, int width)
+    {
+        this(1, wrap, width);
+    }
     public OneDimensionalNeighborhood(int r, boolean wrap, int width)
     {
-        this.r = r;
+        this.r = 1;
         this.wrap = wrap;
         this.width = width;
     }
