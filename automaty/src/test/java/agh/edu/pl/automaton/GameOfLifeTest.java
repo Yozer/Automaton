@@ -8,21 +8,88 @@ import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.neighborhoods.MoorNeighborhood;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
+import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import agh.edu.pl.automaton.satefactory.GeneralStateFactory;
 import agh.edu.pl.automaton.satefactory.UniformStateFactory;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.naming.spi.StateFactory;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 
 public class GameOfLifeTest
 {
+    GameOfLife gameOfLifeStandard;
+    @Before
+    public void init()
+    {
+        int width = 2;
+        int height = 3;
+        CellStateFactory stateFactory = new UniformStateFactory(BinaryState.ALIVE);
+        CellNeighborhood neighborhood = new MoorNeighborhood(2, false, width, height);
+
+        gameOfLifeStandard = new GameOfLife(Arrays.asList(2,3), Collections.singletonList(3), width, height, stateFactory, neighborhood);
+    }
+    @Test
+    public void testNextCellState_cellIsDead_allNeigborsAreDead_remainDead()
+    {
+        BinaryState state = BinaryState.ALIVE;
+        Set<Cell> neighborsStates = new HashSet<>();
+
+        for(int i = 0; i < 8; i++)
+            neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));
+
+        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(state, neighborsStates);
+        assertEquals(BinaryState.DEAD, resultState);
+    }
+    @Test
+    public void testNextCellState_cellIsAlive_twoAliveNeigbors_remainAlive()
+    {
+        BinaryState state = BinaryState.ALIVE;
+        Set<Cell> neighborsStates = new HashSet<>();
+
+        for(int i = 0; i < 6; i++)
+            neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(6)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(7)));
+
+        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(state, neighborsStates);
+        assertEquals(BinaryState.ALIVE, resultState);
+    }
+    @Test
+    public void testNextCellState_cellIsAlive_threeAliveNeigbors_remainAlive()
+    {
+        BinaryState state = BinaryState.ALIVE;
+        Set<Cell> neighborsStates = new HashSet<>();
+
+        for(int i = 0; i < 5; i++)
+            neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(5)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(6)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(7)));
+
+        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(state, neighborsStates);
+        assertEquals(BinaryState.ALIVE, resultState);
+    }
+    @Test
+    public void testNextCellState_cellIsDead_threeAliveNeigbors_becomeAlive()
+    {
+        BinaryState state = BinaryState.DEAD;
+        Set<Cell> neighborsStates = new HashSet<>();
+
+        for(int i = 0; i < 5; i++)
+            neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(5)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(6)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(7)));
+
+        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(state, neighborsStates);
+        assertEquals(BinaryState.ALIVE, resultState);
+    }
 
     @Test
     public void testNewInstance_all_alive() throws Exception
@@ -108,7 +175,7 @@ public class GameOfLifeTest
 
         gameOfLife.insertStructure(blinker);
 
-        for(int p = 0; p < 50; p++)
+        for(int p = 0; p < 5; p++)
         {
             int count = 0;
             int countAlive = 0;
@@ -136,4 +203,17 @@ public class GameOfLifeTest
         }
     }
 
+    @Test
+    public void testSetSurviveFactors() throws Exception
+    {
+        gameOfLifeStandard.setSurviveFactors(Arrays.asList(1,5,7));
+        assertArrayEquals(gameOfLifeStandard.getSurviveFactors().toArray() , Arrays.asList(1,5,7).toArray());
+    }
+
+    @Test
+    public void testSetComeAliveFactors() throws Exception
+    {
+        gameOfLifeStandard.setComeAliveFactors(Arrays.asList(1,5,7));
+        assertArrayEquals(gameOfLifeStandard.getComeAliveFactors().toArray(), Arrays.asList(1,5,7).toArray());
+    }
 }

@@ -9,8 +9,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
  */
 public class Cell
 {
-    private CellState state;
-    private CellCoordinates coords;
+    private final CellState state;
+    private final CellCoordinates coords;
 
     public Cell(CellState state, CellCoordinates coords)
     {

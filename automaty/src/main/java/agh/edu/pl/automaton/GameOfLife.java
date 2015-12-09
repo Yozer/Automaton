@@ -44,7 +44,7 @@ public class GameOfLife extends Automaton2Dim
 
     public List<Integer> getSurviveFactors()
     {
-        return surviveFactors.stream().collect(Collectors.toList());
+        return surviveFactors.stream().sorted().collect(Collectors.toList());
     }
 
     public void setSurviveFactors(List<Integer> surviveFactors)
@@ -54,7 +54,7 @@ public class GameOfLife extends Automaton2Dim
 
     public List<Integer> getComeAliveFactors()
     {
-        return comeAliveFactors.stream().collect(Collectors.toList());
+        return comeAliveFactors.stream().sorted().collect(Collectors.toList());
     }
 
     public void setComeAliveFactors(List<Integer> comeAliveFactors)

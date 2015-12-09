@@ -16,9 +16,4 @@ public class UniformStateFactory implements CellStateFactory
     {
         return state;
     }
-
-    public CellState getState()
-    {
-        return state;
-    }
 }

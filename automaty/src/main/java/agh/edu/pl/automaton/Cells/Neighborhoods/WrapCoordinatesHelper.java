@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  */
 public class WrapCoordinatesHelper
 {
+    private WrapCoordinatesHelper() {}
     public static Set<Coords2D> fixCoords(Set<Coords2D> coords, boolean wrap, int width, int height)
     {
         for(Coords2D coordinates : new ArrayList<>(coords))

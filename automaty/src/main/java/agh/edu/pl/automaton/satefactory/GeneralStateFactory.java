@@ -21,9 +21,4 @@ public class GeneralStateFactory implements CellStateFactory
     {
         return states.get(coordinates);
     }
-
-    public Map<CellCoordinates, CellState> getStates()
-    {
-        return states;
-    }
 }

@@ -25,6 +25,8 @@ public class QuadLife extends GameOfLife
         {
             EnumMap<QuadState, Long> map = aliveCells.stream().collect(Collectors.groupingBy(
                     x -> (QuadState)x.getState(), ()->new EnumMap<>(QuadState.class), Collectors.counting()));
+            EnumSet.allOf(QuadState.class).forEach(c->map.putIfAbsent(c, 0L));
+            map.remove(QuadState.DEAD);
 
             long maxValue = map.values().stream().max(Long::compare).get();
             if(maxValue == 1)
