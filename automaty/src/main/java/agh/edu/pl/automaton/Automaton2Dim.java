@@ -47,5 +47,14 @@ public abstract class Automaton2Dim extends Automaton
         iteratorCurrentCoordinates = new Coords2D(x, y);
         return iteratorCurrentCoordinates;
     }
+
+    public int getWidth()
+    {
+        return width;
+    }
+    public int getHeight()
+    {
+        return height;
+    }
 }
 
