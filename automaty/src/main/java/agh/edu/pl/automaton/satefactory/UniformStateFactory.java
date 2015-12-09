@@ -6,8 +6,19 @@ import agh.edu.pl.automaton.cells.states.CellState;
 public class UniformStateFactory implements CellStateFactory
 {
     private CellState state;
+
+    public UniformStateFactory(CellState state)
+    {
+        this.state = state;
+    }
+
     public CellState initialState(CellCoordinates coordinates)
     {
-        return null;
+        return state;
+    }
+
+    public CellState getState()
+    {
+        return state;
     }
 }

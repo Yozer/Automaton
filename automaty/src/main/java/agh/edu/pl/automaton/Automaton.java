@@ -12,8 +12,8 @@ import java.util.*;
 public abstract class Automaton implements Iterable<Cell>
 {
     private Map<CellCoordinates, CellState> cells;
-    private CellNeighborhood neighborhoodStrategy;
-    private CellStateFactory stateFactory;
+    protected CellNeighborhood neighborhoodStrategy;
+    protected CellStateFactory stateFactory;
 
     public Automaton nextState()
     {

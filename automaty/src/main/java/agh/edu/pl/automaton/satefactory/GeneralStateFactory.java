@@ -11,8 +11,19 @@ import java.util.Map;
 public class GeneralStateFactory implements CellStateFactory
 {
     private Map<CellCoordinates, CellState> states;
+
+    public GeneralStateFactory(Map<CellCoordinates, CellState> states)
+    {
+        this.states = states;
+    }
+
     public CellState initialState(CellCoordinates coordinates)
     {
-        return null;
+        return states.get(coordinates);
+    }
+
+    public Map<CellCoordinates, CellState> getStates()
+    {
+        return states;
     }
 }
