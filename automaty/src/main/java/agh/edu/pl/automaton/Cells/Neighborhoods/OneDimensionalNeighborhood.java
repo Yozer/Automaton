@@ -19,7 +19,7 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
     }
     public OneDimensionalNeighborhood(int r, boolean wrap, int width)
     {
-        this.r = 1;
+        this.r = r;
         this.wrap = wrap;
         this.width = width;
     }
