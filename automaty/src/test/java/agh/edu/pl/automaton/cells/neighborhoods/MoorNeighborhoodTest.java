@@ -18,13 +18,7 @@ public class MoorNeighborhoodTest
         CellNeighborhood neighborhood = new MoorNeighborhood(0, false, 500, 500);
         Set<Coords2D> result = (Set)neighborhood.cellNeighbors(new Coords2D(10, 10));
 
-        ArrayList<Coords2D> expected = new ArrayList<>(
-                Arrays.asList(
-                        new Coords2D(10, 10)
-                ));
-
-        assertEquals(1, result.size());
-        assertTrue(result.containsAll(expected));
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -35,7 +29,6 @@ public class MoorNeighborhoodTest
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
-                        new Coords2D(10, 10),
                         new Coords2D(9, 10),
                         new Coords2D(9, 9),
                         new Coords2D(9, 11),
@@ -46,7 +39,7 @@ public class MoorNeighborhoodTest
                         new Coords2D(11, 9)
                 ));
 
-        assertEquals(9, result.size());
+        assertEquals(8, result.size());
         assertTrue(result.containsAll(expected));
     }
 
@@ -58,7 +51,6 @@ public class MoorNeighborhoodTest
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
-                        new Coords2D(0, 0),
                         new Coords2D(1, 0),
                         new Coords2D(2, 0),
                         new Coords2D(1, 0),
@@ -69,7 +61,7 @@ public class MoorNeighborhoodTest
                         new Coords2D(2, 2)
                 ));
 
-        assertEquals(9, result.size());
+        assertEquals(8, result.size());
         assertTrue(result.containsAll(expected));
     }
 
@@ -81,18 +73,17 @@ public class MoorNeighborhoodTest
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
-                        new Coords2D(0, 0),
                         new Coords2D(1, 0),
                         new Coords2D(1, 0),
                         new Coords2D(1, 1),
-                        new Coords2D(0, 5),
-                        new Coords2D(1, 5),
-                        new Coords2D(5, 5),
-                        new Coords2D(5, 0),
-                        new Coords2D(5, 1)
+                        new Coords2D(0, 4),
+                        new Coords2D(1, 4),
+                        new Coords2D(4, 4),
+                        new Coords2D(4, 0),
+                        new Coords2D(4, 1)
                 ));
 
-        assertEquals(9, result.size());
+        assertEquals(8, result.size());
         assertTrue(result.containsAll(expected));
     }
 }

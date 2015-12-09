@@ -40,6 +40,7 @@ public class VonNeumanNeighborhood implements CellNeighborhood
             }
         }
 
+        result.remove(initalCoords);
         return (Set)WrapCoordinatesHelper.fixCoords(result, wrap, width, height);
     }
 

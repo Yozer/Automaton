@@ -19,8 +19,6 @@ public abstract class Automaton implements Iterable<Cell>
     {
         this.neighborhoodStrategy = neighborhoodStrategy;
         this.stateFactory = stateFactory;
-
-        initAutomaton();
     }
 
     public Automaton nextState()
@@ -56,19 +54,22 @@ public abstract class Automaton implements Iterable<Cell>
     }
     private Set<Cell> mapCoordinates(Set<CellCoordinates> coordinates)
     {
-        Set<Cell> cellSet = new HashSet<Cell>(coordinates.size());
+        Set<Cell> cellSet = new HashSet<>(coordinates.size());
         for(CellCoordinates coords : coordinates)
         {
             cellSet.add(new Cell(cells.get(coords), coords));
         }
         return cellSet;
     }
-    private void initAutomaton()
+    protected void initAutomaton()
     {
-        for(Cell cell : this)
+        CellCoordinates current = initialCoordinates();
+        cells = new HashMap<>();
+        while(hasNextCoordinates(current))
         {
-            CellState initialState = stateFactory.initialState(cell.getCoords());
-            setCellState(cell.getCoords(), initialState);
+            current = nextCoordinates();
+            CellState initialState = stateFactory.initialState(current);
+            setCellState(current, initialState);
         }
     }
 
@@ -101,8 +102,8 @@ public abstract class Automaton implements Iterable<Cell>
                 throw new NoSuchElementException("There is no next cell");
             }
 
-            CellCoordinates currentCoord = nextCoordinates();
-            return new Cell(cells.get(currentCoord), currentCoord);
+            currentCoords = nextCoordinates();
+            return new Cell(cells.get(currentCoords), currentCoords);
         }
 
         @Override

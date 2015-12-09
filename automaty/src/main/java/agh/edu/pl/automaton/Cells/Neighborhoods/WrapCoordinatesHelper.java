@@ -16,17 +16,17 @@ public class WrapCoordinatesHelper
     {
         for(Coords2D coordinates : new ArrayList<>(coords))
         {
-            if (coordinates.getX() < 0 || coordinates.getY() < 0 || coordinates.getX() > width || coordinates.getY() > height)
+            if (coordinates.getX() < 0 || coordinates.getY() < 0 || coordinates.getX() >= width || coordinates.getY() >= height)
             {
                 coords.remove(coordinates);
                 if (wrap)
                 {
                     int newX = coordinates.getX();
                     int newY = coordinates.getY();
-                    if (coordinates.getX() < 0 || coordinates.getX() > width )
-                        newX = Math.floorMod(coordinates.getX(), width) + 1;
-                    if(coordinates.getY() < 0 || coordinates.getY() > height)
-                        newY = Math.floorMod(coordinates.getY(), height) + 1;
+                    if (coordinates.getX() < 0 || coordinates.getX() >= width )
+                        newX = Math.floorMod(coordinates.getX(), width);
+                    if(coordinates.getY() < 0 || coordinates.getY() >= height)
+                        newY = Math.floorMod(coordinates.getY(), height) ;
 
                     coords.add(new Coords2D(newX, newY));
                 }

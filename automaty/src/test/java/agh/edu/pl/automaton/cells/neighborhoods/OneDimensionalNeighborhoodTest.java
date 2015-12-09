@@ -21,13 +21,7 @@ public class OneDimensionalNeighborhoodTest
         CellNeighborhood neighborhood = new OneDimensionalNeighborhood(0, false, 100);
         Set<Coords1D> result = (Set)neighborhood.cellNeighbors(new Coords1D(5));
 
-        ArrayList<Coords1D> expected = new ArrayList<>(
-                Arrays.asList(
-                        new Coords1D(5)
-                ));
-
-        assertEquals(1, result.size());
-        assertTrue(result.containsAll(expected));
+        assertEquals(0, result.size());
     }
     @Test
     public void testCellNeighbors_r_equal_1() throws Exception
@@ -37,11 +31,10 @@ public class OneDimensionalNeighborhoodTest
 
         ArrayList<Coords1D> expected = new ArrayList<>(
                 Arrays.asList(
-                        new Coords1D(0),
                         new Coords1D(1)
                 ));
 
-        assertEquals(2, result.size());
+        assertEquals(1, result.size());
         assertTrue(result.containsAll(expected));
     }
     @Test
@@ -54,14 +47,13 @@ public class OneDimensionalNeighborhoodTest
                 Arrays.asList(
                         new Coords1D(0),
                         new Coords1D(1),
-                        new Coords1D(2),
                         new Coords1D(3),
                         new Coords1D(4),
                         new Coords1D(5),
-                        new Coords1D(7)
+                        new Coords1D(6)
                 ));
 
-        assertEquals(7, result.size());
+        assertEquals(6, result.size());
         assertTrue(result.containsAll(expected));
     }
 }

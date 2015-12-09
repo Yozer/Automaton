@@ -34,6 +34,7 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
             result.add(new Coords1D(x + i));
         }
 
+        result.remove(initalCoords);
         return (Set)WrapCoordinatesHelper.fixCoords(result, wrap, width);
     }
 

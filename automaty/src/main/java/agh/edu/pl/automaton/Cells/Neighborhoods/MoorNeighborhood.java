@@ -28,7 +28,6 @@ public class MoorNeighborhood implements CellNeighborhood
         Set<Coords2D> result = new HashSet<>();
 
         Coords2D initalCoords = (Coords2D)cell;
-        result.add(initalCoords);
 
         int x = initalCoords.getX() - r;
         int y = initalCoords.getY() - r;
@@ -41,6 +40,7 @@ public class MoorNeighborhood implements CellNeighborhood
             }
         }
 
+        result.remove(initalCoords);
         return (Set)WrapCoordinatesHelper.fixCoords(result, wrap, width, height);
     }
 

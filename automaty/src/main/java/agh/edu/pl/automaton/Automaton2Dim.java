@@ -16,6 +16,7 @@ public abstract class Automaton2Dim extends Automaton
         super(cellNeighborhood, cellStateFactory);
         this.width = width;
         this.height = height;
+        initAutomaton();
     }
 
     @Override
@@ -29,7 +30,7 @@ public abstract class Automaton2Dim extends Automaton
     protected boolean hasNextCoordinates(CellCoordinates coords)
     {
         Coords2D coords2D = (Coords2D)coords;
-        return coords2D.getX() != width && coords2D.getY() != height;
+        return coords2D.getX() < width - 1 || coords2D.getY() < height - 1;
     }
 
     @Override
@@ -38,7 +39,7 @@ public abstract class Automaton2Dim extends Automaton
         int x = iteratorCurrentCoordinates.getX() + 1;
         int y = iteratorCurrentCoordinates.getY();
 
-        if(x > width)
+        if(x >= width)
         {
             y++;
             x = 0;

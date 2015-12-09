@@ -6,18 +6,21 @@ import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GameOfLife extends Automaton2Dim
 {
     private Set<Integer> surviveFactors;
     private Set<Integer> comeAliveFactors;
 
-    public GameOfLife(Set<Integer> surviveFactors, Set<Integer> comeAliveFactors, int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
+    public GameOfLife(List<Integer> surviveFactors, List<Integer> comeAliveFactors, int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
         super(width, height, cellStateFactory, cellNeighborhood);
-        this.surviveFactors = surviveFactors;
-        this.comeAliveFactors = comeAliveFactors;
+        this.surviveFactors = new HashSet<>(surviveFactors);
+        this.comeAliveFactors = new HashSet<>(comeAliveFactors);
     }
 
     @Override
@@ -33,29 +36,30 @@ public class GameOfLife extends Automaton2Dim
 
         if(currentState == BinaryState.DEAD && comeAliveFactors.contains(countAlive))
             return BinaryState.ALIVE;
-        else if(currentState == BinaryState.ALIVE && ! !surviveFactors.contains(countAlive))
+        else if(currentState == BinaryState.ALIVE && !surviveFactors.contains(countAlive))
             return BinaryState.DEAD;
 
         return currentState;
     }
 
-    public Set<Integer> getSurviveFactors()
+    public List<Integer> getSurviveFactors()
     {
-        return surviveFactors;
+        return surviveFactors.stream().collect(Collectors.toList());
     }
 
-    public void setSurviveFactors(Set<Integer> surviveFactors)
+    public void setSurviveFactors(List<Integer> surviveFactors)
     {
-        this.surviveFactors = surviveFactors;
+        this.surviveFactors = new HashSet<>(surviveFactors);
     }
 
-    public Set<Integer> getComeAliveFactors()
+    public List<Integer> getComeAliveFactors()
     {
-        return comeAliveFactors;
+        return comeAliveFactors.stream().collect(Collectors.toList());
     }
 
-    public void setComeAliveFactors(Set<Integer> comeAliveFactors)
+    public void setComeAliveFactors(List<Integer> comeAliveFactors)
     {
-        this.comeAliveFactors = comeAliveFactors;
+        this.comeAliveFactors = new HashSet<>(comeAliveFactors);
     }
 }
+

@@ -21,13 +21,7 @@ public class VonNeumanNeighborhoodTest
         CellNeighborhood neighborhood = new VonNeumanNeighborhood(0, false, 500, 500);
         Set<Coords2D> result = (Set)neighborhood.cellNeighbors(new Coords2D(4, 4));
 
-        ArrayList<Coords2D> expected = new ArrayList<>(
-                Arrays.asList(
-                        new Coords2D(4, 4)
-                ));
-
-        assertEquals(1, result.size());
-        assertTrue(result.containsAll(expected));
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -38,14 +32,13 @@ public class VonNeumanNeighborhoodTest
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
-                        new Coords2D(10, 10),
                         new Coords2D(9, 10),
                         new Coords2D(11, 10),
                         new Coords2D(10, 9),
                         new Coords2D(10, 11)
                 ));
 
-        assertEquals(5, result.size());
+        assertEquals(4, result.size());
         assertTrue(result.containsAll(expected));
     }
     @Test
@@ -56,7 +49,6 @@ public class VonNeumanNeighborhoodTest
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
-                        new Coords2D(10, 10),
                         new Coords2D(9, 10),
                         new Coords2D(9, 9),
                         new Coords2D(9, 11),
@@ -71,7 +63,7 @@ public class VonNeumanNeighborhoodTest
                         new Coords2D(12, 10)
                 ));
 
-        assertEquals(13, result.size());
+        assertEquals(12, result.size());
         assertTrue(result.containsAll(expected));
     }
 
@@ -83,7 +75,6 @@ public class VonNeumanNeighborhoodTest
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
-                        new Coords2D(1, 1),
                         new Coords2D(0, 1),
                         new Coords2D(0, 1),
                         new Coords2D(0, 2),
@@ -92,13 +83,13 @@ public class VonNeumanNeighborhoodTest
                         new Coords2D(2, 2),
                         new Coords2D(2, 1),
                         new Coords2D(2, 0),
-                        new Coords2D(1, 100),
+                        new Coords2D(1, 99),
                         new Coords2D(1, 3),
-                        new Coords2D(100, 1),
+                        new Coords2D(99, 1),
                         new Coords2D(3, 1)
                 ));
 
-        assertEquals(13, result.size());
+        assertEquals(12, result.size());
         assertTrue(result.containsAll(expected));
     }
 
@@ -110,7 +101,6 @@ public class VonNeumanNeighborhoodTest
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
-                        new Coords2D(1, 1),
                         new Coords2D(0, 1),
                         new Coords2D(0, 1),
                         new Coords2D(0, 2),
@@ -123,7 +113,7 @@ public class VonNeumanNeighborhoodTest
                         new Coords2D(3, 1)
                 ));
 
-        assertEquals(11, result.size());
+        assertEquals(10, result.size());
         assertTrue(result.containsAll(expected));
     }
 }

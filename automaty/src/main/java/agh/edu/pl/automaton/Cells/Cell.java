@@ -48,4 +48,10 @@ public class Cell
                 .append(this.coords, cell.coords)
                 .isEquals();
     }
+
+    @Override
+    public String toString()
+    {
+        return "State: " + state.toString() + " pos: " + getCoords().toString();
+    }
 }
