@@ -24,7 +24,7 @@ public abstract class Automaton implements Iterable<Cell>
     }
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
     {
-
+        cells.putAll(structure);
     }
 
     protected abstract Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood);
@@ -72,7 +72,6 @@ public abstract class Automaton implements Iterable<Cell>
         }
         public void setState(CellState state)
         {
-
             cells.put(currentCoord, state);
         }
     }
