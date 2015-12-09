@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 public class GameOfLife extends Automaton2Dim
 {
-    private Set<Integer> surviveFactors;
-    private Set<Integer> comeAliveFactors;
+    protected Set<Integer> surviveFactors;
+    protected Set<Integer> comeAliveFactors;
 
     public GameOfLife(List<Integer> surviveFactors, List<Integer> comeAliveFactors, int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
