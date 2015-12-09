@@ -9,6 +9,11 @@ import java.util.Set;
 
 public class WireWorld extends Automaton2Dim
 {
+    protected WireWorld(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
+    {
+        super(width, height, cellStateFactory, cellNeighborhood);
+    }
+
     @Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
