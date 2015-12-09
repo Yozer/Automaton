@@ -11,10 +11,7 @@ public class GameOfLife extends Automaton2Dim
 {
     public GameOfLife(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
-        super.width = width;
-        super.height = height;
-        super.stateFactory = cellStateFactory;
-        super.neighborhoodStrategy = cellNeighborhood;
+        super(width, height, cellStateFactory, cellNeighborhood);
     }
 
     @Override

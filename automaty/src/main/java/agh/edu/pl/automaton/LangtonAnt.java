@@ -10,6 +10,11 @@ import java.util.Set;
 
 public class LangtonAnt extends Automaton2Dim
 {
+    protected LangtonAnt(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
+    {
+        super(width, height, cellStateFactory, cellNeighborhood);
+    }
+
     @Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {

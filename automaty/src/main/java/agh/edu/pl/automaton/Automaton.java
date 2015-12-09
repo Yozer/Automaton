@@ -12,8 +12,16 @@ import java.util.*;
 public abstract class Automaton implements Iterable<Cell>
 {
     private Map<CellCoordinates, CellState> cells;
-    protected CellNeighborhood neighborhoodStrategy;
-    protected CellStateFactory stateFactory;
+    private CellNeighborhood neighborhoodStrategy;
+    private CellStateFactory stateFactory;
+
+    protected Automaton(CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory)
+    {
+        this.neighborhoodStrategy = neighborhoodStrategy;
+        this.stateFactory = stateFactory;
+
+        initAutomaton();
+    }
 
     public Automaton nextState()
     {
@@ -38,6 +46,9 @@ public abstract class Automaton implements Iterable<Cell>
 
     protected abstract Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood);
     protected abstract CellState nextCellState(CellState currentState, Set<Cell> neighborsStates);
+    protected abstract boolean hasNextCoordinates(CellCoordinates coords);
+    protected abstract CellCoordinates initialCoordinates();
+    protected abstract CellCoordinates nextCoordinates();
 
     private void setCellState(CellCoordinates coords, CellState newState)
     {
@@ -52,37 +63,45 @@ public abstract class Automaton implements Iterable<Cell>
         }
         return cellSet;
     }
+    private void initAutomaton()
+    {
+        for(Cell cell : this)
+        {
+            CellState initialState = stateFactory.initialState(cell.getCoords());
+            setCellState(cell.getCoords(), initialState);
+        }
+    }
 
     @Override
     public Iterator<Cell> iterator()
     {
-        return new CellIterator(cells.keySet().iterator());
+        return new CellIterator();
     }
 
     private class CellIterator implements java.util.Iterator<Cell>
     {
-        private Iterator<CellCoordinates> iterator;
+        private CellCoordinates currentCoords;
 
-        public CellIterator(Iterator<CellCoordinates> iterator)
+        public CellIterator()
         {
-            this.iterator = iterator;
+            currentCoords = initialCoordinates();
         }
 
         @Override
         public boolean hasNext()
         {
-            return iterator.hasNext();
+            return hasNextCoordinates(currentCoords);
         }
 
         @Override
         public Cell next()
         {
-            if(!hasNext())
+            if(!hasNextCoordinates(currentCoords))
             {
                 throw new NoSuchElementException("There is no next cell");
             }
 
-            CellCoordinates currentCoord = iterator.next();
+            CellCoordinates currentCoord = nextCoordinates();
             return new Cell(cells.get(currentCoord), currentCoord);
         }
 
