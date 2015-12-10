@@ -1,5 +1,6 @@
 package agh.edu.pl.automaton.automata;
 
+import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
@@ -14,6 +15,12 @@ public class QuadLife extends GameOfLife
     public QuadLife(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
         super(Arrays.asList(2, 3), Arrays.asList(3), width, height, cellStateFactory, cellNeighborhood);
+    }
+
+    @Override
+    protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
+    {
+        return new QuadLife(this.getWidth(), this.getHeight(), cellStateFactory, cellNeighborhood);
     }
 
     @Override

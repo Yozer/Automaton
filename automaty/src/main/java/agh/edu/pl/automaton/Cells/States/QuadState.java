@@ -1,13 +1,50 @@
 package agh.edu.pl.automaton.cells.states;
 
+import java.awt.*;
+
 /**
  * Created by Dominik on 2015-11-29.
  */
 public enum QuadState implements CellState
 {
-    DEAD,
-    RED,
-    YELLOW,
-    BLUE,
+    DEAD
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.BLACK;
+                }
+            },
+    RED
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.RED;
+                }
+            },
+    YELLOW
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.YELLOW;
+                }
+            },
+    BLUE
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.BLUE;
+                }
+            },
     GREEN
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.GREEN;
+                }
+            }
 }

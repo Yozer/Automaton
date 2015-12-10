@@ -30,4 +30,10 @@ public class BinaryAntState implements CellState
     {
         return cellColor;
     }
+
+    @Override
+    public Color toColor()
+    {
+        return cellColor;
+    }
 }

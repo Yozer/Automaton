@@ -1,12 +1,42 @@
 package agh.edu.pl.automaton.cells.states;
 
+import java.awt.*;
+
 /**
  * Created by Dominik on 2015-11-29.
  */
 public enum WireElectronState implements CellState
 {
-    VOID,
-    WIRE,
-    ELECTRON_HEAD,
+    VOID
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.BLACK;
+                }
+            },
+    WIRE
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.YELLOW;
+                }
+            },
+    ELECTRON_HEAD
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.BLUE;
+                }
+            },
     ELECTRON_TAIL
+            {
+                @Override
+                public Color toColor()
+                {
+                    return Color.CYAN;
+                }
+            }
 }
