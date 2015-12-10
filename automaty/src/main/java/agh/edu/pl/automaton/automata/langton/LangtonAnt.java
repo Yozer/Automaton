@@ -28,6 +28,16 @@ public class LangtonAnt extends Automaton2Dim
         Ant ant = new Ant(antCoords, antRotation, antColor, getWidth(), getHeight());
         ants.add(ant);
     }
+    public List<Ant> getAnts()
+    {
+        List<Ant> antsList = new ArrayList<>(ants.size());
+        for(Ant ant : ants)
+        {
+            antsList.add(ant);
+        }
+
+        return antsList;
+    }
 
     @Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
