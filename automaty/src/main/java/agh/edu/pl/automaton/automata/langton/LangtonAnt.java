@@ -23,10 +23,16 @@ public class LangtonAnt extends Automaton2Dim
         super(width, height, cellStateFactory, cellNeighborhood);
     }
 
-    public void addAnt(Coords2D antCoords, Color antColor, AntState antRotation)
+    public Ant addAnt(Coords2D antCoords, Color antColor, AntState antRotation)
     {
+        if(antCoords.getX() < 0 || antCoords.getY() < 0 || antCoords.getX() >= getWidth() || antCoords.getY() >= getHeight())
+        {
+            throw new IllegalArgumentException("Ant has to be inside plane!");
+        }
+
         Ant ant = new Ant(antCoords, antRotation, antColor, getWidth(), getHeight());
         ants.add(ant);
+        return ant;
     }
     public List<Ant> getAnts()
     {
@@ -58,12 +64,12 @@ public class LangtonAnt extends Automaton2Dim
 
         if(state.getBinaryState() == BinaryState.ALIVE)
         {
-            ant.rotateRight();
+            ant.rotateLeft();
             state = new BinaryAntState(BinaryState.DEAD);
         }
         else if(state.getBinaryState() == BinaryState.DEAD)
         {
-            ant.rotateLeft();
+            ant.rotateRight();
             state = new BinaryAntState(BinaryState.ALIVE, ant.getAntColor());
         }
 
