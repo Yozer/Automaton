@@ -1,12 +1,10 @@
-package agh.edu.pl.automaton;
+package agh.edu.pl.automaton.automata;
 
+import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.cells.Cell;
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.neighborhoods.MoorNeighborhood;
-import agh.edu.pl.automaton.cells.neighborhoods.OneDimensionalNeighborhood;
-import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
@@ -14,9 +12,7 @@ import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -26,7 +22,7 @@ import static org.junit.Assert.*;
  */
 public class WireWorldTest
 {
-    Automaton automaton;
+    WireWorld automaton;
     @Before
     public void init()
     {
@@ -43,7 +39,7 @@ public class WireWorldTest
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 6)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 7)));
 
-        CellState newState = automaton.nextCellState(WireElectronState.VOID, neighbors);
+        CellState newState = automaton.nextCellState(new Cell(WireElectronState.VOID, new Coords2D(3, 4)), neighbors);
         assertEquals(newState, WireElectronState.VOID);
     }
     @Test
@@ -55,7 +51,7 @@ public class WireWorldTest
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 6)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 7)));
 
-        CellState newState = automaton.nextCellState(WireElectronState.ELECTRON_HEAD, neighbors);
+        CellState newState = automaton.nextCellState(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(3, 4)), neighbors);
         assertEquals(newState, WireElectronState.ELECTRON_TAIL);
     }
     @Test
@@ -67,7 +63,7 @@ public class WireWorldTest
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 6)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 7)));
 
-        CellState newState = automaton.nextCellState(WireElectronState.ELECTRON_TAIL, neighbors);
+        CellState newState = automaton.nextCellState(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(3, 4)), neighbors);
         assertEquals(newState, WireElectronState.WIRE);
     }
     @Test
@@ -79,7 +75,7 @@ public class WireWorldTest
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 6)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 7)));
 
-        CellState newState = automaton.nextCellState(WireElectronState.WIRE, neighbors);
+        CellState newState = automaton.nextCellState(new Cell(WireElectronState.WIRE, new Coords2D(3, 4)), neighbors);
         assertEquals(newState, WireElectronState.WIRE);
     }
     @Test
@@ -91,7 +87,7 @@ public class WireWorldTest
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 6)));
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 7)));
 
-        CellState newState = automaton.nextCellState(WireElectronState.WIRE, neighbors);
+        CellState newState = automaton.nextCellState(new Cell(WireElectronState.WIRE, new Coords2D(3, 4)), neighbors);
         assertEquals(newState, WireElectronState.WIRE);
     }
     @Test
@@ -103,7 +99,7 @@ public class WireWorldTest
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 6)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(5, 7)));
 
-        CellState newState = automaton.nextCellState(WireElectronState.WIRE, neighbors);
+        CellState newState = automaton.nextCellState(new Cell(WireElectronState.WIRE, new Coords2D(3, 4)), neighbors);
         assertEquals(newState, WireElectronState.ELECTRON_HEAD);
     }
     @Test
@@ -115,7 +111,7 @@ public class WireWorldTest
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 6)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 7)));
 
-        CellState newState = automaton.nextCellState(WireElectronState.WIRE, neighbors);
+        CellState newState = automaton.nextCellState(new Cell(WireElectronState.WIRE, new Coords2D(3, 4)), neighbors);
         assertEquals(newState, WireElectronState.ELECTRON_HEAD);
     }
 }

@@ -1,4 +1,4 @@
-package agh.edu.pl.automaton;
+package agh.edu.pl.automaton.automata;
 
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;

@@ -1,10 +1,10 @@
-package agh.edu.pl.automaton;
+package agh.edu.pl.automaton.automata;
 
+import agh.edu.pl.automaton.automata.QuadLife;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.neighborhoods.MoorNeighborhood;
-import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
@@ -38,7 +38,7 @@ public class QuadLifeTest
         for(int i = 0; i < 8; i++)
             neighborsStates.add(new Cell(QuadState.DEAD, new Coords1D(i)));
 
-        QuadState resultState = (QuadState) quadLife.nextCellState(state, neighborsStates);
+        QuadState resultState = (QuadState) quadLife.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(QuadState.DEAD, resultState);
     }
 
@@ -51,7 +51,7 @@ public class QuadLifeTest
         for(int i = 0; i < 8; i++)
             neighborsStates.add(new Cell(QuadState.GREEN, new Coords1D(i)));
 
-        QuadState resultState = (QuadState) quadLife.nextCellState(state, neighborsStates);
+        QuadState resultState = (QuadState) quadLife.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(QuadState.DEAD, resultState);
     }
     @Test
@@ -69,7 +69,7 @@ public class QuadLifeTest
             for (int i = 0; i < 5; i++)
                 neighborsStates.add(new Cell(QuadState.DEAD, new Coords1D(i)));
 
-            QuadState resultState = (QuadState) quadLife.nextCellState(state, neighborsStates);
+            QuadState resultState = (QuadState) quadLife.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
             assertEquals(testState, resultState);
         }
     }
@@ -85,7 +85,7 @@ public class QuadLifeTest
         neighborsStates.add(new Cell(QuadState.GREEN, new Coords1D(7)));
         neighborsStates.add(new Cell(QuadState.YELLOW, new Coords1D(8)));
 
-        QuadState resultState = (QuadState) quadLife.nextCellState(state, neighborsStates);
+        QuadState resultState = (QuadState) quadLife.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(QuadState.BLUE, resultState);
     }
     @Test
@@ -97,7 +97,7 @@ public class QuadLifeTest
         for(int i = 0; i < 8; i++)
             neighborsStates.add(new Cell(QuadState.GREEN, new Coords1D(i)));
 
-        QuadState resultState = (QuadState) quadLife.nextCellState(state, neighborsStates);
+        QuadState resultState = (QuadState) quadLife.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(QuadState.DEAD, resultState);
     }
     @Test
@@ -112,7 +112,7 @@ public class QuadLifeTest
         neighborsStates.add(new Cell(QuadState.GREEN, new Coords1D(7)));
         neighborsStates.add(new Cell(QuadState.YELLOW, new Coords1D(8)));
 
-        QuadState resultState = (QuadState) quadLife.nextCellState(state, neighborsStates);
+        QuadState resultState = (QuadState) quadLife.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(QuadState.GREEN, resultState);
     }
 }

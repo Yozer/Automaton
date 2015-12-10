@@ -1,5 +1,7 @@
-package agh.edu.pl.automaton;
+package agh.edu.pl.automaton.automata;
 
+import agh.edu.pl.automaton.Automaton;
+import agh.edu.pl.automaton.automata.GameOfLife;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
@@ -8,14 +10,12 @@ import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.neighborhoods.MoorNeighborhood;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
-import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import agh.edu.pl.automaton.satefactory.GeneralStateFactory;
 import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.naming.spi.StateFactory;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -43,7 +43,7 @@ public class GameOfLifeTest
         for(int i = 0; i < 8; i++)
             neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));
 
-        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(state, neighborsStates);
+        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(BinaryState.DEAD, resultState);
     }
     @Test
@@ -57,7 +57,7 @@ public class GameOfLifeTest
         neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(6)));
         neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(7)));
 
-        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(state, neighborsStates);
+        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(BinaryState.ALIVE, resultState);
     }
     @Test
@@ -72,7 +72,7 @@ public class GameOfLifeTest
         neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(6)));
         neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(7)));
 
-        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(state, neighborsStates);
+        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(BinaryState.ALIVE, resultState);
     }
     @Test
@@ -87,7 +87,7 @@ public class GameOfLifeTest
         neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(6)));
         neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords1D(7)));
 
-        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(state, neighborsStates);
+        BinaryState resultState = (BinaryState) gameOfLifeStandard.nextCellState(new Cell(state, new Coords2D(3, 4)), neighborsStates);
         assertEquals(BinaryState.ALIVE, resultState);
     }
 

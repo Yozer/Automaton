@@ -1,5 +1,7 @@
-package agh.edu.pl.automaton;
+package agh.edu.pl.automaton.automata;
 
+import agh.edu.pl.automaton.Automaton;
+import agh.edu.pl.automaton.Automaton1Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
