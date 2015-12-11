@@ -13,6 +13,7 @@ import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
+import agh.edu.pl.automaton.satefactory.GeneralStateFactory;
 import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import javafx.geometry.Pos;
 
@@ -44,17 +45,41 @@ public class AutomataPanel extends JPanel implements ActionListener
         int width = getWidth();
         int height = getHeight();
 
+        Map<CellCoordinates, CellState> someRand = new HashMap<>();
+        Random random = new Random();
 
+        for(int x = 0; x < width/cellSize ; x++)
+        {
+            for(int y = 0; y < height/cellSize; y++)
+            {
+                if(selectedAutomaton == PossibleAutomaton.GameOfLive)
+                {
+                    List<BinaryState> values = Arrays.stream(BinaryState.values()).collect(Collectors.toList());
+                    values.add(BinaryState.DEAD);
+                    values.add(BinaryState.DEAD);
+                    values.add(BinaryState.DEAD);
+                    someRand.put(new Coords2D(x, y),  values.get(random.nextInt(values.size())));
+                }
+                else if(selectedAutomaton == PossibleAutomaton.QuadLife)
+                {
+                    List<QuadState> values = Arrays.stream(QuadState.values()).collect(Collectors.toList());
+                    values.add(QuadState.DEAD);
+                    values.add(QuadState.DEAD);
+                    values.add(QuadState.DEAD);
+                    someRand.put(new Coords2D(x, y), values.get(random.nextInt(values.size())));
+                }
+            }
+        }
 
         if(selectedAutomaton == PossibleAutomaton.GameOfLive)
         {
-            CellStateFactory factory = new UniformStateFactory(BinaryState.DEAD);
+            CellStateFactory factory = new GeneralStateFactory(someRand);
             CellNeighborhood neighborhood = new MoorNeighborhood(1, true, width / cellSize, height / cellSize);
             automaton = new GameOfLife(Arrays.asList(2,3), Collections.singletonList(3), width / cellSize, height / cellSize, factory, neighborhood);
         }
         else if(selectedAutomaton == PossibleAutomaton.QuadLife)
         {
-            CellStateFactory factory = new UniformStateFactory(QuadState.DEAD);
+            CellStateFactory factory = new GeneralStateFactory(someRand);
             CellNeighborhood neighborhood = new MoorNeighborhood(1, false, width / cellSize, height / cellSize);
             automaton = new QuadLife( width / cellSize, height / cellSize, factory, neighborhood);
         }
@@ -63,21 +88,7 @@ public class AutomataPanel extends JPanel implements ActionListener
             return;
         }
 
-        Map<CellCoordinates, CellState> someRand = new HashMap<>();
-        Random random = new Random();
 
-        for(int i = 0; i < 1000; i++)
-        {
-            if(selectedAutomaton == PossibleAutomaton.GameOfLive)
-                someRand.put(new Coords2D(random.nextInt(width / cellSize), random.nextInt(height / cellSize)), BinaryState.ALIVE);
-            else if(selectedAutomaton == PossibleAutomaton.QuadLife)
-            {
-                List<QuadState> values = Arrays.stream(QuadState.values()).filter(t -> t != QuadState.DEAD).collect(Collectors.toList());
-                someRand.put(new Coords2D(random.nextInt(width / cellSize), random.nextInt(height / cellSize)), values.get(random.nextInt(4)));
-            }
-        }
-
-        automaton.insertStructure(someRand);
         //HashMap<CellCoordinates, CellState> blinker = new HashMap<>();
         // blinker
        // blinker.put(new Coords2D(15, 20), BinaryState.ALIVE);
