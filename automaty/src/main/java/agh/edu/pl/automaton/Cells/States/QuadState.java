@@ -12,7 +12,7 @@ public enum QuadState implements CellState
                 @Override
                 public Color toColor()
                 {
-                    return Color.BLACK;
+                    return Color.WHITE;
                 }
             },
     RED

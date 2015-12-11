@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AutomataPanel extends JPanel implements ActionListener
+public class AutomataPanel extends JPanel
 {
     private int DELAY = 1000;
     private Timer timer;
@@ -38,6 +38,7 @@ public class AutomataPanel extends JPanel implements ActionListener
 
     public AutomataPanel()
     {
+        setDoubleBuffered(true);
         initTimer();
     }
     private void resetAutomata()
@@ -107,14 +108,21 @@ public class AutomataPanel extends JPanel implements ActionListener
 
     private void initTimer()
     {
-        timer = new Timer(DELAY, this);
+        timer = new Timer(DELAY, e -> {
+            repaint();
+            if(automaton != null)
+                automaton = automaton.nextState();
+        });
+        timer.setRepeats(true);
+        timer.setCoalesce(true);
         timer.start();
     }
 
+    Map<CellCoordinates, CellState> buffer = new HashMap<>();
     private void doDrawing(Graphics g)
     {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.BLACK);
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
         if(automaton == null)
@@ -125,12 +133,16 @@ public class AutomataPanel extends JPanel implements ActionListener
             for (Cell cell : automaton)
             {
                 Coords2D coords = (Coords2D) cell.getCoords();
-                g2d.setPaint(cell.getState().toColor());
-                g2d.fillRect(coords.getX() * cellSize, coords.getY() * cellSize, cellSize, cellSize);
+                if(!buffer.containsKey(coords) || !Objects.equals(buffer.get(coords), cell.getState()))
+                {
+                    g2d.setPaint(Color.BLACK);
+                    g2d.fillRect(coords.getX() * cellSize, coords.getY() * cellSize, cellSize, cellSize);
+                    g2d.setPaint(cell.getState().toColor());
+                    g2d.fillRect(coords.getX() * cellSize, coords.getY() * cellSize , cellSize , cellSize);
+                    buffer.put(coords, cell.getState());
+                }
             }
         }
-
-        automaton = automaton.nextState();
     }
 
 
@@ -141,11 +153,6 @@ public class AutomataPanel extends JPanel implements ActionListener
         doDrawing(g);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-        repaint();
-    }
 
     public void setCellSize(int cellSize)
     {

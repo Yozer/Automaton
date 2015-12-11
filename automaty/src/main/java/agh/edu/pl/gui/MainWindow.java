@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Created by Dominik on 2015-12-10.
@@ -30,22 +31,21 @@ public class MainWindow extends JFrame
         setSize(1500, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setUndecorated(true);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
 
         // automata window
-        mainPanel.add(automataPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.9, 1));
+        mainPanel.add(automataPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
 
         JPanel settingsPanel = new JPanel();
         settingsPanel.setLayout(new GridLayout(16, 1));
         settingsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        mainPanel.add(settingsPanel, new GBC(1, 0).setFill(GridBagConstraints.BOTH).setWeight(0.1, 1));
+        mainPanel.add(settingsPanel, new GBC(1, 0).setFill(GridBagConstraints.BOTH).setWeight(0.01, 1));
 
         ActionListener listener = e -> {
             JRadioButton btn = (JRadioButton) e.getSource();
-            PossibleAutomaton automata = Arrays.stream(PossibleAutomaton.values()).filter(t -> t.toString() == btn.getText()).findAny().get();
+            PossibleAutomaton automata = Arrays.stream(PossibleAutomaton.values()).filter(t -> Objects.equals(t.toString(), btn.getText())).findAny().get();
             automataPanel.setAutomaton(automata);
         };
 

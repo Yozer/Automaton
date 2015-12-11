@@ -9,7 +9,7 @@ public enum BinaryState implements CellState
                 @Override
                 public Color toColor()
                 {
-                    return Color.BLACK;
+                    return Color.WHITE;
                 }
             },
     ALIVE
@@ -17,7 +17,7 @@ public enum BinaryState implements CellState
                 @Override
                 public Color toColor()
                 {
-                    return Color.WHITE;
+                    return Color.BLACK;
                 }
             };
 }
