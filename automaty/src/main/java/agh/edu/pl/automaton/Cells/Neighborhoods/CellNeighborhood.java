@@ -2,6 +2,7 @@ package agh.edu.pl.automaton.cells.neighborhoods;
 
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -9,6 +10,6 @@ import java.util.Set;
  */
 public interface CellNeighborhood
 {
-    Set<CellCoordinates> cellNeighbors(CellCoordinates cell);
+    List<CellCoordinates> cellNeighbors(CellCoordinates cell);
 }
 

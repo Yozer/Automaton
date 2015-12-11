@@ -12,7 +12,9 @@ import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -33,7 +35,7 @@ public class WireWorldTest
     @Test
     public void testNextCellState_voidRemainsVoid()
     {
-        Set<Cell> neighbors = new HashSet<>();
+        List<Cell> neighbors = new ArrayList<>();
         neighbors.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(5, 4)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 5)));
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 6)));
@@ -45,7 +47,7 @@ public class WireWorldTest
     @Test
     public void testNextCellState_headBecomsTail()
     {
-        Set<Cell> neighbors = new HashSet<>();
+        List<Cell> neighbors = new ArrayList<>();
         neighbors.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(5, 4)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 5)));
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 6)));
@@ -57,7 +59,7 @@ public class WireWorldTest
     @Test
     public void testNextCellState_tailBecomesWire()
     {
-        Set<Cell> neighbors = new HashSet<>();
+        List<Cell> neighbors = new ArrayList<>();
         neighbors.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(5, 4)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 5)));
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 6)));
@@ -69,7 +71,7 @@ public class WireWorldTest
     @Test
     public void testNextCellState_conductorRemainsConductor_threeHeads()
     {
-        Set<Cell> neighbors = new HashSet<>();
+        List<Cell> neighbors = new ArrayList<>();
         neighbors.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(5, 4)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 5)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 6)));
@@ -81,7 +83,7 @@ public class WireWorldTest
     @Test
     public void testNextCellState_conductorRemainsConductor_zeroHeads()
     {
-        Set<Cell> neighbors = new HashSet<>();
+        List<Cell> neighbors = new ArrayList<>();
         neighbors.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(5, 4)));
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 5)));
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 6)));
@@ -93,7 +95,7 @@ public class WireWorldTest
     @Test
     public void testNextCellState_conductorRemainsConductor_oneHead()
     {
-        Set<Cell> neighbors = new HashSet<>();
+        List<Cell> neighbors = new ArrayList<>();
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 4)));
         neighbors.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 5)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 6)));
@@ -105,7 +107,7 @@ public class WireWorldTest
     @Test
     public void testNextCellState_conductorRemainsConductor_twoeads()
     {
-        Set<Cell> neighbors = new HashSet<>();
+        List<Cell> neighbors = new ArrayList<>();
         neighbors.add(new Cell(WireElectronState.VOID, new Coords2D(5, 4)));
         neighbors.add(new Cell(WireElectronState.VOID, new Coords2D(5, 5)));
         neighbors.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(5, 6)));

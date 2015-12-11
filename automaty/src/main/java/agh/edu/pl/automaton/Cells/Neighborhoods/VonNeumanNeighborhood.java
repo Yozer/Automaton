@@ -5,6 +5,7 @@ import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class VonNeumanNeighborhood implements CellNeighborhood
@@ -22,9 +23,9 @@ public class VonNeumanNeighborhood implements CellNeighborhood
     }
 
     @Override
-    public Set<CellCoordinates> cellNeighbors(CellCoordinates cell)
+    public List<CellCoordinates> cellNeighbors(CellCoordinates cell)
     {
-        Set<Coords2D> result = new HashSet<>();
+        List<CellCoordinates> result = new ArrayList<>((2*r + 1)*(2*r + 1));
 
         Coords2D initalCoords = (Coords2D)cell;
 
@@ -35,13 +36,16 @@ public class VonNeumanNeighborhood implements CellNeighborhood
         {
             for(int j = y - r; j <= y + 2*r; j++)
             {
-                if(Math.abs(i - x) + Math.abs(j - y) <= r)
-                    result.add(new Coords2D(i, j));
+                if(Math.abs(i - x) + Math.abs(j - y) <= r && (i != x || j != y))
+                {
+                    Coords2D coords2D = WrapCoordinatesHelper.fixCoord(new Coords2D(i, j), wrap, width, height);
+                    if(coords2D != null)
+                        result.add(coords2D);
+                }
             }
         }
 
-        result.remove(initalCoords);
-        return (Set)WrapCoordinatesHelper.fixCoords(result, wrap, width, height);
+        return result;
     }
 
     public int getHeight()

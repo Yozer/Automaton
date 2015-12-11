@@ -35,7 +35,7 @@ public class ElementaryAutomaton extends Automaton1Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, Set<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, List<Cell> neighborsStates)
     {
         OneDimensionalNeighbors states = new OneDimensionalNeighbors(neighborsStates, (BinaryState) cell.getState());
         return ruleMapper.get(states);
@@ -85,7 +85,7 @@ public class ElementaryAutomaton extends Automaton1Dim
         {
             this.states = states;
         }
-        public OneDimensionalNeighbors(Set<Cell> cells, BinaryState middleState)
+        public OneDimensionalNeighbors(List<Cell> cells, BinaryState middleState)
         {
             List<BinaryState> sortedStates =  cells.stream().
                     sorted((a, b) -> -Integer.compare(((Coords1D) b.getCoords()).getX(), ((Coords1D) a.getCoords()).getX()))

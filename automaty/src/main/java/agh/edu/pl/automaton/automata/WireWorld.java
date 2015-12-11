@@ -7,6 +7,7 @@ import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
+import java.util.List;
 import java.util.Set;
 
 public class WireWorld extends Automaton2Dim
@@ -23,7 +24,7 @@ public class WireWorld extends Automaton2Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, Set<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, List<Cell> neighborsStates)
     {
         WireElectronState state = ((WireElectronState)cell.getState());
 

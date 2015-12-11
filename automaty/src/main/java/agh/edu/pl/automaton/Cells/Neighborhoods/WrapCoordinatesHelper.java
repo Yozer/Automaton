@@ -4,6 +4,7 @@ import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,37 +14,39 @@ import java.util.stream.Collectors;
 public class WrapCoordinatesHelper
 {
     private WrapCoordinatesHelper() {}
-    public static Set<Coords2D> fixCoords(Set<Coords2D> coords, boolean wrap, int width, int height)
+    public static Coords2D fixCoord(Coords2D coord, boolean wrap, int width, int height)
     {
-        for(Coords2D coordinates : new ArrayList<>(coords))
+        if (coord.getX() < 0 || coord.getY() < 0 || coord.getX() >= width || coord.getY() >= height)
         {
-            if (coordinates.getX() < 0 || coordinates.getY() < 0 || coordinates.getX() >= width || coordinates.getY() >= height)
+            if (wrap)
             {
-                coords.remove(coordinates);
-                if (wrap)
-                {
-                    int newX = coordinates.getX();
-                    int newY = coordinates.getY();
-                    if (coordinates.getX() < 0 || coordinates.getX() >= width )
-                        newX = Math.floorMod(coordinates.getX(), width);
-                    if(coordinates.getY() < 0 || coordinates.getY() >= height)
-                        newY = Math.floorMod(coordinates.getY(), height) ;
+                int newX = coord.getX();
+                int newY = coord.getY();
+                if (coord.getX() < 0 || coord.getX() >= width )
+                    newX = Math.floorMod(coord.getX(), width);
+                if(coord.getY() < 0 || coord.getY() >= height)
+                    newY = Math.floorMod(coord.getY(), height) ;
 
-                    coords.add(new Coords2D(newX, newY));
-                }
+                return new Coords2D(newX, newY);
             }
+            return null;
         }
-
-        return coords;
+        return coord;
     }
-
-    public static Set<Coords1D> fixCoords(Set<Coords1D> coords, boolean wrap, int width)
+    public static Coords1D fixCoord(Coords1D coord, boolean wrap, int width)
     {
-        return  fixCoords(coords.stream().
-                            map(t -> new Coords2D(t.getX(), 0)).
-                            collect(Collectors.toSet()), wrap, width, 1).
-                stream().
-                map(t -> new Coords1D(t.getX())).
-                collect(Collectors.toSet());
+        if (coord.getX() < 0 || coord.getX() >= width)
+        {
+            if (wrap)
+            {
+                int newX = coord.getX();
+                if (coord.getX() < 0 || coord.getX() >= width )
+                    newX = Math.floorMod(coord.getX(), width);
+
+                return new Coords1D(newX);
+            }
+            return null;
+        }
+        return coord;
     }
 }

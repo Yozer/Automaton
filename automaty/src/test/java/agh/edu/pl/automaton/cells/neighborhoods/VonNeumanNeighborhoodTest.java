@@ -1,10 +1,12 @@
 package agh.edu.pl.automaton.cells.neighborhoods;
 
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -19,7 +21,7 @@ public class VonNeumanNeighborhoodTest
     public void testCellNeighbors_r_equal_0()
     {
         CellNeighborhood neighborhood = new VonNeumanNeighborhood(0, false, 500, 500);
-        Set<Coords2D> result = (Set)neighborhood.cellNeighbors(new Coords2D(4, 4));
+        List<CellCoordinates> result = neighborhood.cellNeighbors(new Coords2D(4, 4));
 
         assertEquals(0, result.size());
     }
@@ -28,7 +30,7 @@ public class VonNeumanNeighborhoodTest
     public void testCellNeighbors_r_equal_1()
     {
         CellNeighborhood neighborhood = new VonNeumanNeighborhood(1, false, 500, 500);
-        Set<Coords2D> result = (Set)neighborhood.cellNeighbors(new Coords2D(10, 10));
+        List<CellCoordinates> result = neighborhood.cellNeighbors(new Coords2D(10, 10));
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
@@ -45,7 +47,7 @@ public class VonNeumanNeighborhoodTest
     public void testCellNeighbors_r_equal_2()
     {
         CellNeighborhood neighborhood = new VonNeumanNeighborhood(2, false, 500, 500);
-        Set<Coords2D> result = (Set)neighborhood.cellNeighbors(new Coords2D(10, 10));
+        List<CellCoordinates> result = neighborhood.cellNeighbors(new Coords2D(10, 10));
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
@@ -71,7 +73,7 @@ public class VonNeumanNeighborhoodTest
     public void testCellNeighbors_r_equal_2_outOfPlane_wrap()
     {
         CellNeighborhood neighborhood = new VonNeumanNeighborhood(2, true, 100, 100);
-        Set<Coords2D> result = (Set)neighborhood.cellNeighbors(new Coords2D(1, 1));
+        List<CellCoordinates> result = neighborhood.cellNeighbors(new Coords2D(1, 1));
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(
@@ -97,7 +99,7 @@ public class VonNeumanNeighborhoodTest
     public void testCellNeighbors_r_equal_2_outOfPlane()
     {
         CellNeighborhood neighborhood = new VonNeumanNeighborhood(2, false, 100, 100);
-        Set<Coords2D> result = (Set)neighborhood.cellNeighbors(new Coords2D(1, 1));
+        List<CellCoordinates> result = neighborhood.cellNeighbors(new Coords2D(1, 1));
 
         ArrayList<Coords2D> expected = new ArrayList<>(
                 Arrays.asList(

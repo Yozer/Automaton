@@ -3,7 +3,9 @@ package agh.edu.pl.automaton.cells.neighborhoods;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -24,22 +26,25 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
         this.width = width;
     }
     @Override
-    public Set<CellCoordinates> cellNeighbors(CellCoordinates cell)
+    public List<CellCoordinates> cellNeighbors(CellCoordinates cell)
     {
-        Set<Coords1D> result = new HashSet<>();
+        List<CellCoordinates> result = new ArrayList<>(2*r + 1);
 
         Coords1D initalCoords = (Coords1D)cell;
-        result.add(initalCoords);
 
         int x = initalCoords.getX() - r;
 
         for(int i = 0; i < 2*r + 1; i++)
         {
-            result.add(new Coords1D(x + i));
+            if(x + i != initalCoords.getX())
+            {
+                Coords1D coords1D = WrapCoordinatesHelper.fixCoord(new Coords1D(x + i), wrap, width);
+                if(coords1D != null)
+                    result.add(coords1D);
+            }
         }
 
-        result.remove(initalCoords);
-        return (Set)WrapCoordinatesHelper.fixCoords(result, wrap, width);
+        return result;
     }
 
     public int getWidth()

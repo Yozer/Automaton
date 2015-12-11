@@ -38,7 +38,7 @@ public class GameOfLifeTest
     public void testNextCellState_cellIsDead_allNeigborsAreDead_remainDead()
     {
         BinaryState state = BinaryState.ALIVE;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 8; i++)
             neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));
@@ -50,7 +50,7 @@ public class GameOfLifeTest
     public void testNextCellState_cellIsAlive_twoAliveNeigbors_remainAlive()
     {
         BinaryState state = BinaryState.ALIVE;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 6; i++)
             neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));
@@ -64,7 +64,7 @@ public class GameOfLifeTest
     public void testNextCellState_cellIsAlive_threeAliveNeigbors_remainAlive()
     {
         BinaryState state = BinaryState.ALIVE;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 5; i++)
             neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));
@@ -79,7 +79,7 @@ public class GameOfLifeTest
     public void testNextCellState_cellIsDead_threeAliveNeigbors_becomeAlive()
     {
         BinaryState state = BinaryState.DEAD;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 5; i++)
             neighborsStates.add(new Cell(BinaryState.DEAD, new Coords1D(i)));

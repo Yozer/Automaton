@@ -15,6 +15,7 @@ import org.junit.Test;
 import java.awt.Color;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class LangtonAntTest
     public void testNextCellState_antOnDead_shouldMoveDown() throws Exception
     {
         Ant ant = automaton.addAnt(new Coords2D(3, 3), Color.blue, AntState.EAST);
-        BinaryAntState result = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.DEAD), ant.getCoordinates()), new HashSet<>());
+        BinaryAntState result = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.DEAD), ant.getCoordinates()), new ArrayList<>());
 
         assertEquals(result.getBinaryState(), BinaryState.ALIVE);
         assertEquals(ant.getAntState(), AntState.SOUTH);
@@ -65,7 +66,7 @@ public class LangtonAntTest
     public void testNextCellState_antOnDead_shouldMoveLeft() throws Exception
     {
         Ant ant = automaton.addAnt(new Coords2D(0, 5), Color.blue, AntState.SOUTH);
-        BinaryAntState result = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.DEAD), ant.getCoordinates()), new HashSet<>());
+        BinaryAntState result = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.DEAD), ant.getCoordinates()), new ArrayList<>());
 
         assertEquals(result.getBinaryState(), BinaryState.ALIVE);
         assertEquals(result.getCellColor(), ant.getAntColor());
@@ -76,7 +77,7 @@ public class LangtonAntTest
     public void testNextCellState_antOnAlive_shouldMoveDown() throws Exception
     {
         Ant ant = automaton.addAnt(new Coords2D(55, 199), Color.blue, AntState.WEST);
-        BinaryAntState result = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.ALIVE), ant.getCoordinates()), new HashSet<>());
+        BinaryAntState result = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.ALIVE), ant.getCoordinates()), new ArrayList<>());
 
         assertEquals(result.getBinaryState(), BinaryState.DEAD);
         assertEquals(result.getCellColor(), Color.BLACK);
@@ -89,8 +90,8 @@ public class LangtonAntTest
     {
         Ant ant1 = automaton.addAnt(new Coords2D(199, 61), Color.blue, AntState.WEST);
         Ant ant2 = automaton.addAnt(new Coords2D(199, 61), Color.blue, AntState.SOUTH);
-        BinaryAntState result1 = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.ALIVE), ant1.getCoordinates()), new HashSet<>());
-        BinaryAntState result2 = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.ALIVE), ant2.getCoordinates()), new HashSet<>());
+        BinaryAntState result1 = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.ALIVE), ant1.getCoordinates()), new ArrayList<>());
+        BinaryAntState result2 = (BinaryAntState) automaton.nextCellState(new Cell(new BinaryAntState(BinaryState.ALIVE), ant2.getCoordinates()), new ArrayList<>());
 
         assertEquals(result1.getBinaryState(), BinaryState.DEAD);
         assertEquals(result1.getCellColor(), Color.BLACK);

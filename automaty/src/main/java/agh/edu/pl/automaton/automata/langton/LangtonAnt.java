@@ -56,7 +56,7 @@ public class LangtonAnt extends Automaton2Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, Set<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, List<Cell> neighborsStates)
     {
         Optional<Ant> anyAnt = ants.stream().filter(t -> t.getCoordinates().equals(cell.getCoords())).findAny();
 

@@ -10,10 +10,7 @@ import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -33,7 +30,7 @@ public class QuadLifeTest
     public void testNextCellState_cellIsDead_allNeigborsAreDead_remainDead()
     {
         QuadState state = QuadState.DEAD;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 8; i++)
             neighborsStates.add(new Cell(QuadState.DEAD, new Coords1D(i)));
@@ -46,7 +43,7 @@ public class QuadLifeTest
     public void testNextCellState_cellIsDead_overpopulated_remainDead()
     {
         QuadState state = QuadState.DEAD;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 8; i++)
             neighborsStates.add(new Cell(QuadState.GREEN, new Coords1D(i)));
@@ -62,7 +59,7 @@ public class QuadLifeTest
         for(QuadState testState : states)
         {
             QuadState state = QuadState.DEAD;
-            Set<Cell> neighborsStates = new HashSet<>();
+            List<Cell> neighborsStates = new ArrayList<>();
 
             for (int i = 0; i < 3; i++)
                 neighborsStates.add(new Cell(testState, new Coords1D(i)));
@@ -77,7 +74,7 @@ public class QuadLifeTest
     public void testNextCellState_cellIsDead_threeDiffrentNeighbors_shouldHaveDiffrentColor()
     {
         QuadState state = QuadState.DEAD;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 5; i++)
             neighborsStates.add(new Cell(QuadState.DEAD, new Coords1D(i)));
@@ -92,7 +89,7 @@ public class QuadLifeTest
     public void testNextCellState_cellIsAlive_overpopulated_shoudDie()
     {
         QuadState state = QuadState.GREEN;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 8; i++)
             neighborsStates.add(new Cell(QuadState.GREEN, new Coords1D(i)));
@@ -104,7 +101,7 @@ public class QuadLifeTest
     public void testNextCellState_cellIsAlive_threeNeighbors_shoudRemainAlive()
     {
         QuadState state = QuadState.GREEN;
-        Set<Cell> neighborsStates = new HashSet<>();
+        List<Cell> neighborsStates = new ArrayList<>();
 
         for(int i = 0; i < 5; i++)
             neighborsStates.add(new Cell(QuadState.DEAD, new Coords1D(i)));
