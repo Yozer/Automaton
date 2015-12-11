@@ -36,7 +36,7 @@ public enum WireElectronState implements CellState
                 @Override
                 public Color toColor()
                 {
-                    return Color.CYAN;
+                    return Color.RED;
                 }
             }
 }

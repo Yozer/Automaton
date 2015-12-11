@@ -24,6 +24,10 @@ public class MainWindow extends JFrame
     {
         initUI();
     }
+    public void init()
+    {
+        automataPanel.setAutomaton(PossibleAutomaton.GameOfLive);
+    }
 
     private void initUI()
     {
@@ -31,6 +35,7 @@ public class MainWindow extends JFrame
         setSize(1500, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
@@ -59,7 +64,9 @@ public class MainWindow extends JFrame
             radio.addActionListener(listener);
 
             if(automaton == PossibleAutomaton.GameOfLive)
+            {
                 radio.setSelected(true);
+            }
 
             panelRadio.add(radio);
         }
