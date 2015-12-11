@@ -22,20 +22,13 @@ public class Coords1D implements CellCoordinates
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder(17, 31)
-                .append(x)
-                .toHashCode();
+        return x;
     }
     @Override
     public boolean equals(Object obj)
     {
-        if(!(obj instanceof Coords1D))
-            return false;
-        if(obj == this)
-            return true;
-
-        Coords1D coords1D = (Coords1D)obj;
-        return coords1D.getX() == this.getX();
+        Coords1D c = ((Coords1D) obj);
+        return c.getX() == x;
     }
 
     @Override

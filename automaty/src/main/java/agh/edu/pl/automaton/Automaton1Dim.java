@@ -1,14 +1,10 @@
 package agh.edu.pl.automaton;
 
 
-import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
-import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
-
-import java.util.Set;
 
 public abstract class Automaton1Dim extends Automaton
 {
@@ -17,7 +13,7 @@ public abstract class Automaton1Dim extends Automaton
 
     protected Automaton1Dim(int size, CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory)
     {
-        super(neighborhoodStrategy, stateFactory);
+        super(neighborhoodStrategy, stateFactory, size);
         this.size = size;
     }
 

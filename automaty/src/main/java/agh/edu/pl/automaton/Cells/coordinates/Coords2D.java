@@ -30,24 +30,13 @@ public class Coords2D implements CellCoordinates
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder(17, 31)
-                .append(x)
-                .append(y)
-                .toHashCode();
+        return 31 * x + y;
     }
     @Override
     public boolean equals(Object obj)
     {
-        if(!(obj instanceof Coords2D))
-            return false;
-        if(obj == this)
-            return true;
-
-        Coords2D coords2D = (Coords2D)obj;
-        return new EqualsBuilder().
-                append(x, coords2D.x).
-                append(y, coords2D.y)
-                .isEquals();
+        Coords2D c = ((Coords2D) obj);
+        return x == c.getX() && y == c.getY();
     }
 
     @Override

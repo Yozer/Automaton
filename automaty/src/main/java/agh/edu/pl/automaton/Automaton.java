@@ -15,10 +15,13 @@ public abstract class Automaton implements Iterable<Cell>
     private CellNeighborhood neighborhoodStrategy;
     private CellStateFactory stateFactory;
 
-    protected Automaton(CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory)
+    private int cellCount;
+
+    protected Automaton(CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory, int cellCount)
     {
         this.neighborhoodStrategy = neighborhoodStrategy;
         this.stateFactory = stateFactory;
+        this.cellCount = cellCount;
     }
 
     public Automaton nextState()
@@ -64,7 +67,7 @@ public abstract class Automaton implements Iterable<Cell>
     protected void initAutomaton()
     {
         CellCoordinates current = initialCoordinates();
-        cells = new HashMap<>();
+        cells = new HashMap<>(cellCount);
         while(hasNextCoordinates(current))
         {
             current = nextCoordinates();

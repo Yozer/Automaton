@@ -13,7 +13,7 @@ public abstract class Automaton2Dim extends Automaton
 
     protected Automaton2Dim(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
-        super(cellNeighborhood, cellStateFactory);
+        super(cellNeighborhood, cellStateFactory, width*height);
         this.width = width;
         this.height = height;
         initAutomaton();
