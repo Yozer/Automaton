@@ -164,6 +164,7 @@ public class AutomataPanel extends JPanel
         glider.put(new Coords2D(7, 4), BinaryState.ALIVE);
         glider.put(new Coords2D(6, 3), BinaryState.ALIVE);
         automaton.insertStructure(glider);*/
+        automaton.start();
     }
 
     private void drawAutomata(Graphics g)

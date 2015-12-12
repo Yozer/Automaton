@@ -9,8 +9,8 @@ import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 
 public abstract class Automaton implements Iterable<Cell>
@@ -21,6 +21,8 @@ public abstract class Automaton implements Iterable<Cell>
     private int[] changeList;
     private int[] changeListBackBuffer;
     private byte[] changeListSet;
+    private byte[] changeListSetBackBuffer;
+
     private int changeListSize;
     private int changeListBackbufferSize;
 
@@ -31,16 +33,47 @@ public abstract class Automaton implements Iterable<Cell>
     private final int processorsCount = Runtime.getRuntime().availableProcessors();
     private final ForkJoinPool threadPool = new ForkJoinPool(processorsCount);
 
+    private final AtomicInteger aliveCount = new AtomicInteger(0);
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
+    private final AtomicBoolean isGenerating = new AtomicBoolean(false);
+
     protected Automaton(CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory, int cellCount)
     {
         this.neighborhoodStrategy = neighborhoodStrategy;
         this.stateFactory = stateFactory;
         this.cellCount = cellCount;
+
+        cells = new ArrayList<>(cellCount);
+        cellsBackBuffer = new ArrayList<>(cellCount);
+        changeList = new int[cellCount];
+        changeListBackBuffer = new int[cellCount];
+        changeListSet = new byte[cellCount];
+        changeListSetBackBuffer = new byte[cellCount];
+    }
+
+    public void start()
+    {
+        isRunning.set(true);
+    }
+    public void pause()
+    {
+        isRunning.set(false);
+        while (isGenerating.get())
+            try
+            {
+                Thread.sleep(5);
+            } catch (InterruptedException e)
+            {
+
+            }
     }
 
     public int nextState()
     {
-        AtomicInteger aliveCount = new AtomicInteger(0);
+        if(!isRunning.get())
+            return aliveCount.get();
+        isGenerating.set(true);
+
         int step = (int) (changeListSize / ((float) processorsCount));
 
         for(int i = 0; i < processorsCount; ++i)
@@ -58,25 +91,28 @@ public abstract class Automaton implements Iterable<Cell>
                     List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
                     CellState newState = nextCellState(cell, neighbors);
 
-                    if(cellIsAlive(newState))
-                        aliveCount.getAndIncrement();
                     Cell backbufferCell = setBackBufferCellState(cell, newState);
                     if(backbufferCell.hasChanged())
                     {
+                        if(cellIsAlive(newState))
+                            aliveCount.incrementAndGet();
+                        else
+                            aliveCount.decrementAndGet();
+
                         synchronized (changeListSet)
                         {
-                            if(changeListSet[cellIndex] == 0)
+                            if(changeListSetBackBuffer[cellIndex] == 0)
                             {
                                 changeListBackBuffer[changeListBackbufferSize++] = cellIndex;
-                                changeListSet[cellIndex] = 1;
+                                changeListSetBackBuffer[cellIndex] = 1;
                             }
                             for(CellCoordinates coordinates : neighbors)
                             {
                                 int index = getCoordsIndex(coordinates);
-                                if(changeListSet[index] == 0)
+                                if(changeListSetBackBuffer[index] == 0)
                                 {
                                     changeListBackBuffer[changeListBackbufferSize++] = index;
-                                    changeListSet[index] = 1;
+                                    changeListSetBackBuffer[index] = 1;
                                 }
                             }
                         }
@@ -85,35 +121,14 @@ public abstract class Automaton implements Iterable<Cell>
             });
         }
 
-        /*for (final Cell cell : cells)
-        {
-            /*threadPool.submit((Runnable) () -> {
-                List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
-                CellState newState = nextCellState(cell, neighbors);
-
-                if(cellIsAlive(newState))
-                    aliveCount.getAndIncrement();
-                setBackBufferCellState(cell, newState);
-            });*/
-            /*List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
-            CellState newState = nextCellState(cell, neighbors);
-
-            if(cellIsAlive(newState))
-                aliveCount.getAndIncrement();
-            setBackBufferCellState(cell, newState);*/
-        //}
-        /*List<Integer> gunwo = new ArrayList<>();
-        for(int x : changeListBackBuffer)
-            if(x != 0)
-                gunwo.add(x);
-        gunwo = gunwo.stream().sorted().collect(Collectors.toList());*/
         threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        swapBuffers();
 
-        swapBuffer();
+        isGenerating.set(false);
         return aliveCount.get();
     }
 
-    private void swapBuffer()
+    private void swapBuffers()
     {
         List<Cell> tmp = cellsBackBuffer;
         cellsBackBuffer = cells;
@@ -126,8 +141,12 @@ public abstract class Automaton implements Iterable<Cell>
         changeList = changeListBackBuffer;
         changeListBackBuffer = x;
 
+
+        byte[] y = changeListSet;
+        changeListSet = changeListSetBackBuffer;
+        changeListSetBackBuffer = y;
         for(int i = 0; i < cellCount; i++)
-            changeListSet[i] = 0;
+            changeListSetBackBuffer[i] = 0;
     }
     private Cell setBackBufferCellState(Cell cell, CellState newState)
     {
@@ -139,8 +158,18 @@ public abstract class Automaton implements Iterable<Cell>
 
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
     {
+        pause();
         for(CellCoordinates coords : structure.keySet())
-            cells.set(getCoordsIndex(coords), new Cell(structure.get(coords), coords));
+        {
+            int index = getCoordsIndex(coords);
+            cells.set(index, new Cell(structure.get(coords), coords));
+            if(changeListSet[index] == 0)
+            {
+                changeList[changeListSize++] = index;
+                changeListSet[index] = 1;
+            }
+        }
+
     }
 
     protected abstract CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates);
@@ -159,12 +188,6 @@ public abstract class Automaton implements Iterable<Cell>
     {
         // initialize lists
         CellCoordinates current = initialCoordinates();
-        cells = new ArrayList<>(cellCount);
-        cellsBackBuffer = new ArrayList<>(cellCount);
-        changeList = new int[cellCount];
-        changeListBackBuffer = new int[cellCount];
-        changeListSet = new byte[cellCount];
-
         while (cells.size() < cellCount)
         {
             cells.add(null);
@@ -177,13 +200,15 @@ public abstract class Automaton implements Iterable<Cell>
         {
             current = nextCoordinates();
             CellState initialState = stateFactory.initialState(current);
+            if(cellIsAlive(initialState))
+                aliveCount.incrementAndGet();
 
             int cellIndex = getCoordsIndex(current);
             cells.set(cellIndex, new Cell(initialState, current));
             cellsBackBuffer.set(cellIndex, new Cell(initialState, current));
 
             changeList[changeListSize] = cellIndex;
-            changeListSet[changeListSize++] = 0;
+            changeListSet[changeListSize++] = 1;
         }
     }
 
