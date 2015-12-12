@@ -16,23 +16,22 @@ import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import agh.edu.pl.automaton.satefactory.GeneralStateFactory;
-import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
 
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AutomataPanel extends JPanel
 {
-    private int DELAY;
-    private Timer timer;
+    private int simulationDelay = 500;
+    private final Timer timerAutomata;
 
     private Automaton automaton;
     private PossibleAutomaton selectedAutomaton;
@@ -40,12 +39,25 @@ public class AutomataPanel extends JPanel
     private int cellSize;
     private final int cellBorderThickness = 1;
 
+    private int lastSimulationTime = 0;
+    private int generationCount = 0;
+    private int aliveCellsCount = 0;
+
     public AutomataPanel()
     {
         setDoubleBuffered(true);
         setBackground(Color.BLACK);
         setOpaque(true);
-        initTimer();
+
+        timerAutomata = new Timer(simulationDelay, simulateNextGeneration());
+        timerAutomata.setRepeats(true);
+        timerAutomata.setCoalesce(true);
+
+        addListeners();
+    }
+
+    private void addListeners()
+    {
         addComponentListener(new ComponentListener()
         {
             @Override
@@ -53,26 +65,15 @@ public class AutomataPanel extends JPanel
             {
                 resetAutomata();
             }
-
             @Override
-            public void componentMoved(ComponentEvent e)
-            {
-
-            }
-
+            public void componentMoved(ComponentEvent e) {}
             @Override
-            public void componentShown(ComponentEvent e)
-            {
-
-            }
-
+            public void componentShown(ComponentEvent e) {}
             @Override
-            public void componentHidden(ComponentEvent e)
-            {
-
-            }
+            public void componentHidden(ComponentEvent e) {}
         });
     }
+
     private void resetAutomata()
     {
         int width = getWidth();
@@ -81,7 +82,11 @@ public class AutomataPanel extends JPanel
         // window not created
         if(width == 0 || height == 0)
             return;
+        if(!timerAutomata.isRunning())
+            timerAutomata.start();
 
+        generationCount = 0;
+        aliveCellsCount = 0;
         Map<CellCoordinates, CellState> someRand = new HashMap<>();
         Random random = new Random();
 
@@ -155,23 +160,7 @@ public class AutomataPanel extends JPanel
         glider.put(new Coords2D(6, 3), BinaryState.ALIVE);
         automaton.insertStructure(glider);*/
     }
-    private void initTimer()
-    {
-        timer = new Timer(DELAY, e -> {
-            long before = System.nanoTime();
 
-            repaint();
-            if(automaton != null)
-                automaton = automaton.nextState();
-            long after = System.nanoTime();
-            long diff = after - before;
-            System.out.println(diff/1000000);
-
-        });
-        timer.setRepeats(true);
-        timer.setCoalesce(true);
-        timer.start();
-    }
     private void drawAutomata(Graphics g)
     {
         if(automaton == null)
@@ -197,7 +186,20 @@ public class AutomataPanel extends JPanel
 
         g2d.dispose();
     }
+    private ActionListener simulateNextGeneration()
+    {
+        return e -> {
+            long before = System.nanoTime();
 
+            repaint();
+            aliveCellsCount = automaton.nextState();
+
+            long after = System.nanoTime();
+            long diff = after - before;
+            lastSimulationTime = (int) (diff/1000000f);
+            generationCount++;
+        };
+    }
 
     @Override
     public void paintComponent(Graphics g)
@@ -205,7 +207,6 @@ public class AutomataPanel extends JPanel
         super.paintComponent(g);
         drawAutomata(g);
     }
-
 
     public void setCellSize(int cellSize)
     {
@@ -218,9 +219,24 @@ public class AutomataPanel extends JPanel
         resetAutomata();
     }
 
-    public void setSymulationSpeed(int symulationSpeed)
+    public void setSimulationSpeed(int simulationSpeed)
     {
-        this.DELAY = symulationSpeed;
-        timer.setDelay(this.DELAY);
+        this.simulationDelay = simulationSpeed;
+        timerAutomata.setDelay(this.simulationDelay);
+    }
+
+    public int getLastSimulationTime()
+    {
+        return lastSimulationTime;
+    }
+
+    public int getGenerationCount()
+    {
+        return generationCount;
+    }
+
+    public int getAliveCellsCount()
+    {
+        return aliveCellsCount;
     }
 }

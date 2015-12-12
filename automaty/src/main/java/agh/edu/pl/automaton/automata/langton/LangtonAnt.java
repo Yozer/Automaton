@@ -82,6 +82,12 @@ public class LangtonAnt extends Automaton2Dim
         return state;
     }
 
+    @Override
+    protected boolean cellIsAlive(CellState state)
+    {
+        return state == BinaryState.ALIVE;
+    }
+
 
 }
 

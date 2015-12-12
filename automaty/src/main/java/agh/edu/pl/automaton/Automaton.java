@@ -9,6 +9,7 @@ import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public abstract class Automaton implements Iterable<Cell>
@@ -30,19 +31,23 @@ public abstract class Automaton implements Iterable<Cell>
         this.cellCount = cellCount;
     }
 
-    public Automaton nextState()
+    public int nextState()
     {
+        AtomicInteger aliveCount = new AtomicInteger(0);
+
         for (final Cell cell : cells) {
             threadPool.submit((Runnable) () -> {
                 List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
                 CellState newState = nextCellState(cell, neighbors);
+
+                if(cellIsAlive(newState))
+                    aliveCount.getAndIncrement();
                 setBackBufferCellState(cell, newState);
             });
         }
 
         swapBuffer();
-
-        return this;
+        return aliveCount.get();
     }
 
     private void swapBuffer()
@@ -69,6 +74,7 @@ public abstract class Automaton implements Iterable<Cell>
     protected abstract CellCoordinates initialCoordinates();
     protected abstract CellCoordinates nextCoordinates();
     protected abstract int getCoordsIndex(CellCoordinates coord);
+    protected abstract boolean cellIsAlive(CellState state);
 
     protected CellState getCellStateByCoordinates(CellCoordinates coordinates)
     {

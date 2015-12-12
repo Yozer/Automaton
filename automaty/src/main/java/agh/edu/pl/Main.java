@@ -13,7 +13,6 @@ public class Main
         EventQueue.invokeLater(() -> {
             MainWindow ex = new MainWindow();
             ex.setVisible(true);
-            //ex.init();
         });
     }
 }

@@ -8,6 +8,7 @@ import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
+import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -28,18 +29,17 @@ public class ElementaryAutomaton extends Automaton1Dim
         this.setRule(rule);
     }
 
-
-    /*@Override
-    protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
-    {
-        return new ElementaryAutomaton(getRule(), super.getSize(), cellNeighborhood, cellStateFactory);
-    }*/
-
     @Override
     protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
     {
         OneDimensionalNeighbors states = new OneDimensionalNeighbors(neighborsStates, (BinaryState) cell.getState());
         return ruleMapper.get(states);
+    }
+
+    @Override
+    protected boolean cellIsAlive(CellState state)
+    {
+        return state == BinaryState.ALIVE;
     }
 
     public int getRule()
