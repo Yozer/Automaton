@@ -19,18 +19,18 @@ public class GameOfLife extends Automaton2Dim
     protected Set<Integer> surviveFactors;
     protected Set<Integer> comeAliveFactors;
 
-    public GameOfLife(List<Integer> surviveFactors, List<Integer> comeAliveFactors, int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
+    public GameOfLife(Set<Integer> surviveFactors, Set<Integer> comeAliveFactors, int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
         super(width, height, cellStateFactory, cellNeighborhood);
-        this.surviveFactors = new HashSet<>(surviveFactors);
-        this.comeAliveFactors = new HashSet<>(comeAliveFactors);
+        this.surviveFactors = surviveFactors;
+        this.comeAliveFactors = comeAliveFactors;
     }
 
-    @Override
+    /*@Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
-        return  new GameOfLife(getSurviveFactors(), getComeAliveFactors(), this.getWidth(), this.getHeight(), cellStateFactory, cellNeighborhood);
-    }
+        return new GameOfLife(getSurviveFactors(), getComeAliveFactors(), this.getWidth(), this.getHeight(), cellStateFactory, cellNeighborhood);
+    }*/
 
     @Override
     protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
@@ -38,7 +38,7 @@ public class GameOfLife extends Automaton2Dim
         int countAlive = 0;
         for(CellCoordinates coords : neighborsStates)
         {
-            if(getCellByCoordinates(coords) == BinaryState.ALIVE)
+            if(getCellStateByCoordinates(coords) == BinaryState.ALIVE)
                 countAlive++;
         }
 
@@ -52,9 +52,9 @@ public class GameOfLife extends Automaton2Dim
         return currentState;
     }
 
-    public List<Integer> getSurviveFactors()
+    public Set<Integer> getSurviveFactors()
     {
-        return surviveFactors.stream().sorted().collect(Collectors.toList());
+        return surviveFactors;
     }
 
     public void setSurviveFactors(List<Integer> surviveFactors)
@@ -62,9 +62,9 @@ public class GameOfLife extends Automaton2Dim
         this.surviveFactors = new HashSet<>(surviveFactors);
     }
 
-    public List<Integer> getComeAliveFactors()
+    public Set<Integer> getComeAliveFactors()
     {
-        return comeAliveFactors.stream().sorted().collect(Collectors.toList());
+        return comeAliveFactors;
     }
 
     public void setComeAliveFactors(List<Integer> comeAliveFactors)

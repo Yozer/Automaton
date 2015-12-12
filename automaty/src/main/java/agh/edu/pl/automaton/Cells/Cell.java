@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
  */
 public class Cell
 {
-    private final CellState state;
+    private CellState state;
     private final CellCoordinates coords;
 
     public Cell(CellState state, CellCoordinates coords)
@@ -38,20 +38,17 @@ public class Cell
     @Override
     public boolean equals(Object obj)
     {
-        if(!(obj instanceof Cell))
-            return false;
-        if(obj == this)
-            return true;
-        Cell cell = (Cell)obj;
-
-        return new EqualsBuilder()
-                .append(this.coords, cell.coords)
-                .isEquals();
+        return ((Cell) obj).getCoords().equals(this.getCoords());
     }
 
     @Override
     public String toString()
     {
         return "State: " + state.toString() + " pos: " + getCoords().toString();
+    }
+
+    public void setState(CellState state)
+    {
+        this.state = state;
     }
 }

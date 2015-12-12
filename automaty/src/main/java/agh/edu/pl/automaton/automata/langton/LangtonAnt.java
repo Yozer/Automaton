@@ -46,7 +46,7 @@ public class LangtonAnt extends Automaton2Dim
         return antsList;
     }
 
-    @Override
+    /*@Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
         LangtonAnt langtonAnt = new LangtonAnt(getWidth(), getHeight(), cellStateFactory, cellNeighborhood);
@@ -54,7 +54,7 @@ public class LangtonAnt extends Automaton2Dim
             langtonAnt.ants.add(ant);
 
         return langtonAnt;
-    }
+    }*/
 
     @Override
     protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)

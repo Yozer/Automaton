@@ -17,11 +17,11 @@ public class WireWorld extends Automaton2Dim
         super(width, height, cellStateFactory, cellNeighborhood);
     }
 
-    @Override
+    /*@Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
         return new WireWorld(getWidth(), getHeight(), cellStateFactory, cellNeighborhood);
-    }
+    }*/
 
     @Override
     protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
@@ -39,7 +39,7 @@ public class WireWorld extends Automaton2Dim
         else if(state == WireElectronState.WIRE)
         {
             int headCount = (int) neighborsStates.stream().
-                    filter(t -> getCellByCoordinates(t)  == WireElectronState.ELECTRON_HEAD).
+                    filter(t -> getCellStateByCoordinates(t)  == WireElectronState.ELECTRON_HEAD).
                     count();
             if(headCount == 1 || headCount == 2)
                 return WireElectronState.ELECTRON_HEAD;

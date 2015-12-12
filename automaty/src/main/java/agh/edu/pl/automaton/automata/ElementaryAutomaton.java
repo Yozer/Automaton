@@ -29,11 +29,11 @@ public class ElementaryAutomaton extends Automaton1Dim
     }
 
 
-    @Override
+    /*@Override
     protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
         return new ElementaryAutomaton(getRule(), super.getSize(), cellNeighborhood, cellStateFactory);
-    }
+    }*/
 
     @Override
     protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
@@ -90,7 +90,7 @@ public class ElementaryAutomaton extends Automaton1Dim
         {
             List<BinaryState> sortedStates =  cells.stream().
                     sorted((a, b) -> -Integer.compare(((Coords1D) b).getX(), ((Coords1D) a).getX()))
-                    .map(t -> (BinaryState) getCellByCoordinates(t))
+                    .map(t -> (BinaryState) getCellStateByCoordinates(t))
                     .collect(Collectors.toList());
 
             states = new BinaryState[]{ sortedStates.get(0), middleState, sortedStates.get(1)};

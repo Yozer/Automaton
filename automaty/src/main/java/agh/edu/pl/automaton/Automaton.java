@@ -12,6 +12,8 @@ import java.util.*;
 public abstract class Automaton implements Iterable<Cell>
 {
     private List<Cell> cells;
+    private List<Cell> cellsBackBuffer;
+
     private CellNeighborhood neighborhoodStrategy;
     private CellStateFactory stateFactory;
 
@@ -26,17 +28,18 @@ public abstract class Automaton implements Iterable<Cell>
 
     public Automaton nextState()
     {
-        Automaton result = newInstance(stateFactory, neighborhoodStrategy);
-
         for(Cell cell : this)
         {
             List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
-
             CellState newState = nextCellState(cell, neighbors);
-            result.setCellState(cell.getCoords(), newState);
+            cellsBackBuffer.get(getCoordsIndex(cell.getCoords())).setState(newState);
         }
 
-        return result;
+        List<Cell> tmp = cellsBackBuffer;
+        cellsBackBuffer = cells;
+        cells = tmp;
+
+        return this;
     }
 
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
@@ -45,35 +48,42 @@ public abstract class Automaton implements Iterable<Cell>
             cells.set(getCoordsIndex(coords), new Cell(structure.get(coords), coords));
     }
 
-    protected abstract Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood);
+    //protected abstract Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood);
     protected abstract CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates);
     protected abstract boolean hasNextCoordinates(CellCoordinates coords);
     protected abstract CellCoordinates initialCoordinates();
     protected abstract CellCoordinates nextCoordinates();
     protected abstract int getCoordsIndex(CellCoordinates coord);
 
-    protected CellState getCellByCoordinates(CellCoordinates coordinates)
+    protected CellState getCellStateByCoordinates(CellCoordinates coordinates)
     {
         return cells.get(getCoordsIndex(coordinates)).getState();
     }
 
-    private void setCellState(CellCoordinates coords, CellState newState)
+    /*private void setCellState(CellCoordinates coords, CellState newState)
     {
         cells.set(getCoordsIndex(coords), new Cell(newState, coords));
-    }
+    }*/
 
     protected void initAutomaton()
     {
         CellCoordinates current = initialCoordinates();
         cells = new ArrayList<>(cellCount);
+        cellsBackBuffer = new ArrayList<>(cellCount);
         while (cells.size() < cellCount)
+        {
             cells.add(null);
+            cellsBackBuffer.add(null);
+        }
 
         while(hasNextCoordinates(current))
         {
             current = nextCoordinates();
-            CellState initialState = stateFactory.initialState(getCoordsIndex(current));
-            setCellState(current, initialState);
+            CellState initialState = stateFactory.initialState(current);
+
+            int cellIndex = getCoordsIndex(current);
+            cells.set(cellIndex, new Cell(initialState, current));
+            cellsBackBuffer.set(cellIndex, new Cell(initialState, current));
         }
     }
 
