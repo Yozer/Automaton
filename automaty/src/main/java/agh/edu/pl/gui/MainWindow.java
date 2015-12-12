@@ -1,14 +1,7 @@
 package agh.edu.pl.gui;
 
-import com.horstmann.corejava.GBC;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.TimerTask;
 
 public class MainWindow extends MainWindowDesign
 {
@@ -29,7 +22,8 @@ public class MainWindow extends MainWindowDesign
         {
             setSimulationTimeLabel(automataPanel.getLastSimulationTime());
             setGenerationCountLabel(automataPanel.getGenerationCount());
-            setAliveCellsCount(automataPanel.getAliveCellsCount());
+            setAliveCellsCountLabel(automataPanel.getAliveCellsCount());
+            setRenderTimeLabel(automataPanel.getRenderTime());
         };
     }
 }

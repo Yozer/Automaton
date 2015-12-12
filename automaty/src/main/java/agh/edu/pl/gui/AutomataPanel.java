@@ -30,8 +30,9 @@ import java.util.stream.Collectors;
 
 public class AutomataPanel extends JPanel
 {
-    private int simulationDelay = 500;
-    private final Timer timerAutomata;
+    private int simulationDelay = 1;
+    private final java.util.Timer timerAutomata;
+    private final Timer timerAutomata2;
 
     private Automaton automaton;
     private PossibleAutomaton selectedAutomaton;
@@ -42,6 +43,7 @@ public class AutomataPanel extends JPanel
     private int lastSimulationTime = 0;
     private int generationCount = 0;
     private int aliveCellsCount = 0;
+    private int drawTime = 0;
 
     public AutomataPanel()
     {
@@ -49,9 +51,12 @@ public class AutomataPanel extends JPanel
         setBackground(Color.BLACK);
         setOpaque(true);
 
-        timerAutomata = new Timer(simulationDelay, simulateNextGeneration());
-        timerAutomata.setRepeats(true);
-        timerAutomata.setCoalesce(true);
+        timerAutomata2 = new Timer(0, e -> repaint());
+        timerAutomata2.setRepeats(true);
+        timerAutomata2.setCoalesce(true);
+        timerAutomata2.start();
+        timerAutomata = new java.util.Timer();
+        timerAutomata.scheduleAtFixedRate(simulateNextGeneration(), simulationDelay, simulationDelay);
 
         addListeners();
     }
@@ -82,8 +87,8 @@ public class AutomataPanel extends JPanel
         // window not created
         if(width == 0 || height == 0)
             return;
-        if(!timerAutomata.isRunning())
-            timerAutomata.start();
+        //if(!timerAutomata.isRunning())
+            //timerAutomata.start();
 
         generationCount = 0;
         aliveCellsCount = 0;
@@ -172,32 +177,47 @@ public class AutomataPanel extends JPanel
             for (Cell cell : automaton)
             {
                 Coords2D coords = (Coords2D) cell.getCoords();
+                if(cellSize < 5)
+                {
+                    g2d.setPaint(cell.getState().toColor());
+                    g2d.fillRect(coords.getX() * cellSize, coords.getY() * cellSize, cellSize, cellSize);
+                }
+                else
+                {
+                    g2d.setPaint(cell.getState().toColor());
+                    g2d.fillRect(coords.getX() * cellSize, coords.getY() * cellSize, cellSize, cellSize);
+                    g2d.setPaint(Color.BLACK);
 
-                g2d.setPaint(cell.getState().toColor());
-                g2d.fillRect(coords.getX() * cellSize, coords.getY() * cellSize, cellSize, cellSize);
-                g2d.setPaint(Color.BLACK);
-
-                Stroke oldStroke = g2d.getStroke();
-                g2d.setStroke(new BasicStroke(cellBorderThickness));
-                g2d.drawRect(coords.getX() * cellSize, coords.getY() * cellSize, cellSize, cellSize);
-                g2d.setStroke(oldStroke);
+                    Stroke oldStroke = g2d.getStroke();
+                    g2d.setStroke(new BasicStroke(cellBorderThickness));
+                    g2d.drawRect(coords.getX() * cellSize, coords.getY() * cellSize, cellSize, cellSize);
+                    g2d.setStroke(oldStroke);
+                }
             }
         }
 
         g2d.dispose();
     }
-    private ActionListener simulateNextGeneration()
+    private TimerTask simulateNextGeneration()
     {
-        return e -> {
-            long before = System.nanoTime();
+        AutomataPanel p = this;
+        return new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                if(automaton == null)
+                    return;
 
-            repaint();
-            aliveCellsCount = automaton.nextState();
+                //repaint();
+                long before = System.nanoTime();
+                aliveCellsCount = automaton.nextState();
+                long after = System.nanoTime();
+                long diff = after - before;
 
-            long after = System.nanoTime();
-            long diff = after - before;
-            lastSimulationTime = (int) (diff/1000000f);
-            generationCount++;
+                lastSimulationTime = (int) (diff/1000000f);
+                generationCount++;
+            }
         };
     }
 
@@ -206,6 +226,15 @@ public class AutomataPanel extends JPanel
     {
         super.paintComponent(g);
         drawAutomata(g);
+    }
+    @Override
+    public void paint(Graphics g)
+    {
+        long before = System.nanoTime();
+        super.paint(g);
+        long after = System.nanoTime();
+        long diff = after - before;
+        drawTime = (int) (diff/1000000f);
     }
 
     public void setCellSize(int cellSize)
@@ -221,8 +250,8 @@ public class AutomataPanel extends JPanel
 
     public void setSimulationSpeed(int simulationSpeed)
     {
-        this.simulationDelay = simulationSpeed;
-        timerAutomata.setDelay(this.simulationDelay);
+        //this.simulationDelay = simulationSpeed;
+        //timerAutomata.setDelay(this.simulationDelay);
     }
 
     public int getLastSimulationTime()
@@ -238,5 +267,10 @@ public class AutomataPanel extends JPanel
     public int getAliveCellsCount()
     {
         return aliveCellsCount;
+    }
+
+    public int getRenderTime()
+    {
+        return drawTime;
     }
 }

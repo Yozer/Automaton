@@ -9,6 +9,8 @@ import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -20,9 +22,9 @@ public abstract class Automaton implements Iterable<Cell>
     private CellNeighborhood neighborhoodStrategy;
     private CellStateFactory stateFactory;
 
-    private int cellCount;
+    private final int cellCount;
     private final int processorsCount = Runtime.getRuntime().availableProcessors();
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(processorsCount);
+    private final ForkJoinPool threadPool = new ForkJoinPool(processorsCount);
 
     protected Automaton(CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory, int cellCount)
     {
@@ -34,18 +36,48 @@ public abstract class Automaton implements Iterable<Cell>
     public int nextState()
     {
         AtomicInteger aliveCount = new AtomicInteger(0);
+        int step = (int) (cellCount / ((float) processorsCount));
 
-        for (final Cell cell : cells) {
-            threadPool.submit((Runnable) () -> {
+        for(int i = 0; i < processorsCount; ++i)
+        {
+            int from = i * step;
+            int to = i == processorsCount - 1 ? cellCount : (i + 1) * step;
+
+            threadPool.execute(() ->
+            {
+                for(int j = from; j < to; j++)
+                {
+                    Cell cell = cells.get(j);
+                    List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
+                    CellState newState = nextCellState(cell, neighbors);
+
+                    if(cellIsAlive(newState))
+                        aliveCount.getAndIncrement();
+                    setBackBufferCellState(cell, newState);
+                }
+            });
+        }
+
+        /*for (final Cell cell : cells)
+        {
+            /*threadPool.submit((Runnable) () -> {
                 List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
                 CellState newState = nextCellState(cell, neighbors);
 
                 if(cellIsAlive(newState))
                     aliveCount.getAndIncrement();
                 setBackBufferCellState(cell, newState);
-            });
-        }
+            });*/
+            /*List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
+            CellState newState = nextCellState(cell, neighbors);
 
+            if(cellIsAlive(newState))
+                aliveCount.getAndIncrement();
+            setBackBufferCellState(cell, newState);*/
+        //}
+
+        threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        //threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         swapBuffer();
         return aliveCount.get();
     }
@@ -59,7 +91,7 @@ public abstract class Automaton implements Iterable<Cell>
     private void setBackBufferCellState(Cell cell, CellState newState)
     {
         Cell backBufferCell = cellsBackBuffer.get(getCoordsIndex(cell.getCoords()));
-        backBufferCell.isChanged(backBufferCell.getState() != newState);
+        //backBufferCell.isChanged(backBufferCell.getState() != newState);
         backBufferCell.setState(newState);
     }
 

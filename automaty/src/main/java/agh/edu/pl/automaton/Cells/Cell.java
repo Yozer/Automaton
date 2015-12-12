@@ -10,14 +10,14 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 public class Cell
 {
     private CellState state;
-    private boolean hasChanged;
+    //private boolean hasChanged;
     private final CellCoordinates coords;
 
     public Cell(CellState state, CellCoordinates coords)
     {
         this.state = state;
         this.coords = coords;
-        this.hasChanged = true;
+        //this.hasChanged = true;
     }
 
 
@@ -54,12 +54,12 @@ public class Cell
         this.state = state;
     }
 
-    public boolean hasChanged()
+    /*public boolean hasChanged()
     {
         return hasChanged;
     }
     public void isChanged(boolean value)
     {
         this.hasChanged = value;
-    }
+    }*/
 }

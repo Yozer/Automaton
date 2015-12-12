@@ -17,7 +17,8 @@ public class MainWindowDesign extends JFrame
     protected AutomataPanel automataPanel = new AutomataPanel();
     protected Label generationCountLabel;
     protected Label simulationTimeLabel;
-    protected Label aliveCellsCount;
+    protected Label aliveCellsCountLabel;
+    protected Label renderTimeLabel;
 
     protected MainWindowDesign()
     {
@@ -72,19 +73,19 @@ public class MainWindowDesign extends JFrame
         // ------------------------------------------------------------------------ \\
         settingsPanel.add(new Label("Rozmiar komórki"));
 
-        JSlider slider = new JSlider(3, 100, 20);
+        JSlider slider = new JSlider(0, 20, 5);
         slider.setMinorTickSpacing(1);
-        slider.setMajorTickSpacing(10);
+        slider.setMajorTickSpacing(1);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
-        slider.addChangeListener(ce -> automataPanel.setCellSize(((JSlider) ce.getSource()).getValue()));
+        slider.addChangeListener(ce -> automataPanel.setCellSize(((JSlider) ce.getSource()).getValue() + 1));
         automataPanel.setCellSize(slider.getValue());
         settingsPanel.add(slider);
         // ------------------------------------------------------------------------ \\
 
-        settingsPanel.add(new Label("Szybkość symulacji [ms]"));
+        settingsPanel.add(new Label("Opóźnienie między kolejnymi symulacjami [ms]"));
 
-        slider = new JSlider(0, 1000, 100);
+        slider = new JSlider(0, 1000, 0);
         slider.setMinorTickSpacing(50);
         slider.setMajorTickSpacing(250);
         slider.setPaintTicks(true);
@@ -96,10 +97,12 @@ public class MainWindowDesign extends JFrame
         JPanel statisticsPanel = new JPanel(new GridLayout(2,2));
         generationCountLabel = new Label("Liczba generacji: 0");
         simulationTimeLabel = new Label("Czas symulacji jednej: 0");
-        aliveCellsCount = new Label("Liczba żywych komórek: 0");
+        aliveCellsCountLabel = new Label("Liczba żywych komórek: 0");
+        renderTimeLabel = new Label("Czas renderowania: 0");
         statisticsPanel.add(generationCountLabel);
         statisticsPanel.add(simulationTimeLabel);
-        statisticsPanel.add(aliveCellsCount);
+        statisticsPanel.add(aliveCellsCountLabel);
+        statisticsPanel.add(renderTimeLabel);
         settingsPanel.add(statisticsPanel);
         // ------------------------------------------------------------------------ \\
 
@@ -114,8 +117,12 @@ public class MainWindowDesign extends JFrame
     {
         simulationTimeLabel.setText("Czas symulacji jednej generacji: " + time);
     }
-    protected void setAliveCellsCount(int count)
+    protected void setAliveCellsCountLabel(int count)
     {
-        aliveCellsCount.setText("Liczba żywych komórek: " + count);
+        aliveCellsCountLabel.setText("Liczba żywych komórek: " + count);
+    }
+    protected void setRenderTimeLabel(int time)
+    {
+        renderTimeLabel.setText("Czas renderowania: " + time);
     }
 }
