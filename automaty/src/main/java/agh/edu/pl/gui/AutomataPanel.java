@@ -16,6 +16,7 @@ import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import agh.edu.pl.automaton.satefactory.GeneralStateFactory;
+import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -150,12 +151,11 @@ public class AutomataPanel extends JPanel
             return;
         }
 
-        //HashMap<CellCoordinates, CellState> blinker = new HashMap<>();
-        // blinker
-       // blinker.put(new Coords2D(15, 20), BinaryState.ALIVE);
-        //blinker.put(new Coords2D(15, 21), BinaryState.ALIVE);
-        //blinker.put(new Coords2D(15, 22), BinaryState.ALIVE);
-       // automaton.insertStructure(blinker);
+        /*HashMap<CellCoordinates, CellState> blinker = new HashMap<>();
+        blinker.put(new Coords2D(15, 20), BinaryState.ALIVE);
+        blinker.put(new Coords2D(15, 21), BinaryState.ALIVE);
+        blinker.put(new Coords2D(15, 22), BinaryState.ALIVE);
+        automaton.insertStructure(blinker);*/
 
         /*HashMap<CellCoordinates, CellState> glider = new HashMap<>();
         glider.put(new Coords2D(5, 5), BinaryState.ALIVE);
