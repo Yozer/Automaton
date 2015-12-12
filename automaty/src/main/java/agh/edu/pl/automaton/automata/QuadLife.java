@@ -2,6 +2,7 @@ package agh.edu.pl.automaton.automata;
 
 import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
@@ -24,15 +25,15 @@ public class QuadLife extends GameOfLife
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, List<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
     {
-        List<Cell> aliveCells = neighborsStates.stream().filter(t -> t.getState() != QuadState.DEAD).collect(Collectors.toList());
+        List<CellCoordinates> aliveCells = neighborsStates.stream().filter(t -> getCellByCoordinates(t) != QuadState.DEAD).collect(Collectors.toList());
         CellState currentState = cell.getState();
 
         if(currentState == QuadState.DEAD && super.comeAliveFactors.contains(aliveCells.size()))
         {
             EnumMap<QuadState, Long> map = aliveCells.stream().collect(Collectors.groupingBy(
-                    x -> (QuadState)x.getState(), ()->new EnumMap<>(QuadState.class), Collectors.counting()));
+                    x -> (QuadState) getCellByCoordinates(x), ()->new EnumMap<>(QuadState.class), Collectors.counting()));
             EnumSet.allOf(QuadState.class).forEach(c->map.putIfAbsent(c, 0L));
             map.remove(QuadState.DEAD);
 

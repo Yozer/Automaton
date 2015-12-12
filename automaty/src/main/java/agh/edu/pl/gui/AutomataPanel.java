@@ -82,19 +82,19 @@ public class AutomataPanel extends JPanel
 
         if(selectedAutomaton == PossibleAutomaton.GameOfLive)
         {
-            CellStateFactory factory = new GeneralStateFactory(someRand);
+            CellStateFactory factory = new GeneralStateFactory(someRand, width / cellSize);
             CellNeighborhood neighborhood = new MoorNeighborhood(1, true, width / cellSize, height / cellSize);
             automaton = new GameOfLife(Arrays.asList(2,3), Collections.singletonList(3), width / cellSize, height / cellSize, factory, neighborhood);
         }
         else if(selectedAutomaton == PossibleAutomaton.QuadLife)
         {
-            CellStateFactory factory = new GeneralStateFactory(someRand);
+            CellStateFactory factory = new GeneralStateFactory(someRand, width / cellSize);
             CellNeighborhood neighborhood = new MoorNeighborhood(1, false, width / cellSize, height / cellSize);
             automaton = new QuadLife( width / cellSize, height / cellSize, factory, neighborhood);
         }
         else if(selectedAutomaton == PossibleAutomaton.WireWorld)
         {
-            CellStateFactory factory = new GeneralStateFactory(someRand);
+            CellStateFactory factory = new GeneralStateFactory(someRand, width / cellSize);
             CellNeighborhood neighborhood = new MoorNeighborhood(1, false, width / cellSize, height / cellSize);
             automaton = new WireWorld(width / cellSize, height / cellSize, factory, neighborhood);
         }

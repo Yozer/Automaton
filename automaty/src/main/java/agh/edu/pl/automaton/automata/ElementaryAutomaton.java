@@ -3,6 +3,7 @@ package agh.edu.pl.automaton.automata;
 import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.Automaton1Dim;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.BinaryState;
@@ -35,7 +36,7 @@ public class ElementaryAutomaton extends Automaton1Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, List<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
     {
         OneDimensionalNeighbors states = new OneDimensionalNeighbors(neighborsStates, (BinaryState) cell.getState());
         return ruleMapper.get(states);
@@ -85,11 +86,11 @@ public class ElementaryAutomaton extends Automaton1Dim
         {
             this.states = states;
         }
-        public OneDimensionalNeighbors(List<Cell> cells, BinaryState middleState)
+        public OneDimensionalNeighbors(List<CellCoordinates> cells, BinaryState middleState)
         {
             List<BinaryState> sortedStates =  cells.stream().
-                    sorted((a, b) -> -Integer.compare(((Coords1D) b.getCoords()).getX(), ((Coords1D) a.getCoords()).getX()))
-                    .map(t -> (BinaryState)t.getState())
+                    sorted((a, b) -> -Integer.compare(((Coords1D) b).getX(), ((Coords1D) a).getX()))
+                    .map(t -> (BinaryState) getCellByCoordinates(t))
                     .collect(Collectors.toList());
 
             states = new BinaryState[]{ sortedStates.get(0), middleState, sortedStates.get(1)};

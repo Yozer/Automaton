@@ -44,4 +44,5 @@ public class Coords2D implements CellCoordinates
     {
         return "X: " + x + " Y: " + y;
     }
+
 }

@@ -3,12 +3,12 @@ package agh.edu.pl.automaton.automata;
 import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
 import java.util.List;
-import java.util.Set;
 
 public class WireWorld extends Automaton2Dim
 {
@@ -24,7 +24,7 @@ public class WireWorld extends Automaton2Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, List<Cell> neighborsStates)
+    protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
     {
         WireElectronState state = ((WireElectronState)cell.getState());
 
@@ -39,7 +39,7 @@ public class WireWorld extends Automaton2Dim
         else if(state == WireElectronState.WIRE)
         {
             int headCount = (int) neighborsStates.stream().
-                    filter(t -> t.getState() == WireElectronState.ELECTRON_HEAD).
+                    filter(t -> getCellByCoordinates(t)  == WireElectronState.ELECTRON_HEAD).
                     count();
             if(headCount == 1 || headCount == 2)
                 return WireElectronState.ELECTRON_HEAD;

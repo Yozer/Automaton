@@ -8,5 +8,5 @@ import agh.edu.pl.automaton.cells.states.CellState;
  */
 public interface CellStateFactory
 {
-     CellState initialState(CellCoordinates cellCoordinates);
+     CellState initialState(int index);
 }

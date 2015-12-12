@@ -43,5 +43,12 @@ public abstract class Automaton1Dim extends Automaton
     {
         return size;
     }
+
+    @Override
+    protected int getCoordsIndex(CellCoordinates coord)
+    {
+        Coords1D coords1D = ((Coords1D) coord);
+        return coords1D.getX();
+    }
 }
 

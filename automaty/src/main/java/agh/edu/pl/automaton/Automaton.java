@@ -11,7 +11,7 @@ import java.util.*;
 
 public abstract class Automaton implements Iterable<Cell>
 {
-    private Map<CellCoordinates, CellState> cells;
+    private List<Cell> cells;
     private CellNeighborhood neighborhoodStrategy;
     private CellStateFactory stateFactory;
 
@@ -31,9 +31,8 @@ public abstract class Automaton implements Iterable<Cell>
         for(Cell cell : this)
         {
             List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
-            List<Cell> mappedNeighbors = mapCoordinates(neighbors);
 
-            CellState newState = nextCellState(cell, mappedNeighbors);
+            CellState newState = nextCellState(cell, neighbors);
             result.setCellState(cell.getCoords(), newState);
         }
 
@@ -42,36 +41,38 @@ public abstract class Automaton implements Iterable<Cell>
 
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
     {
-        cells.putAll(structure);
+        for(CellCoordinates coords : structure.keySet())
+            cells.set(getCoordsIndex(coords), new Cell(structure.get(coords), coords));
     }
 
     protected abstract Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood);
-    protected abstract CellState nextCellState(Cell cell, List<Cell> neighborsStates);
+    protected abstract CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates);
     protected abstract boolean hasNextCoordinates(CellCoordinates coords);
     protected abstract CellCoordinates initialCoordinates();
     protected abstract CellCoordinates nextCoordinates();
+    protected abstract int getCoordsIndex(CellCoordinates coord);
+
+    protected CellState getCellByCoordinates(CellCoordinates coordinates)
+    {
+        return cells.get(getCoordsIndex(coordinates)).getState();
+    }
 
     private void setCellState(CellCoordinates coords, CellState newState)
     {
-        cells.put(coords, newState);
+        cells.set(getCoordsIndex(coords), new Cell(newState, coords));
     }
-    private List<Cell> mapCoordinates(List<CellCoordinates> coordinates)
-    {
-        List<Cell> cellSet = new ArrayList<>(coordinates.size());
-        for(CellCoordinates coords : coordinates)
-        {
-            cellSet.add(new Cell(cells.get(coords), coords));
-        }
-        return cellSet;
-    }
+
     protected void initAutomaton()
     {
         CellCoordinates current = initialCoordinates();
-        cells = new HashMap<>(cellCount);
+        cells = new ArrayList<>(cellCount);
+        while (cells.size() < cellCount)
+            cells.add(null);
+
         while(hasNextCoordinates(current))
         {
             current = nextCoordinates();
-            CellState initialState = stateFactory.initialState(current);
+            CellState initialState = stateFactory.initialState(getCoordsIndex(current));
             setCellState(current, initialState);
         }
     }
@@ -79,10 +80,10 @@ public abstract class Automaton implements Iterable<Cell>
     @Override
     public Iterator<Cell> iterator()
     {
-        return new CellIterator();
+        return cells.iterator();
     }
 
-    private class CellIterator implements java.util.Iterator<Cell>
+    /*private class CellIterator implements java.util.Iterator<Cell>
     {
         private CellCoordinates currentCoords;
 
@@ -114,6 +115,6 @@ public abstract class Automaton implements Iterable<Cell>
         {
             throw new UnsupportedOperationException("remove method not implemented");
         }
-    }
+    }*/
 }
 
