@@ -16,11 +16,15 @@ import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import agh.edu.pl.automaton.satefactory.GeneralStateFactory;
+import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
 
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,12 +43,44 @@ public class AutomataPanel extends JPanel
     public AutomataPanel()
     {
         setDoubleBuffered(true);
+        setBackground(Color.BLACK);
+        setOpaque(true);
         initTimer();
+        addComponentListener(new ComponentListener()
+        {
+            @Override
+            public void componentResized(ComponentEvent e)
+            {
+                resetAutomata();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e)
+            {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e)
+            {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e)
+            {
+
+            }
+        });
     }
     private void resetAutomata()
     {
         int width = getWidth();
         int height = getHeight();
+
+        // window not created
+        if(width == 0 || height == 0)
+            return;
 
         Map<CellCoordinates, CellState> someRand = new HashMap<>();
         Random random = new Random();
@@ -83,6 +119,7 @@ public class AutomataPanel extends JPanel
         if(selectedAutomaton == PossibleAutomaton.GameOfLive)
         {
             CellStateFactory factory = new GeneralStateFactory(someRand);
+            //CellStateFactory factory = new UniformStateFactory(BinaryState.DEAD);
             CellNeighborhood neighborhood = new MoorNeighborhood(1, true, width / cellSize, height / cellSize);
             automaton = new GameOfLife(new HashSet<>(Arrays.asList(2,3)), new HashSet<>(Collections.singletonList(3)), width / cellSize, height / cellSize, factory, neighborhood);
         }
@@ -135,15 +172,11 @@ public class AutomataPanel extends JPanel
         timer.setCoalesce(true);
         timer.start();
     }
-
     private void drawAutomata(Graphics g)
     {
-        Graphics2D g2d = (Graphics2D) g.create();
-        g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, getWidth(), getHeight());
-
         if(automaton == null)
             return;
+        Graphics2D g2d = ((Graphics2D) g);
 
         if(automaton instanceof Automaton2Dim)
         {
@@ -161,6 +194,8 @@ public class AutomataPanel extends JPanel
                 g2d.setStroke(oldStroke);
             }
         }
+
+        g2d.dispose();
     }
 
 

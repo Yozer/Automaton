@@ -7,6 +7,8 @@ import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public abstract class Automaton implements Iterable<Cell>
@@ -18,6 +20,8 @@ public abstract class Automaton implements Iterable<Cell>
     private CellStateFactory stateFactory;
 
     private int cellCount;
+    private final int processorsCount = Runtime.getRuntime().availableProcessors();
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(processorsCount);
 
     protected Automaton(CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory, int cellCount)
     {
@@ -28,11 +32,12 @@ public abstract class Automaton implements Iterable<Cell>
 
     public Automaton nextState()
     {
-        for(Cell cell : cells)
-        {
-            List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
-            CellState newState = nextCellState(cell, neighbors);
-            setBackBufferCellState(cell, newState);
+        for (final Cell cell : cells) {
+            threadPool.submit((Runnable) () -> {
+                List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
+                CellState newState = nextCellState(cell, neighbors);
+                setBackBufferCellState(cell, newState);
+            });
         }
 
         swapBuffer();
@@ -48,7 +53,9 @@ public abstract class Automaton implements Iterable<Cell>
     }
     private void setBackBufferCellState(Cell cell, CellState newState)
     {
-        cellsBackBuffer.get(getCoordsIndex(cell.getCoords())).setState(newState);
+        Cell backBufferCell = cellsBackBuffer.get(getCoordsIndex(cell.getCoords()));
+        backBufferCell.isChanged(backBufferCell.getState() != newState);
+        backBufferCell.setState(newState);
     }
 
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)

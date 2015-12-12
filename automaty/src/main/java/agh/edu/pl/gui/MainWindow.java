@@ -24,10 +24,10 @@ public class MainWindow extends JFrame
     {
         initUI();
     }
-    public void init()
-    {
-        automataPanel.setAutomaton(PossibleAutomaton.GameOfLive);
-    }
+    //public void init()
+    //{
+        //automataPanel.setAutomaton(PossibleAutomaton.GameOfLive);
+    //}
 
     private void initUI()
     {
@@ -66,6 +66,7 @@ public class MainWindow extends JFrame
             if(automaton == PossibleAutomaton.GameOfLive)
             {
                 radio.setSelected(true);
+                automataPanel.setAutomaton(PossibleAutomaton.GameOfLive);
             }
 
             panelRadio.add(radio);
@@ -74,7 +75,7 @@ public class MainWindow extends JFrame
 
         settingsPanel.add(new Label("Rozmiar komórki"));
 
-        JSlider slider = new JSlider(5, 70, 20);
+        JSlider slider = new JSlider(5, 100, 20);
         slider.setMinorTickSpacing(1);
         slider.setMajorTickSpacing(10);
         slider.setPaintTicks(true);
@@ -85,7 +86,7 @@ public class MainWindow extends JFrame
 
         settingsPanel.add(new Label("Szybkość symulacji [ms]"));
 
-        slider = new JSlider(10, 2000, 100);
+        slider = new JSlider(0, 1000, 100);
         slider.setMinorTickSpacing(50);
         slider.setMajorTickSpacing(250);
         slider.setPaintTicks(true);
