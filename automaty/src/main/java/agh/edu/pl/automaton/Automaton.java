@@ -28,18 +28,27 @@ public abstract class Automaton implements Iterable<Cell>
 
     public Automaton nextState()
     {
-        for(Cell cell : this)
+        for(Cell cell : cells)
         {
             List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
             CellState newState = nextCellState(cell, neighbors);
-            cellsBackBuffer.get(getCoordsIndex(cell.getCoords())).setState(newState);
+            setBackBufferCellState(cell, newState);
         }
 
+        swapBuffer();
+
+        return this;
+    }
+
+    private void swapBuffer()
+    {
         List<Cell> tmp = cellsBackBuffer;
         cellsBackBuffer = cells;
         cells = tmp;
-
-        return this;
+    }
+    private void setBackBufferCellState(Cell cell, CellState newState)
+    {
+        cellsBackBuffer.get(getCoordsIndex(cell.getCoords())).setState(newState);
     }
 
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
@@ -48,7 +57,6 @@ public abstract class Automaton implements Iterable<Cell>
             cells.set(getCoordsIndex(coords), new Cell(structure.get(coords), coords));
     }
 
-    //protected abstract Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood);
     protected abstract CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates);
     protected abstract boolean hasNextCoordinates(CellCoordinates coords);
     protected abstract CellCoordinates initialCoordinates();
@@ -60,13 +68,9 @@ public abstract class Automaton implements Iterable<Cell>
         return cells.get(getCoordsIndex(coordinates)).getState();
     }
 
-    /*private void setCellState(CellCoordinates coords, CellState newState)
-    {
-        cells.set(getCoordsIndex(coords), new Cell(newState, coords));
-    }*/
-
     protected void initAutomaton()
     {
+        // initialize lists
         CellCoordinates current = initialCoordinates();
         cells = new ArrayList<>(cellCount);
         cellsBackBuffer = new ArrayList<>(cellCount);
@@ -76,6 +80,7 @@ public abstract class Automaton implements Iterable<Cell>
             cellsBackBuffer.add(null);
         }
 
+        // iterate over all coordinates and get initial state for each cell
         while(hasNextCoordinates(current))
         {
             current = nextCoordinates();
@@ -117,7 +122,7 @@ public abstract class Automaton implements Iterable<Cell>
             }
 
             currentCoords = nextCoordinates();
-            return new Cell(cells.get(currentCoords), currentCoords);
+            return cells.get(getCoordsIndex(currentCoords));
         }
 
         @Override

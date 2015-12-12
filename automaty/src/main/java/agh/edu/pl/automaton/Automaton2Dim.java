@@ -49,6 +49,12 @@ public abstract class Automaton2Dim extends Automaton
         iteratorCurrentCoordinates = new Coords2D(x, y);
         return iteratorCurrentCoordinates;
     }
+    @Override
+    protected int getCoordsIndex(CellCoordinates coord)
+    {
+        Coords2D coords2D = ((Coords2D) coord);
+        return coords2D.getY() * getWidth() + coords2D.getX();
+    }
 
     public int getWidth()
     {
@@ -57,13 +63,6 @@ public abstract class Automaton2Dim extends Automaton
     public int getHeight()
     {
         return height;
-    }
-
-    @Override
-    protected int getCoordsIndex(CellCoordinates coord)
-    {
-        Coords2D coords2D = ((Coords2D) coord);
-        return coords2D.getY() * getWidth() + coords2D.getX();
     }
 }
 

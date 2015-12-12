@@ -38,17 +38,18 @@ public abstract class Automaton1Dim extends Automaton
         iteratorCurrentCoordinates = new Coords1D(x);
         return iteratorCurrentCoordinates;
     }
-
-    public int getSize()
-    {
-        return size;
-    }
-
     @Override
     protected int getCoordsIndex(CellCoordinates coord)
     {
         Coords1D coords1D = ((Coords1D) coord);
         return coords1D.getX();
     }
+
+    public int getSize()
+    {
+        return size;
+    }
+
+
 }
 
