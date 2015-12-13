@@ -50,24 +50,6 @@ class AutomatonThread
         this.automatonPanel = automatonPanel;
     }
 
-    private void setUp()
-    {
-        /*HashMap<CellCoordinates, CellState> blinker = new HashMap<>();
-        blinker.put(new Coords2D(15, 20), BinaryState.ALIVE);
-        blinker.put(new Coords2D(15, 21), BinaryState.ALIVE);
-        blinker.put(new Coords2D(15, 22), BinaryState.ALIVE);
-        automaton.insertStructure(blinker);*/
-
-        /*HashMap<CellCoordinates, CellState> glider = new HashMap<>();
-        glider.put(new Coords2D(5, 5), BinaryState.ALIVE);
-        glider.put(new Coords2D(6, 5), BinaryState.ALIVE);
-        glider.put(new Coords2D(7, 5), BinaryState.ALIVE);
-        glider.put(new Coords2D(7, 4), BinaryState.ALIVE);
-        glider.put(new Coords2D(6, 3), BinaryState.ALIVE);
-        automaton.insertStructure(glider);*/
-        //automaton.start();
-    }
-
     public void reset(Runnable invokeAfter, boolean startImmiediately)
     {
         AutomatonThread thr = this;
@@ -102,11 +84,14 @@ class AutomatonThread
             simulationThread.interrupt();
         }
 
+        resetStatistics();
+
         // resetujemy automaton do stanu (wszystko martwe)
         UniformStateFactory stateFactory;
         settings.setWidth(automatonPanel.getWidth() /  settings.getCellSize());
         settings.setHeight(automatonPanel.getHeight() /  settings.getCellSize());
         automatonPanel.setScale(settings.getCellSize());
+        statistics.totalCellsCount.set(settings.getWidth()*settings.getHeight());
 
         CellNeighborhoodType neighborhoodType = settings.getNeighborHood();
         CellNeighborhood neighborhood = null;
@@ -151,6 +136,7 @@ class AutomatonThread
         simulationThread = new Thread(() ->
         {
             AtomicBoolean wasDrawn = new AtomicBoolean(false);
+            long simulateTimeBefore, simulateTimeAfter;
 
             while(!Thread.currentThread().isInterrupted())
             {
@@ -159,12 +145,20 @@ class AutomatonThread
                 wasDrawn.set(false);
                 SwingUtilities.invokeLater(() ->
                 {
-                    automatonPanel.paintImmediately(0,0, automatonPanel.getWidth(), automatonPanel.getHeight());
+                    long drawTimeBefore = System.nanoTime();
+                    drawCurrentAutomaton();
                     wasDrawn.set(true);
+                    automatonPanel.paintImmediately(0,0, automatonPanel.getWidth(), automatonPanel.getHeight());
+                    long drawTimeAfter = System.nanoTime();
+                    statistics.renderTime.set((int) ((drawTimeAfter - drawTimeBefore)/1000000f));
                 });
 
+                simulateTimeBefore = System.nanoTime();
                 automaton.calculateNextState();
-                automaton.setCalculatedNextState();
+
+                simulateTimeAfter = System.nanoTime();
+                statistics.generationTime.set((int) ((simulateTimeAfter - simulateTimeBefore)/1000000f));
+
                 while (!wasDrawn.get())
                 {
                     try
@@ -175,7 +169,9 @@ class AutomatonThread
 
                     }
                 }
-                drawCurrentAutomaton();
+
+                automaton.setCalculatedNextState();
+                statistics.generationCount.incrementAndGet();
 
                 long timeAfter = System.nanoTime();
                 int difference = (int) ((timeAfter - timeBefore)/1000000f);
@@ -207,9 +203,18 @@ class AutomatonThread
                         }
                     }
                 }
-
             }
         });
+    }
+
+    private void resetStatistics()
+    {
+        statistics.generationCount.set(0);
+        statistics.renderTime.set(0);
+        statistics.generationTime.set(0);
+        statistics.aliveCellsCount.set(0);
+        statistics.deadCellsCount.set(0);
+        statistics.totalCellsCount.set(0);
     }
 
     private void drawCurrentAutomaton()
@@ -226,14 +231,7 @@ class AutomatonThread
                 }
             }
         }
-        File outputfile = new File("saved.png");
-        try
-        {
-            ImageIO.write(bufferedImage, "png", outputfile);
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+
         automatonPanel.releaseBitmapAfterDrawing();
     }
 
@@ -279,7 +277,7 @@ class AutomatonThread
                 invokeAfter.run();
             }
         };
-        swingWorker.run();
+        swingWorker.execute();
     }
 
     private void pause()
@@ -317,30 +315,41 @@ class AutomatonThread
                         if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
                         {
                             List<BinaryState> values = Arrays.stream(BinaryState.values()).collect(Collectors.toList());
-                            values.add(BinaryState.DEAD);
-                            values.add(BinaryState.DEAD);
-                            values.add(BinaryState.DEAD);
+                            for(int i = 0; i < 8; i++)
+                                values.add(BinaryState.DEAD);
                             someRand.put(new Coords2D(x, y),  values.get(random.nextInt(values.size())));
                         }
                         else if(settings.getSelectedAutomaton() == PossibleAutomaton.QuadLife)
                         {
                             List<QuadState> values = Arrays.stream(QuadState.values()).collect(Collectors.toList());
-                            values.add(QuadState.DEAD);
-                            values.add(QuadState.DEAD);
-                            values.add(QuadState.DEAD);
+                            for(int i = 0; i < 8; i++)
+                                values.add(QuadState.DEAD);
                             someRand.put(new Coords2D(x, y), values.get(random.nextInt(values.size())));
                         }
                         else if(settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
                         {
                             List<WireElectronState> values = Arrays.stream(WireElectronState.values()).collect(Collectors.toList());
-                            values.add(WireElectronState.VOID);
-                            values.add(WireElectronState.VOID);
-                            values.add(WireElectronState.VOID);
+                            for(int i = 0; i < 8; i++)
+                                values.add(WireElectronState.VOID);
                             someRand.put(new Coords2D(x, y), values.get(random.nextInt(values.size())));
                         }
                     }
                 }
 
+                /*HashMap<CellCoordinates, CellState> blinker = new HashMap<>();
+                blinker.put(new Coords2D(15, 20), BinaryState.ALIVE);
+                blinker.put(new Coords2D(15, 21), BinaryState.ALIVE);
+                blinker.put(new Coords2D(15, 22), BinaryState.ALIVE);
+                automaton.insertStructure(blinker);*/
+
+                /*HashMap<CellCoordinates, CellState> glider = new HashMap<>();
+                glider.put(new Coords2D(5, 5), BinaryState.ALIVE);
+                glider.put(new Coords2D(6, 5), BinaryState.ALIVE);
+                glider.put(new Coords2D(7, 5), BinaryState.ALIVE);
+                glider.put(new Coords2D(7, 4), BinaryState.ALIVE);
+                glider.put(new Coords2D(6, 3), BinaryState.ALIVE);
+                automaton.insertStructure(glider);*/
+                //automaton.start();
                 automaton.insertStructure(someRand);
                 drawCurrentAutomaton();
                 automatonPanel.paintImmediately(0,0, automatonPanel.getWidth(), automatonPanel.getHeight());
@@ -353,7 +362,7 @@ class AutomatonThread
                 invokeAfter.run();
             }
         };
-        worker.run();
+        worker.execute();
     }
 
     public void setSelectedAutomaton(PossibleAutomaton selectedAutomaton)
@@ -390,6 +399,16 @@ class AutomatonThread
     public int getRenderTime()
     {
         return statistics.renderTime.get();
+    }
+
+    public int getDeadCellsCount()
+    {
+        return statistics.deadCellsCount.get();
+    }
+
+    public int getTotalCellsCount()
+    {
+        return statistics.totalCellsCount.get();
     }
 
     private class AutomatonStatistics

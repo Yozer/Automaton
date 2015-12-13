@@ -9,7 +9,6 @@ import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -101,6 +100,7 @@ public abstract class Automaton implements Iterable<Cell>
         }
 
         threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+
         return aliveCount.get();
     }
 
@@ -139,7 +139,7 @@ public abstract class Automaton implements Iterable<Cell>
     private Cell setBackBufferCellState(Cell cell, CellState newState)
     {
         Cell backBufferCell = cellsBackBuffer.get(getCoordsIndex(cell.getCoords()));
-        backBufferCell.isChanged(backBufferCell.getState() != newState);
+        backBufferCell.isChanged(cell.getState() != newState);
         backBufferCell.setState(newState);
         return backBufferCell;
     }
@@ -149,11 +149,20 @@ public abstract class Automaton implements Iterable<Cell>
         for(CellCoordinates coords : structure.keySet())
         {
             int index = getCoordsIndex(coords);
-            cells.set(index, new Cell(structure.get(coords), coords));
+            cells.get(index).setState(structure.get(coords));
             if(changeListSet[index] == 0)
             {
                 changeList[changeListSize++] = index;
                 changeListSet[index] = 1;
+            }
+            for(CellCoordinates coordinates : neighborhoodStrategy.cellNeighbors(coords))
+            {
+                int indexN = getCoordsIndex(coordinates);
+                if(changeListSet[indexN] == 0)
+                {
+                    changeList[changeListSize++] = indexN;
+                    changeListSet[indexN] = 1;
+                }
             }
         }
 

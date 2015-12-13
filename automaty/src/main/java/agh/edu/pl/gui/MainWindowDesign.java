@@ -14,9 +14,10 @@ import java.awt.event.ActionListener;
 public abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener
 {
     protected AutomatonPanel automatonPanel;
-    protected Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel;
+    protected Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel, deadCellsLabel, totalCellsLabel;
     protected Label renderTimeLabel;
     protected JPanel settingsPanel;
+    protected JSlider sliderDelay;
 
     protected JButton randButton, startButton, pauseButton;
 
@@ -31,7 +32,7 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     private void initUI()
     {
         setTitle("Automat komórkowy");
-        //setSize(1920, 1080);
+        //setSize(1700, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -84,20 +85,21 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
 
         settingsPanel.add(new Label("Opóźnienie między kolejnymi symulacjami [ms]"));
 
-        slider = new JSlider(0, 1000, 0);
+        sliderDelay = slider = new JSlider(0, 1000, 0);
         slider.setMinorTickSpacing(50);
         slider.setMajorTickSpacing(250);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
         slider.setName(Commands.CHANGE_SIMULATION_DELAY.toString());
-        slider.addChangeListener(this);
         slider.setValue(automatonSettings.getSimulationDelay());
+        slider.addChangeListener(this);
         settingsPanel.add(slider);
         // ------------------------------------------------------------------------ \\
         JPanel navigationButtonsPanel = new JPanel(new GridLayout(1, 3));
         startButton = new JButton("Start");
         startButton.setActionCommand(Commands.START_AUTOMATON.toString());
         startButton.addActionListener(this);
+        startButton.setEnabled(false);
         navigationButtonsPanel.add(startButton);
 
         pauseButton = new JButton("Pauza");
@@ -112,16 +114,20 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         navigationButtonsPanel.add(randButton);
         settingsPanel.add(navigationButtonsPanel);
         // ------------------------------------------------------------------------ \\
-        JPanel statisticsPanel = new JPanel(new GridLayout(2,2));
+        JPanel statisticsPanel = new JPanel(new GridLayout(3,2));
         statisticsPanel.setName("statisticPanel");
         generationCountLabel = new Label("Liczba generacji: 0");
         simulationTimeLabel = new Label("Czas symulacji jednej: 0");
         aliveCellsCountLabel = new Label("Liczba żywych komórek: 0");
         renderTimeLabel = new Label("Czas renderowania: 0");
+        totalCellsLabel = new Label("Wszystkich komórek: 0");
+        deadCellsLabel = new Label("Martwych komórek: 0");
         statisticsPanel.add(generationCountLabel);
         statisticsPanel.add(simulationTimeLabel);
         statisticsPanel.add(aliveCellsCountLabel);
         statisticsPanel.add(renderTimeLabel);
+        statisticsPanel.add(deadCellsLabel);
+        statisticsPanel.add(totalCellsLabel);
         settingsPanel.add(statisticsPanel);
         // ------------------------------------------------------------------------ \\
 
@@ -139,6 +145,14 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     protected void setAliveCellsCountLabel(int count)
     {
         aliveCellsCountLabel.setText("Liczba żywych komórek: " + count);
+    }
+    protected void setTotalCellsLabel(int count)
+    {
+        totalCellsLabel.setText("Wszystkich komórek: " + count);
+    }
+    protected void setDeadCellsLabel(int count)
+    {
+        deadCellsLabel.setText("Martwych komórek: " + count);
     }
     protected void setRenderTimeLabel(int time)
     {

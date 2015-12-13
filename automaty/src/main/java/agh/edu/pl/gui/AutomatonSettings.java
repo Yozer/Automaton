@@ -8,13 +8,13 @@ public class AutomatonSettings
 {
     private int cellSize = 5;
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLive;
-    private int simulationDelay = 50;
+    private int simulationDelay = 15;
     private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2, 3));
     private Set<Integer> comeAliveFactors= new HashSet<>(Arrays.asList(3));
     private CellNeighborhoodType neighborhoodType = CellNeighborhoodType.Moore;
     private int oneDimRule;
     private int neighborhoodRadius = 1;
-    private boolean wrap = false;
+    private boolean wrap = true;
 
     private int width;
     private int height;

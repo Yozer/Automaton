@@ -38,7 +38,8 @@ public class MainWindow extends MainWindowDesign
         Component[] components = panel.getComponents();
 
         for(int i = 0; i < components.length; i++) {
-            if(Objects.equals(components[i].getClass().getName(), "javax.swing.JPanel")) {
+            if(Objects.equals(components[i].getClass().getName(), "javax.swing.JPanel") &&
+                    !Objects.equals(components[i].getName(), "statisticPanel")) {
                 setPanelState((JPanel) components[i], isEnabled);
             }
 
@@ -72,6 +73,7 @@ public class MainWindow extends MainWindowDesign
         automaton.start(() -> {
             disableSettingsPanel();
             pauseButton.setEnabled(true);
+            sliderDelay.setEnabled(true);
         });
     }
     private ActionListener updateStatistics()
@@ -81,6 +83,8 @@ public class MainWindow extends MainWindowDesign
             setSimulationTimeLabel(automaton.getLastSimulationTime());
             setGenerationCountLabel(automaton.getGenerationCount());
             setAliveCellsCountLabel(automaton.getAliveCellsCount());
+            setDeadCellsLabel(automaton.getDeadCellsCount());
+            setTotalCellsLabel(automaton.getTotalCellsCount());
             setRenderTimeLabel(automaton.getRenderTime());
         };
     }
@@ -95,7 +99,7 @@ public class MainWindow extends MainWindowDesign
             JRadioButton btn = (JRadioButton) e.getSource();
             PossibleAutomaton selectedAutomaton = Arrays.stream(PossibleAutomaton.values()).filter(t -> Objects.equals(t.toString(), btn.getText())).findAny().get();
             automaton.setSelectedAutomaton(selectedAutomaton);
-            //resetAutomaton();
+            startButton.setEnabled(false);
         }
         else if(cmd.equals(Commands.START_AUTOMATON.toString()))
         {
@@ -126,7 +130,7 @@ public class MainWindow extends MainWindowDesign
                 automaton.setCellSize(slider.getValue() + 1);
                 //resetAutomaton();
             }
-            else if(name.equals(Commands.CHANGE_SIMULATION_DELAY))
+            else if(name.equals(Commands.CHANGE_SIMULATION_DELAY.toString()))
             {
                 automaton.setSimulationDelay(slider.getValue());
             }
