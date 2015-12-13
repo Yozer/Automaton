@@ -48,6 +48,6 @@ public class WireWorld extends Automaton2Dim
     @Override
     protected boolean cellIsAlive(CellState state)
     {
-        return state != QuadState.DEAD;
+        return state != WireElectronState.VOID;
     }
 }

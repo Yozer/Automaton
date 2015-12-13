@@ -49,8 +49,12 @@ public abstract class Automaton implements Iterable<Cell>
         changeListSetBackBuffer = new byte[cellCount];
     }
 
+    public int getAliveCount()
+    {
+        return aliveCount.get();
+    }
 
-    public int calculateNextState()
+    public void calculateNextState()
     {
         int step = (int) (changeListSize / ((float) processorsCount));
 
@@ -100,20 +104,11 @@ public abstract class Automaton implements Iterable<Cell>
         }
 
         threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-
-        return aliveCount.get();
     }
 
     public void setCalculatedNextState()
     {
         swapBuffers();
-    }
-
-    public int nextState()
-    {
-        int aliveCells = calculateNextState();
-        setCalculatedNextState();
-        return aliveCells;
     }
 
     private void swapBuffers()
@@ -149,7 +144,17 @@ public abstract class Automaton implements Iterable<Cell>
         for(CellCoordinates coords : structure.keySet())
         {
             int index = getCoordsIndex(coords);
-            cells.get(index).setState(structure.get(coords));
+            CellState newState = structure.get(coords);
+
+            if(cells.get(index).getState() != newState)
+            {
+                if (cellIsAlive(newState))
+                    aliveCount.incrementAndGet();
+                else
+                    aliveCount.decrementAndGet();
+            }
+            cells.get(index).setState(newState);
+
             if(changeListSet[index] == 0)
             {
                 changeList[changeListSize++] = index;

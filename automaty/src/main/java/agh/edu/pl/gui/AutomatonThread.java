@@ -172,6 +172,8 @@ class AutomatonThread
 
                 automaton.setCalculatedNextState();
                 statistics.generationCount.incrementAndGet();
+                statistics.aliveCellsCount.set(automaton.getAliveCount());
+                statistics.deadCellsCount.set(statistics.totalCellsCount.get() - statistics.aliveCellsCount.get());
 
                 long timeAfter = System.nanoTime();
                 int difference = (int) ((timeAfter - timeBefore)/1000000f);
@@ -315,21 +317,21 @@ class AutomatonThread
                         if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
                         {
                             List<BinaryState> values = Arrays.stream(BinaryState.values()).collect(Collectors.toList());
-                            for(int i = 0; i < 8; i++)
+                            for(int i = 0; i < 3; i++)
                                 values.add(BinaryState.DEAD);
                             someRand.put(new Coords2D(x, y),  values.get(random.nextInt(values.size())));
                         }
                         else if(settings.getSelectedAutomaton() == PossibleAutomaton.QuadLife)
                         {
                             List<QuadState> values = Arrays.stream(QuadState.values()).collect(Collectors.toList());
-                            for(int i = 0; i < 8; i++)
+                            for(int i = 0; i < 4; i++)
                                 values.add(QuadState.DEAD);
                             someRand.put(new Coords2D(x, y), values.get(random.nextInt(values.size())));
                         }
                         else if(settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
                         {
                             List<WireElectronState> values = Arrays.stream(WireElectronState.values()).collect(Collectors.toList());
-                            for(int i = 0; i < 8; i++)
+                            for(int i = 0; i < 20; i++)
                                 values.add(WireElectronState.VOID);
                             someRand.put(new Coords2D(x, y), values.get(random.nextInt(values.size())));
                         }
@@ -351,6 +353,8 @@ class AutomatonThread
                 automaton.insertStructure(glider);*/
                 //automaton.start();
                 automaton.insertStructure(someRand);
+                statistics.aliveCellsCount.set(automaton.getAliveCount());
+                statistics.deadCellsCount.set(statistics.totalCellsCount.get() - statistics.aliveCellsCount.get());
                 drawCurrentAutomaton();
                 automatonPanel.paintImmediately(0,0, automatonPanel.getWidth(), automatonPanel.getHeight());
                 return null;
@@ -410,6 +414,7 @@ class AutomatonThread
     {
         return statistics.totalCellsCount.get();
     }
+
 
     private class AutomatonStatistics
     {
