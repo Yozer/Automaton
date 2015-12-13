@@ -17,21 +17,27 @@ import agh.edu.pl.automaton.cells.neighborhoods.VonNeumanNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+
+
+// TODO make this class easier to read, extract some threads etc
+// TODO remove drawing from GUI thread (in simulation Thread)
+// TODO check why it's hanging. Probably that odd thread.sleep when diff < delay
+// TODO check why it behaves strange for wireworld
 
 /**
  * Created by Dominik on 2015-12-13.
  */
-class AutomatonThread
+class AutomatonManager
 {
     private Automaton automaton;
     private Thread simulationThread;
@@ -44,15 +50,15 @@ class AutomatonThread
     private final AtomicBoolean shouldPause = new AtomicBoolean(false);
     private final AtomicBoolean paused = new AtomicBoolean(true);
 
-    public AutomatonThread(AutomatonPanel automatonPanel)
+    public AutomatonManager(AutomatonPanel automatonPanel)
     {
         this.delay = new AtomicInteger(settings.getSimulationDelay());
         this.automatonPanel = automatonPanel;
     }
 
-    public void reset(Runnable invokeAfter, boolean startImmiediately)
+    public void reset(Runnable invokeAfter, boolean startImmediately)
     {
-        AutomatonThread thr = this;
+        AutomatonManager thr = this;
         SwingWorker swingWorker = new SwingWorker<Void, Void>()
         {
             @Override
@@ -65,7 +71,7 @@ class AutomatonThread
             @Override
             protected void done()
             {
-                if(startImmiediately)
+                if(startImmediately)
                 {
                     thr.start();
                 }
@@ -88,8 +94,8 @@ class AutomatonThread
 
         // resetujemy automaton do stanu (wszystko martwe)
         UniformStateFactory stateFactory;
-        settings.setWidth(automatonPanel.getWidth() /  settings.getCellSize());
-        settings.setHeight(automatonPanel.getHeight() /  settings.getCellSize());
+        settings.setWidth((int) (automatonPanel.getWidth() /  settings.getCellSize()));
+        settings.setHeight((int) (automatonPanel.getHeight() /  settings.getCellSize()));
         automatonPanel.setScale(settings.getCellSize());
         statistics.totalCellsCount.set(settings.getWidth()*settings.getHeight());
 
@@ -135,19 +141,19 @@ class AutomatonThread
 
         simulationThread = new Thread(() ->
         {
-            AtomicBoolean wasDrawn = new AtomicBoolean(false);
             long simulateTimeBefore, simulateTimeAfter;
 
             while(!Thread.currentThread().isInterrupted())
             {
+                CountDownLatch wasDrawn = new CountDownLatch(1);
                 long timeBefore = System.nanoTime();
 
-                wasDrawn.set(false);
+
                 SwingUtilities.invokeLater(() ->
                 {
                     long drawTimeBefore = System.nanoTime();
                     drawCurrentAutomaton();
-                    wasDrawn.set(true);
+                    wasDrawn.countDown();
                     automatonPanel.paintImmediately(0,0, automatonPanel.getWidth(), automatonPanel.getHeight());
                     long drawTimeAfter = System.nanoTime();
                     statistics.renderTime.set((int) ((drawTimeAfter - drawTimeBefore)/1000000f));
@@ -159,15 +165,12 @@ class AutomatonThread
                 simulateTimeAfter = System.nanoTime();
                 statistics.generationTime.set((int) ((simulateTimeAfter - simulateTimeBefore)/1000000f));
 
-                while (!wasDrawn.get())
+                try
                 {
-                    try
-                    {
-                        Thread.sleep(0);
-                    } catch (InterruptedException e)
-                    {
+                    wasDrawn.await();
+                } catch (InterruptedException e)
+                {
 
-                    }
                 }
 
                 automaton.setCalculatedNextState();
@@ -177,8 +180,9 @@ class AutomatonThread
 
                 long timeAfter = System.nanoTime();
                 int difference = (int) ((timeAfter - timeBefore)/1000000f);
+                statistics.timeOfOnePass.set(difference);
                 int currentDelay = delay.get();
-                if(difference < currentDelay)
+                if(difference < currentDelay && difference > 10)
                 {
                     try
                     {
@@ -217,6 +221,7 @@ class AutomatonThread
         statistics.aliveCellsCount.set(0);
         statistics.deadCellsCount.set(0);
         statistics.totalCellsCount.set(0);
+        statistics.timeOfOnePass.set(0);
     }
 
     private void drawCurrentAutomaton()
@@ -414,6 +419,10 @@ class AutomatonThread
     {
         return statistics.totalCellsCount.get();
     }
+    public int getOonePassTime()
+    {
+        return statistics.timeOfOnePass.get();
+    }
 
 
     private class AutomatonStatistics
@@ -424,5 +433,6 @@ class AutomatonThread
         private final AtomicInteger deadCellsCount  = new AtomicInteger();
         private final AtomicInteger renderTime = new AtomicInteger();
         private final AtomicInteger generationTime = new AtomicInteger();
+        public final AtomicInteger timeOfOnePass = new AtomicInteger();
     }
 }

@@ -13,12 +13,12 @@ public class MainWindow extends MainWindowDesign
     private final Timer timerStatistics;
     private final int statisticUpdateEvery = 500; // ms
 
-    private AutomatonThread automaton;
+    private AutomatonManager automaton;
 
     public MainWindow()
     {
         super();
-        automaton = new AutomatonThread(automatonPanel);
+        automaton = new AutomatonManager(automatonPanel);
         timerStatistics = new Timer(statisticUpdateEvery, updateStatistics());
         timerStatistics.setRepeats(true);
         timerStatistics.setCoalesce(true);
@@ -86,6 +86,7 @@ public class MainWindow extends MainWindowDesign
             setDeadCellsLabel(automaton.getDeadCellsCount());
             setTotalCellsLabel(automaton.getTotalCellsCount());
             setRenderTimeLabel(automaton.getRenderTime());
+            setOnePassTimeLabel(automaton.getOonePassTime());
         };
     }
 
@@ -127,7 +128,7 @@ public class MainWindow extends MainWindowDesign
             if (name.equals(Commands.CHANGE_CELL_SIZE.toString()))
             {
                 // TODO it has restart automaton? I don't think so
-                automaton.setCellSize(slider.getValue() + 1);
+                automaton.setCellSize(slider.getValue());
                 //resetAutomaton();
             }
             else if(name.equals(Commands.CHANGE_SIMULATION_DELAY.toString()))

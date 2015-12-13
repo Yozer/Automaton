@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class AutomatonSettings
 {
-    private int cellSize = 5;
+    private float cellSize = 5;
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLive;
     private int simulationDelay = 15;
     private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2, 3));
@@ -29,7 +29,7 @@ public class AutomatonSettings
         this.selectedAutomaton = selectedAutomaton;
     }
 
-    public int getCellSize()
+    public float getCellSize()
     {
         return cellSize;
     }

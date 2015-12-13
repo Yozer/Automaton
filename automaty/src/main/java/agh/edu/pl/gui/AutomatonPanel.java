@@ -1,26 +1,27 @@
 package agh.edu.pl.gui;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 class AutomatonPanel extends JPanel
 {
     private BufferedImage bufferedImage;
+    private BufferedImage bufferedImageBorder;
     private Lock bitmapLocker = new ReentrantLock();
-    private int scale;
+    private float scale;
 
     public AutomatonPanel()
     {
         setDoubleBuffered(true);
         setBackground(Color.BLACK);
         setOpaque(true);
-
-        // TODO create bufferedImage, handle screen resize?
-
     }
 
     @Override
@@ -32,6 +33,13 @@ class AutomatonPanel extends JPanel
         Graphics2D g2d = ((Graphics2D) g);
         g2d.scale(scale, scale);
         g2d.drawImage(bufferedImage, 0, 0, null);
+        if(bufferedImageBorder != null)
+        {
+            AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.DST_OUT);
+            g2d.setComposite(ac);
+            g2d.scale(1 / scale, 1 / scale);
+            g2d.drawImage(bufferedImageBorder, 0, 0, null);
+        }
         unlockBitmap();
     }
 
@@ -43,10 +51,48 @@ class AutomatonPanel extends JPanel
     {
         bitmapLocker.unlock();
     }
-    public void setScale(int scale)
+    public void setScale(float scale)
     {
         lockBitmap();
         this.scale = scale;
+        // create border if cellsize is greater or equal 4
+        if(scale >= 2)
+        {
+            //scale = 3;
+            bufferedImageBorder = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics2D = bufferedImageBorder.createGraphics();
+            graphics2D.setColor(new Color(0, true));
+            graphics2D.fillRect(0, 0, getWidth(), getHeight());
+
+            graphics2D.setPaint(Color.BLACK);
+            graphics2D.setStroke(new BasicStroke(1));
+
+            int width = (int) (getWidth() / scale);
+            int height = (int)(getHeight() / scale);
+            int scaleInt = (int) scale;
+
+            for(int x = 1; x < width; x++)
+            {
+                graphics2D.drawLine(scaleInt * x, 0, scaleInt *x, getHeight());
+            }
+            for(int y = 1; y < height; y++)
+            {
+                graphics2D.drawLine(0, scaleInt * y, getWidth(), scaleInt * y);
+            }
+
+            graphics2D.dispose();
+            try {
+                // retrieve image
+                File outputfile = new File("saved.png");
+                ImageIO.write(bufferedImageBorder, "png", outputfile);
+            } catch (IOException e) {
+
+            }
+        }
+        else
+        {
+            bufferedImageBorder = null;
+        }
         unlockBitmap();
     }
     public BufferedImage getBitmapForDrawing()

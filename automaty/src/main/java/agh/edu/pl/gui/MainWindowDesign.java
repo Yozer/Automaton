@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
 public abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener
 {
     protected AutomatonPanel automatonPanel;
-    protected Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel, deadCellsLabel, totalCellsLabel;
+    protected Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel, deadCellsLabel, totalCellsLabel, onePassTimeLabel;
     protected Label renderTimeLabel;
     protected JPanel settingsPanel;
     protected JSlider sliderDelay;
@@ -72,13 +72,13 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         // ------------------------------------------------------------------------ \\
         settingsPanel.add(new Label("Rozmiar komórki"));
 
-        JSlider slider = new JSlider(0, 20, 5);
+        JSlider slider = new JSlider(1, 20, 5);
         slider.setMinorTickSpacing(1);
         slider.setMajorTickSpacing(1);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
         slider.setName(Commands.CHANGE_CELL_SIZE.toString());
-        slider.setValue(automatonSettings.getCellSize());
+        slider.setValue((int) automatonSettings.getCellSize());
         slider.addChangeListener(this);
         settingsPanel.add(slider);
         // ------------------------------------------------------------------------ \\
@@ -114,7 +114,7 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         navigationButtonsPanel.add(randButton);
         settingsPanel.add(navigationButtonsPanel);
         // ------------------------------------------------------------------------ \\
-        JPanel statisticsPanel = new JPanel(new GridLayout(3,2));
+        JPanel statisticsPanel = new JPanel(new GridLayout(4,2));
         statisticsPanel.setName("statisticPanel");
         generationCountLabel = new Label("Liczba generacji: 0");
         simulationTimeLabel = new Label("Czas symulacji jednej: 0");
@@ -122,11 +122,13 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         renderTimeLabel = new Label("Czas renderowania: 0");
         totalCellsLabel = new Label("Wszystkich komórek: 0");
         deadCellsLabel = new Label("Martwych komórek: 0");
+        onePassTimeLabel = new Label("Czas jednego przejścia: 0");
         statisticsPanel.add(generationCountLabel);
         statisticsPanel.add(simulationTimeLabel);
         statisticsPanel.add(aliveCellsCountLabel);
         statisticsPanel.add(renderTimeLabel);
         statisticsPanel.add(deadCellsLabel);
+        statisticsPanel.add(onePassTimeLabel);
         statisticsPanel.add(totalCellsLabel);
         settingsPanel.add(statisticsPanel);
         // ------------------------------------------------------------------------ \\
@@ -157,5 +159,9 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     protected void setRenderTimeLabel(int time)
     {
         renderTimeLabel.setText("Czas renderowania: " + time);
+    }
+    protected void setOnePassTimeLabel(int time)
+    {
+        onePassTimeLabel.setText("Czas jednego przejścia: " + time);
     }
 }
