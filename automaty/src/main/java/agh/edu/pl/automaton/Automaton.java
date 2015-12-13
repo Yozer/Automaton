@@ -34,8 +34,7 @@ public abstract class Automaton implements Iterable<Cell>
     private final ForkJoinPool threadPool = new ForkJoinPool(processorsCount);
 
     private final AtomicInteger aliveCount = new AtomicInteger(0);
-    private final AtomicBoolean isRunning = new AtomicBoolean(false);
-    private final AtomicBoolean isGenerating = new AtomicBoolean(false);
+
 
     protected Automaton(CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory, int cellCount)
     {
@@ -51,29 +50,9 @@ public abstract class Automaton implements Iterable<Cell>
         changeListSetBackBuffer = new byte[cellCount];
     }
 
-    public void start()
-    {
-        isRunning.set(true);
-    }
-    public void pause()
-    {
-        isRunning.set(false);
-        while (isGenerating.get())
-            try
-            {
-                Thread.sleep(5);
-            } catch (InterruptedException e)
-            {
 
-            }
-    }
-
-    public int nextState()
+    public int calculateNextState()
     {
-        if(!isRunning.get())
-            return aliveCount.get();
-        isGenerating.set(true);
-
         int step = (int) (changeListSize / ((float) processorsCount));
 
         for(int i = 0; i < processorsCount; ++i)
@@ -122,10 +101,19 @@ public abstract class Automaton implements Iterable<Cell>
         }
 
         threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        swapBuffers();
-
-        isGenerating.set(false);
         return aliveCount.get();
+    }
+
+    public void setCalculatedNextState()
+    {
+        swapBuffers();
+    }
+
+    public int nextState()
+    {
+        int aliveCells = calculateNextState();
+        setCalculatedNextState();
+        return aliveCells;
     }
 
     private void swapBuffers()
@@ -158,7 +146,6 @@ public abstract class Automaton implements Iterable<Cell>
 
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
     {
-        pause();
         for(CellCoordinates coords : structure.keySet())
         {
             int index = getCoordsIndex(coords);

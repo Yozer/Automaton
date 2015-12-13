@@ -22,7 +22,7 @@ public class ElementaryAutomaton extends Automaton1Dim
     private List<OneDimensionalNeighbors> neighborList;
     private Map<OneDimensionalNeighbors, BinaryState> ruleMapper;
 
-    protected ElementaryAutomaton(int rule, int size, CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory)
+    public ElementaryAutomaton(int rule, int size, CellStateFactory stateFactory, CellNeighborhood neighborhoodStrategy)
     {
         super(size, neighborhoodStrategy, stateFactory);
         this.generateNeighborList();

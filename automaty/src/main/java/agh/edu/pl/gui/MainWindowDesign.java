@@ -4,21 +4,24 @@ import com.horstmann.corejava.GBC;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * Created by Dominik on 2015-12-10.
  */
-public class MainWindowDesign extends JFrame
+public abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener
 {
-    protected AutomataPanel automataPanel = new AutomataPanel();
-    protected Label generationCountLabel;
-    protected Label simulationTimeLabel;
-    protected Label aliveCellsCountLabel;
+    protected AutomatonPanel automatonPanel;
+    protected Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel;
     protected Label renderTimeLabel;
+    protected JPanel settingsPanel;
+
+    protected JButton randButton, startButton, pauseButton;
+
+    // helps get default settings
+    private final AutomatonSettings automatonSettings = new AutomatonSettings();
 
     protected MainWindowDesign()
     {
@@ -28,7 +31,7 @@ public class MainWindowDesign extends JFrame
     private void initUI()
     {
         setTitle("Automat komórkowy");
-        setSize(1500, 800);
+        //setSize(1920, 1080);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -37,18 +40,13 @@ public class MainWindowDesign extends JFrame
         mainPanel.setLayout(new GridBagLayout());
 
         // automata window
-        mainPanel.add(automataPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
+        automatonPanel = new AutomatonPanel();
+        mainPanel.add(automatonPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
 
-        JPanel settingsPanel = new JPanel();
+        settingsPanel = new JPanel();
         settingsPanel.setLayout(new GridLayout(16, 1));
         settingsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         mainPanel.add(settingsPanel, new GBC(1, 0).setFill(GridBagConstraints.BOTH).setWeight(0.01, 1));
-
-        ActionListener listener = e -> {
-            JRadioButton btn = (JRadioButton) e.getSource();
-            PossibleAutomaton automata = Arrays.stream(PossibleAutomaton.values()).filter(t -> Objects.equals(t.toString(), btn.getText())).findAny().get();
-            automataPanel.setAutomaton(automata);
-        };
 
         // ------------------------------------------------------------------------ \\
         settingsPanel.add(new Label("Typ automatu"));
@@ -57,13 +55,13 @@ public class MainWindowDesign extends JFrame
         for (PossibleAutomaton automaton : PossibleAutomaton.values())
         {
             JRadioButton radio = new JRadioButton(automaton.toString());
+            radio.setActionCommand(Commands.CHANGE_AUTOMATON.toString());
             group.add(radio);
-            radio.addActionListener(listener);
+            radio.addActionListener(this);
 
-            if(automaton == PossibleAutomaton.GameOfLive)
+            if(automaton == automatonSettings.getSelectedAutomaton())
             {
                 radio.setSelected(true);
-                automataPanel.setAutomaton(PossibleAutomaton.GameOfLive);
             }
 
             panelRadio.add(radio);
@@ -78,8 +76,9 @@ public class MainWindowDesign extends JFrame
         slider.setMajorTickSpacing(1);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
-        slider.addChangeListener(ce -> automataPanel.setCellSize(((JSlider) ce.getSource()).getValue() + 1));
-        automataPanel.setCellSize(slider.getValue());
+        slider.setName(Commands.CHANGE_CELL_SIZE.toString());
+        slider.setValue(automatonSettings.getCellSize());
+        slider.addChangeListener(this);
         settingsPanel.add(slider);
         // ------------------------------------------------------------------------ \\
 
@@ -90,11 +89,31 @@ public class MainWindowDesign extends JFrame
         slider.setMajorTickSpacing(250);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
-        slider.addChangeListener(ce -> automataPanel.setSimulationSpeed(((JSlider) ce.getSource()).getValue()));
-        automataPanel.setSimulationSpeed(slider.getValue());
+        slider.setName(Commands.CHANGE_SIMULATION_DELAY.toString());
+        slider.addChangeListener(this);
+        slider.setValue(automatonSettings.getSimulationDelay());
         settingsPanel.add(slider);
         // ------------------------------------------------------------------------ \\
+        JPanel navigationButtonsPanel = new JPanel(new GridLayout(1, 3));
+        startButton = new JButton("Start");
+        startButton.setActionCommand(Commands.START_AUTOMATON.toString());
+        startButton.addActionListener(this);
+        navigationButtonsPanel.add(startButton);
+
+        pauseButton = new JButton("Pauza");
+        pauseButton.setActionCommand(Commands.PAUSE_AUTOMATON.toString());
+        pauseButton.addActionListener(this);
+        pauseButton.setEnabled(false);
+        navigationButtonsPanel.add(pauseButton);
+
+        randButton = new JButton("Losuj");
+        randButton.setActionCommand(Commands.RAND_CELLS.toString());
+        randButton.addActionListener(this);
+        navigationButtonsPanel.add(randButton);
+        settingsPanel.add(navigationButtonsPanel);
+        // ------------------------------------------------------------------------ \\
         JPanel statisticsPanel = new JPanel(new GridLayout(2,2));
+        statisticsPanel.setName("statisticPanel");
         generationCountLabel = new Label("Liczba generacji: 0");
         simulationTimeLabel = new Label("Czas symulacji jednej: 0");
         aliveCellsCountLabel = new Label("Liczba żywych komórek: 0");
