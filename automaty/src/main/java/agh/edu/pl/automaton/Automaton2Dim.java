@@ -17,7 +17,6 @@ public abstract class Automaton2Dim extends Automaton
         super(cellNeighborhood, cellStateFactory, width*height);
         this.width = width;
         this.height = height;
-        initAutomaton();
     }
 
     @Override

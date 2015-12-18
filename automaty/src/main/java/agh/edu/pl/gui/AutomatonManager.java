@@ -24,11 +24,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-
+// TODO initAutomaton run it in nextState and make private
 // TODO make this class easier to read, extract some threads etc
 // TODO remove drawing from GUI thread (in simulation Thread)
 // TODO check why it's hanging. Probably that odd thread.sleep when diff < delay
@@ -160,7 +158,7 @@ class AutomatonManager
                 });
 
                 simulateTimeBefore = System.nanoTime();
-                automaton.calculateNextState();
+                automaton.beginCalculatingNextState();
 
                 simulateTimeAfter = System.nanoTime();
                 statistics.generationTime.set((int) ((simulateTimeAfter - simulateTimeBefore)/1000000f));
@@ -173,7 +171,7 @@ class AutomatonManager
 
                 }
 
-                automaton.setCalculatedNextState();
+                automaton.endCalculatingNextState();
                 statistics.generationCount.incrementAndGet();
                 statistics.aliveCellsCount.set(automaton.getAliveCount());
                 statistics.deadCellsCount.set(statistics.totalCellsCount.get() - statistics.aliveCellsCount.get());

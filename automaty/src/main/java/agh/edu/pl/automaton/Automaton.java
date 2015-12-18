@@ -14,9 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Automaton implements Iterable<Cell>
 {
-    private List<Cell> cells;
-    private List<Cell> cellsBackBuffer;
-
+    private Cell[] cells;
+    private Cell[] cellsBackBuffer;
     private int[] changeList;
     private int[] changeListBackBuffer;
     private byte[] changeListSet;
@@ -31,8 +30,9 @@ public abstract class Automaton implements Iterable<Cell>
     private final int cellCount;
     private final int processorsCount = Runtime.getRuntime().availableProcessors();
     private final ForkJoinPool threadPool = new ForkJoinPool(processorsCount);
-
     private final AtomicInteger aliveCount = new AtomicInteger(0);
+
+    private boolean isInitiated = false;
 
 
     protected Automaton(CellNeighborhood neighborhoodStrategy, CellStateFactory stateFactory, int cellCount)
@@ -41,8 +41,8 @@ public abstract class Automaton implements Iterable<Cell>
         this.stateFactory = stateFactory;
         this.cellCount = cellCount;
 
-        cells = new ArrayList<>(cellCount);
-        cellsBackBuffer = new ArrayList<>(cellCount);
+        cells = new Cell[cellCount];
+        cellsBackBuffer = new Cell[cellCount];
         changeList = new int[cellCount];
         changeListBackBuffer = new int[cellCount];
         changeListSet = new byte[cellCount];
@@ -54,8 +54,14 @@ public abstract class Automaton implements Iterable<Cell>
         return aliveCount.get();
     }
 
-    public void calculateNextState()
+    public void beginCalculatingNextState()
     {
+        if(!isInitiated)
+        {
+            initAutomaton();
+            isInitiated = true;
+        }
+
         int step = (int) (changeListSize / ((float) processorsCount));
 
         for(int i = 0; i < processorsCount; ++i)
@@ -68,7 +74,7 @@ public abstract class Automaton implements Iterable<Cell>
                 for(int j = from; j < to; j++)
                 {
                     int cellIndex = changeList[j];
-                    Cell cell = cells.get(cellIndex);
+                    Cell cell = cells[cellIndex];
 
                     List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
                     CellState newState = nextCellState(cell, neighbors);
@@ -103,10 +109,10 @@ public abstract class Automaton implements Iterable<Cell>
             });
         }
 
-        threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.SECONDS);
     }
 
-    public void setCalculatedNextState()
+    public void endCalculatingNextState()
     {
         swapBuffers();
     }
@@ -133,10 +139,32 @@ public abstract class Automaton implements Iterable<Cell>
     }
     private Cell setBackBufferCellState(Cell cell, CellState newState)
     {
-        Cell backBufferCell = cellsBackBuffer.get(getCoordsIndex(cell.getCoords()));
+        Cell backBufferCell = cellsBackBuffer[getCoordsIndex(cell.getCoords())];
         backBufferCell.isChanged(cell.getState() != newState);
         backBufferCell.setState(newState);
         return backBufferCell;
+    }
+
+    private void initAutomaton()
+    {
+        CellCoordinates current = initialCoordinates();
+
+        // iterate over all coordinates and get initial state for each cell
+        changeListSize = 0;
+        while(hasNextCoordinates(current))
+        {
+            current = nextCoordinates();
+            CellState initialState = stateFactory.initialState(current);
+            if(cellIsAlive(initialState))
+                aliveCount.incrementAndGet();
+
+            int cellIndex = getCoordsIndex(current);
+            cells[cellIndex] = new Cell(initialState, current);
+            cellsBackBuffer[cellIndex] = new Cell(initialState, current);
+
+            changeList[changeListSize] = cellIndex;
+            changeListSet[changeListSize++] = 1;
+        }
     }
 
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
@@ -146,14 +174,14 @@ public abstract class Automaton implements Iterable<Cell>
             int index = getCoordsIndex(coords);
             CellState newState = structure.get(coords);
 
-            if(cells.get(index).getState() != newState)
+            if(cells[index].getState() != newState)
             {
                 if (cellIsAlive(newState))
                     aliveCount.incrementAndGet();
                 else
                     aliveCount.decrementAndGet();
             }
-            cells.get(index).setState(newState);
+            cells[index].setState(newState);
 
             if(changeListSet[index] == 0)
             {
@@ -185,65 +213,36 @@ public abstract class Automaton implements Iterable<Cell>
         return cells.get(getCoordsIndex(coordinates)).getState();
     }
 
-    protected void initAutomaton()
-    {
-        // initialize lists
-        CellCoordinates current = initialCoordinates();
-        while (cells.size() < cellCount)
-        {
-            cells.add(null);
-            cellsBackBuffer.add(null);
-        }
-
-        // iterate over all coordinates and get initial state for each cell
-        changeListSize = 0;
-        while(hasNextCoordinates(current))
-        {
-            current = nextCoordinates();
-            CellState initialState = stateFactory.initialState(current);
-            if(cellIsAlive(initialState))
-                aliveCount.incrementAndGet();
-
-            int cellIndex = getCoordsIndex(current);
-            cells.set(cellIndex, new Cell(initialState, current));
-            cellsBackBuffer.set(cellIndex, new Cell(initialState, current));
-
-            changeList[changeListSize] = cellIndex;
-            changeListSet[changeListSize++] = 1;
-        }
-    }
-
     @Override
     public Iterator<Cell> iterator()
     {
-        return cells.iterator();
+        return new CellIterator();
     }
 
-    /*private class CellIterator implements java.util.Iterator<Cell>
+    private class CellIterator implements java.util.Iterator<Cell>
     {
-        private CellCoordinates currentCoords;
+        private int cellIndex;
 
         public CellIterator()
         {
-            currentCoords = initialCoordinates();
+            cellIndex = -1;
         }
 
         @Override
         public boolean hasNext()
         {
-            return hasNextCoordinates(currentCoords);
+            return cellIndex < cellCount - 1;
         }
 
         @Override
         public Cell next()
         {
-            if(!hasNextCoordinates(currentCoords))
+            if(!hasNext())
             {
                 throw new NoSuchElementException("There is no next cell");
             }
 
-            currentCoords = nextCoordinates();
-            return cells.get(getCoordsIndex(currentCoords));
+            return cells[++cellIndex];
         }
 
         @Override
@@ -251,6 +250,6 @@ public abstract class Automaton implements Iterable<Cell>
         {
             throw new UnsupportedOperationException("remove method not implemented");
         }
-    }*/
+    }
 }
 
