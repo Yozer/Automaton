@@ -86,7 +86,7 @@ public class MainWindow extends MainWindowDesign
             setDeadCellsLabel(automaton.getDeadCellsCount());
             setTotalCellsLabel(automaton.getTotalCellsCount());
             setRenderTimeLabel(automaton.getRenderTime());
-            setOnePassTimeLabel(automaton.getOonePassTime());
+            setOnePassTimeLabel(automaton.getOnePassTime());
         };
     }
 
