@@ -18,6 +18,8 @@ public abstract class Automaton implements Iterable<Cell>
     private Cell[] cellsBackBuffer;
     private int[] changeList;
     private int[] changeListBackBuffer;
+
+
     private byte[] changeListSet;
     private byte[] changeListSetBackBuffer;
 
@@ -186,18 +188,17 @@ public abstract class Automaton implements Iterable<Cell>
                         changeListBackBuffer[changeListBackbufferSize++] = cellIndex;
                         changeListSetBackBuffer[cellIndex] = 1;
                     }
-                }
 
-                for(CellCoordinates coordinates : neighbors)
-                {
-                    int index = getCoordsIndex(coordinates);
-                    synchronized (changeListSetBackBuffer)
+                    for(CellCoordinates coordinates : neighbors)
                     {
+                        int index = getCoordsIndex(coordinates);
+
                         if (changeListSetBackBuffer[index] == 0)
                         {
                             changeListBackBuffer[changeListBackbufferSize++] = index;
                             changeListSetBackBuffer[index] = 1;
                         }
+
                     }
                 }
             }
