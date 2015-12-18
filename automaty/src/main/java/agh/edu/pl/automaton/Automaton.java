@@ -86,12 +86,18 @@ public abstract class Automaton implements Iterable<Cell>
     }
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
     {
-        for(CellCoordinates coords : structure.keySet())
+        if (!isInitiated)
+        {
+            initAutomaton();
+            isInitiated = true;
+        }
+
+        for (CellCoordinates coords : structure.keySet())
         {
             int index = getCoordsIndex(coords);
             CellState newState = structure.get(coords);
 
-            if(cells[index].getState() != newState)
+            if (cells[index].getState() != newState)
             {
                 if (cellIsAlive(newState))
                     aliveCount.incrementAndGet();
@@ -100,22 +106,59 @@ public abstract class Automaton implements Iterable<Cell>
             }
             cells[index].setState(newState);
 
-            if(changeListSet[index] == 0)
+            if (changeListSet[index] == 0)
             {
                 changeList[changeListSize++] = index;
                 changeListSet[index] = 1;
             }
-            for(CellCoordinates coordinates : neighborhoodStrategy.cellNeighbors(coords))
+            for (CellCoordinates coordinates : neighborhoodStrategy.cellNeighbors(coords))
             {
                 int indexN = getCoordsIndex(coordinates);
-                if(changeListSet[indexN] == 0)
+                if (changeListSet[indexN] == 0)
                 {
                     changeList[changeListSize++] = indexN;
                     changeListSet[indexN] = 1;
                 }
             }
         }
+    }
 
+    public void insertStructure(List<Cell> structure)
+    {
+        if (!isInitiated)
+        {
+            initAutomaton();
+            isInitiated = true;
+        }
+
+        for (Cell cell : structure)
+        {
+            int index = getCoordsIndex(cell.getCoords());
+
+            if (cells[index].getState() != cell.getState())
+            {
+                if (cellIsAlive(cell.getState()))
+                    aliveCount.incrementAndGet();
+                else
+                    aliveCount.decrementAndGet();
+            }
+            cells[index].setState(cell.getState());
+
+            if (changeListSet[index] == 0)
+            {
+                changeList[changeListSize++] = index;
+                changeListSet[index] = 1;
+            }
+            for (CellCoordinates coordinates : neighborhoodStrategy.cellNeighbors(cell.getCoords()))
+            {
+                int indexN = getCoordsIndex(coordinates);
+                if (changeListSet[indexN] == 0)
+                {
+                    changeList[changeListSize++] = indexN;
+                    changeListSet[indexN] = 1;
+                }
+            }
+        }
     }
 
     private void simulateSlice(int from, int to)
@@ -185,15 +228,13 @@ public abstract class Automaton implements Iterable<Cell>
         changeListSetBackBuffer = y;
         bytefill(changeListSetBackBuffer, (byte) 0);
     }
-    public static void bytefill(byte[] array, byte value)
+    private void bytefill(byte[] array, byte value)
     {
-        // TODO check performance
-        Arrays.fill(array, value);
-        /*int len = array.length;
+        int len = array.length;
         if (len > 0)
             array[0] = value;
         for (int i = 1; i < len; i += i)
-            System.arraycopy( array, 0, array, i, ((len - i) < i) ? (len - i) : i);*/
+            System.arraycopy( array, 0, array, i, ((len - i) < i) ? (len - i) : i);
     }
     private Cell setBackBufferCellState(Cell cell, CellState newState)
     {
@@ -240,6 +281,11 @@ public abstract class Automaton implements Iterable<Cell>
     @Override
     public Iterator<Cell> iterator()
     {
+        if(!isInitiated)
+        {
+            initAutomaton();
+            isInitiated = true;
+        }
         return new CellIterator();
     }
 

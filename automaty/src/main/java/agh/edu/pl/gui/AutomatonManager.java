@@ -308,36 +308,37 @@ class AutomatonManager
             @Override
             protected Void doInBackground() throws Exception
             {
-                Map<CellCoordinates, CellState> someRand = new HashMap<>();
+                List<Cell> someRand = new ArrayList<>(settings.getHeight() * settings.getHeight());
                 Random random = new Random();
 
                 reset();
+                List<CellState> values = null;
+                if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
+                {
+                    values = Arrays.stream(BinaryState.values()).collect(Collectors.toList());
+                    for(int i = 0; i < 3; i++)
+                        values.add(BinaryState.DEAD);
+
+                }
+                else if(settings.getSelectedAutomaton() == PossibleAutomaton.QuadLife)
+                {
+                    values = Arrays.stream(QuadState.values()).collect(Collectors.toList());
+                    for(int i = 0; i < 4; i++)
+                        values.add(QuadState.DEAD);
+
+                }
+                else if(settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
+                {
+                    values = Arrays.stream(WireElectronState.values()).collect(Collectors.toList());
+                    for(int i = 0; i < 20; i++)
+                        values.add(WireElectronState.VOID);
+                }
 
                 for(int x = 0; x < settings.getWidth() ; x++)
                 {
                     for(int y = 0; y < settings.getHeight(); y++)
                     {
-                        if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
-                        {
-                            List<BinaryState> values = Arrays.stream(BinaryState.values()).collect(Collectors.toList());
-                            for(int i = 0; i < 3; i++)
-                                values.add(BinaryState.DEAD);
-                            someRand.put(new Coords2D(x, y),  values.get(random.nextInt(values.size())));
-                        }
-                        else if(settings.getSelectedAutomaton() == PossibleAutomaton.QuadLife)
-                        {
-                            List<QuadState> values = Arrays.stream(QuadState.values()).collect(Collectors.toList());
-                            for(int i = 0; i < 4; i++)
-                                values.add(QuadState.DEAD);
-                            someRand.put(new Coords2D(x, y), values.get(random.nextInt(values.size())));
-                        }
-                        else if(settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
-                        {
-                            List<WireElectronState> values = Arrays.stream(WireElectronState.values()).collect(Collectors.toList());
-                            for(int i = 0; i < 20; i++)
-                                values.add(WireElectronState.VOID);
-                            someRand.put(new Coords2D(x, y), values.get(random.nextInt(values.size())));
-                        }
+                        someRand.add(new Cell(values.get(random.nextInt(values.size())), new Coords2D(x, y)));
                     }
                 }
 
