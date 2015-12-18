@@ -28,8 +28,8 @@ public abstract class Automaton implements Iterable<Cell>
     private CellStateFactory stateFactory;
 
     private final int cellCount;
-    private final int processorsCount = Runtime.getRuntime().availableProcessors();
-    private final ForkJoinPool threadPool = new ForkJoinPool(processorsCount);
+    private final int processorsCount;
+    private final ForkJoinPool threadPool;
     private final AtomicInteger aliveCount = new AtomicInteger(0);
 
     private boolean isInitiated = false;
@@ -47,6 +47,9 @@ public abstract class Automaton implements Iterable<Cell>
         changeListBackBuffer = new int[cellCount];
         changeListSet = new byte[cellCount];
         changeListSetBackBuffer = new byte[cellCount];
+
+        processorsCount = Runtime.getRuntime().availableProcessors() == 1 ? 1 : Runtime.getRuntime().availableProcessors() - 1;
+        threadPool = new ForkJoinPool(processorsCount);
     }
 
     public int getAliveCount()
@@ -62,7 +65,7 @@ public abstract class Automaton implements Iterable<Cell>
             isInitiated = true;
         }
 
-        int step = (int) (changeListSize / ((float) processorsCount));
+        int step = getStep(processorsCount, changeListSize);
 
         for(int i = 0; i < processorsCount; ++i)
         {
@@ -71,102 +74,16 @@ public abstract class Automaton implements Iterable<Cell>
 
             threadPool.execute(() ->
             {
-                for(int j = from; j < to; j++)
-                {
-                    int cellIndex = changeList[j];
-                    Cell cell = cells[cellIndex];
-
-                    List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
-                    CellState newState = nextCellState(cell, neighbors);
-
-                    Cell backbufferCell = setBackBufferCellState(cell, newState);
-                    if(backbufferCell.hasChanged())
-                    {
-                        if(cellIsAlive(newState))
-                            aliveCount.incrementAndGet();
-                        else
-                            aliveCount.decrementAndGet();
-
-                        synchronized (changeListSet)
-                        {
-                            if(changeListSetBackBuffer[cellIndex] == 0)
-                            {
-                                changeListBackBuffer[changeListBackbufferSize++] = cellIndex;
-                                changeListSetBackBuffer[cellIndex] = 1;
-                            }
-                            for(CellCoordinates coordinates : neighbors)
-                            {
-                                int index = getCoordsIndex(coordinates);
-                                if(changeListSetBackBuffer[index] == 0)
-                                {
-                                    changeListBackBuffer[changeListBackbufferSize++] = index;
-                                    changeListSetBackBuffer[index] = 1;
-                                }
-                            }
-                        }
-                    }
-                }
+                simulateSlice(from, to);
             });
         }
 
         threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.SECONDS);
     }
-
     public void endCalculatingNextState()
     {
         swapBuffers();
     }
-
-    private void swapBuffers()
-    {
-        List<Cell> tmp = cellsBackBuffer;
-        cellsBackBuffer = cells;
-        cells = tmp;
-
-        changeListSize = changeListBackbufferSize;
-        changeListBackbufferSize = 0;
-
-        int[] x = changeList;
-        changeList = changeListBackBuffer;
-        changeListBackBuffer = x;
-
-
-        byte[] y = changeListSet;
-        changeListSet = changeListSetBackBuffer;
-        changeListSetBackBuffer = y;
-        for(int i = 0; i < cellCount; i++)
-            changeListSetBackBuffer[i] = 0;
-    }
-    private Cell setBackBufferCellState(Cell cell, CellState newState)
-    {
-        Cell backBufferCell = cellsBackBuffer[getCoordsIndex(cell.getCoords())];
-        backBufferCell.isChanged(cell.getState() != newState);
-        backBufferCell.setState(newState);
-        return backBufferCell;
-    }
-
-    private void initAutomaton()
-    {
-        CellCoordinates current = initialCoordinates();
-
-        // iterate over all coordinates and get initial state for each cell
-        changeListSize = 0;
-        while(hasNextCoordinates(current))
-        {
-            current = nextCoordinates();
-            CellState initialState = stateFactory.initialState(current);
-            if(cellIsAlive(initialState))
-                aliveCount.incrementAndGet();
-
-            int cellIndex = getCoordsIndex(current);
-            cells[cellIndex] = new Cell(initialState, current);
-            cellsBackBuffer[cellIndex] = new Cell(initialState, current);
-
-            changeList[changeListSize] = cellIndex;
-            changeListSet[changeListSize++] = 1;
-        }
-    }
-
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
     {
         for(CellCoordinates coords : structure.keySet())
@@ -201,6 +118,113 @@ public abstract class Automaton implements Iterable<Cell>
 
     }
 
+    private void simulateSlice(int from, int to)
+    {
+        for(int j = from; j < to; j++)
+        {
+            int cellIndex = changeList[j];
+            Cell cell = cells[cellIndex];
+
+            List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
+            CellState newState = nextCellState(cell, neighbors);
+
+            Cell backbufferCell = setBackBufferCellState(cell, newState);
+            if(backbufferCell.hasChanged())
+            {
+                if(cellIsAlive(newState))
+                    aliveCount.incrementAndGet();
+                else
+                    aliveCount.decrementAndGet();
+
+                synchronized (changeListSetBackBuffer)
+                {
+                    if (changeListSetBackBuffer[cellIndex] == 0)
+                    {
+                        changeListBackBuffer[changeListBackbufferSize++] = cellIndex;
+                        changeListSetBackBuffer[cellIndex] = 1;
+                    }
+                }
+
+                for(CellCoordinates coordinates : neighbors)
+                {
+                    int index = getCoordsIndex(coordinates);
+                    synchronized (changeListSetBackBuffer)
+                    {
+                        if (changeListSetBackBuffer[index] == 0)
+                        {
+                            changeListBackBuffer[changeListBackbufferSize++] = index;
+                            changeListSetBackBuffer[index] = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private int getStep(int processorsCount, int arraySize)
+    {
+        return (int) (arraySize / ((float) processorsCount));
+    }
+
+    private void swapBuffers()
+    {
+        Cell[] tmp = cellsBackBuffer;
+        cellsBackBuffer = cells;
+        cells = tmp;
+
+        changeListSize = changeListBackbufferSize;
+        changeListBackbufferSize = 0;
+
+        int[] x = changeList;
+        changeList = changeListBackBuffer;
+        changeListBackBuffer = x;
+
+
+        byte[] y = changeListSet;
+        changeListSet = changeListSetBackBuffer;
+        changeListSetBackBuffer = y;
+        bytefill(changeListSetBackBuffer, (byte) 0);
+    }
+    public static void bytefill(byte[] array, byte value)
+    {
+        // TODO check performance
+        Arrays.fill(array, value);
+        /*int len = array.length;
+        if (len > 0)
+            array[0] = value;
+        for (int i = 1; i < len; i += i)
+            System.arraycopy( array, 0, array, i, ((len - i) < i) ? (len - i) : i);*/
+    }
+    private Cell setBackBufferCellState(Cell cell, CellState newState)
+    {
+        Cell backBufferCell = cellsBackBuffer[getCoordsIndex(cell.getCoords())];
+        backBufferCell.isChanged(cell.getState() != newState);
+        backBufferCell.setState(newState);
+        return backBufferCell;
+    }
+
+    private void initAutomaton()
+    {
+        CellCoordinates current = initialCoordinates();
+
+        // iterate over all coordinates and get initial state for each cell
+        changeListSize = 0;
+        while(hasNextCoordinates(current))
+        {
+            current = nextCoordinates();
+            CellState initialState = stateFactory.initialState(current);
+            if(cellIsAlive(initialState))
+                aliveCount.incrementAndGet();
+
+            int cellIndex = getCoordsIndex(current);
+            cells[cellIndex] = new Cell(initialState, current);
+            cellsBackBuffer[cellIndex] = new Cell(initialState, current);
+
+            changeList[changeListSize] = cellIndex;
+            changeListSet[changeListSize++] = 1;
+        }
+    }
+
     protected abstract CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates);
     protected abstract boolean hasNextCoordinates(CellCoordinates coords);
     protected abstract CellCoordinates initialCoordinates();
@@ -210,7 +234,7 @@ public abstract class Automaton implements Iterable<Cell>
 
     protected CellState getCellStateByCoordinates(CellCoordinates coordinates)
     {
-        return cells.get(getCoordsIndex(coordinates)).getState();
+        return cells[getCoordsIndex(coordinates)].getState();
     }
 
     @Override
