@@ -16,6 +16,7 @@ class SimulationThread implements Runnable
 
     private AtomicBoolean isDrawning = new AtomicBoolean();
     private volatile boolean pauseThreadFlag = true;
+    private volatile boolean isPausedFlag = true;
 
     private final DrawingThread drawingThread;
     private final Thread drawingThreadObject;
@@ -57,7 +58,7 @@ class SimulationThread implements Runnable
             timerTotal.stop();
             manager.statistics.timeOfOnePass.set(timerTotal.getElapsed());
 
-            /*int currentDelay = timerTotal.getElapsed() - manager.getDelayFromSettings();
+            int currentDelay = manager.getDelayFromSettings() - timerTotal.getElapsed();
             if(currentDelay > 10)
             {
                 try
@@ -66,7 +67,7 @@ class SimulationThread implements Runnable
                 } catch (InterruptedException e)
                 {
                 }
-            }*/
+            }
         }
     }
     private void waitForDrawing()
@@ -95,6 +96,7 @@ class SimulationThread implements Runnable
             {
                 if(!wasNotified)
                 {
+                    isPausedFlag = true;
                     synchronized (IS_PAUSED_MONITOR)
                     {
                         IS_PAUSED_MONITOR.notify();
@@ -118,14 +120,18 @@ class SimulationThread implements Runnable
             return;
 
         pauseThreadFlag = true;
+        isPausedFlag = false;
         synchronized (IS_PAUSED_MONITOR)
         {
-            try
+            while (!isPausedFlag)
             {
-                IS_PAUSED_MONITOR.wait();
-            } catch (InterruptedException ignored)
-            {
+                try
+                {
+                    IS_PAUSED_MONITOR.wait();
+                } catch (InterruptedException ignored)
+                {
 
+                }
             }
         }
     }
