@@ -91,16 +91,16 @@ public class AutomatonManager
 
     void drawCurrentAutomaton()
     {
-        BufferedImage bufferedImage = automatonPanel.getBitmapForDrawing();
+        int[] pixels = automatonPanel.getPixelsForDrawing();
         if(automaton instanceof Automaton2Dim)
         {
             for (Cell cell : automaton)
             {
-                //if (cell.hasChanged())
-                //{
+                if (cell.hasChanged())
+                {
                     Coords2D coords = (Coords2D) cell.getCoords();
-                    bufferedImage.setRGB(coords.getX(), coords.getY(), cell.getState().toColor().getRGB());
-                //}
+                    pixels[coords.getY() * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
+                }
             }
         }
 

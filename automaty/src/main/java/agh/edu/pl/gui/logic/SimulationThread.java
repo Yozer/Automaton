@@ -46,7 +46,7 @@ class SimulationThread implements Runnable
 
 //            if(sumTotalTime >= FPS_LIMIT)
 //            {
-//                drawingThread.draw();
+                drawingThread.draw();
 //            }
 
             checkForPausedAndWait();
@@ -57,7 +57,7 @@ class SimulationThread implements Runnable
 
 //            if(sumTotalTime >= FPS_LIMIT)
 //            {
-//                waitForDrawing();
+                waitForDrawing();
 //                sumTotalTime = 0;
 //            }
 

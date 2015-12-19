@@ -137,7 +137,7 @@ class InsertPrimeSwingWorker extends SwingWorker<Void, Void>
         primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 3)));*/
 
         BufferedReader reader = null;
-        File file = new File("primes.wi");
+        File file = new File("primes2");
         try
         {
             reader = new BufferedReader(new FileReader(file));
