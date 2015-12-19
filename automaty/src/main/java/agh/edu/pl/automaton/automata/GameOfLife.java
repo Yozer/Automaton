@@ -31,7 +31,7 @@ public class GameOfLife extends Automaton2Dim
         int countAlive = 0;
         for(int i = 0; i < neighborsStates.getLength(); ++i)
         {
-            if(getCellStateByCoordinates(neighborsStates.get(i)) == BinaryState.ALIVE)
+            if(getCellStateByIndex(neighborsStates.get(i)) == BinaryState.ALIVE)
                 countAlive++;
         }
 

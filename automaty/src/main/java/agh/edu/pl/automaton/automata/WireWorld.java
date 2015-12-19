@@ -35,7 +35,7 @@ public class WireWorld extends Automaton2Dim
             int headCount = 0;
             for(int i = 0; i < neighborsStates.getLength(); ++i)
             {
-                if(getCellStateByCoordinates(neighborsStates.get(i)) == WireElectronState.ELECTRON_HEAD)
+                if(getCellStateByIndex(neighborsStates.get(i)) == WireElectronState.ELECTRON_HEAD)
                     headCount++;
             }
             if(headCount == 1 || headCount == 2)

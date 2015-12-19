@@ -141,7 +141,7 @@ public abstract class Automaton implements Iterable<Cell>
             neighborhoodStrategy.cellNeighbors(coords, arrayWrapper);
             for (int i = 0; i < arrayWrapper.getLength(); ++i)
             {
-                int indexN = getCoordsIndex(arrayWrapper.get(i));
+                int indexN = arrayWrapper.get(i);
                 if (!currentSet[index].getAndSet(true))
                 {
                     currentChangeList[currentChangeListSize++] = indexN;
@@ -179,7 +179,7 @@ public abstract class Automaton implements Iterable<Cell>
             neighborhoodStrategy.cellNeighbors(cell.getCoords(), arrayWrapper);
             for (int i = 0; i < arrayWrapper.getLength(); ++i)
             {
-                int indexN = getCoordsIndex(arrayWrapper.get(i));
+                int indexN = arrayWrapper.get(i);
                 if (!currentSet[index].getAndSet(true))
                 {
                     currentChangeList[currentChangeListSize++] = indexN;
@@ -214,7 +214,7 @@ public abstract class Automaton implements Iterable<Cell>
 
                 for(int i = 0; i < arrayWrapper.getLength(); i++)
                 {
-                    int index = getCoordsIndex(arrayWrapper.get(i));
+                    int index = arrayWrapper.get(i);
 
                     if (!nextGenerationSet[index].getAndSet(true))
                     {
@@ -312,6 +312,10 @@ public abstract class Automaton implements Iterable<Cell>
     protected CellState getCellStateByCoordinates(CellCoordinates coordinates)
     {
         return currentCells[getCoordsIndex(coordinates)].getState();
+    }
+    protected CellState getCellStateByIndex(int i)
+    {
+        return currentCells[i].getState();
     }
 
     private class CellIterator implements java.util.Iterator<Cell>

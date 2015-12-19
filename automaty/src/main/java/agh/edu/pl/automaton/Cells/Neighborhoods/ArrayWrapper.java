@@ -5,12 +5,12 @@ import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 public class ArrayWrapper
 {
-    private CellCoordinates[] array;
+    private int[] array;
     private int length = 0;
 
     public ArrayWrapper(int size)
     {
-        array = new CellCoordinates[size];
+        array = new int[size];
     }
 
     public int getLength()
@@ -23,17 +23,12 @@ public class ArrayWrapper
         this.length = length;
     }
 
-    public CellCoordinates[] getArray()
-    {
-        return array;
-    }
-
-    public void push(CellCoordinates coords)
+    public void push(int coords)
     {
         array[length++] = coords;
     }
 
-    public CellCoordinates get(int i)
+    public int get(int i)
     {
         return array[i];
     }

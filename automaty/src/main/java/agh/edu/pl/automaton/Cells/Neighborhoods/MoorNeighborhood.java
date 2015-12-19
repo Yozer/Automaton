@@ -38,15 +38,21 @@ public class MoorNeighborhood implements CellNeighborhood
         int x = initalCoords.getX() - r;
         int y = initalCoords.getY() - r;
 
+        int xN, yN;
         for(int i = 0; i < 2*r + 1; i++)
         {
             for(int j = 0; j < 2*r + 1; j++)
             {
                 if(x + i != initalCoords.getX() || y + j != initalCoords.getY())
                 {
-                    Coords2D coords2D = WrapCoordinatesHelper.fixCoord(new Coords2D(x + i, y + j), wrap, width, height);
-                    if(coords2D != null)
-                        result.push(coords2D);
+                    xN = x + i;
+                    yN = y + j;
+                    if (xN < 0 || xN >= width )
+                        xN = Math.floorMod(xN, width);
+                    if(yN < 0 || yN >= height)
+                        yN = Math.floorMod(yN, height) ;
+
+                    result.push(yN * width + xN);
                 }
             }
         }

@@ -41,26 +41,26 @@ public class ElementaryAutomaton extends Automaton1Dim
         {
             if(coords1Ds.get(0).getX() < ((Coords1D) cell.getCoords()).getX())
             {
-                neighborStates[0] = (BinaryState) getCellStateByCoordinates(neighborsStates.get(0));
+                neighborStates[0] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
                 neighborStates[2] = BinaryState.DEAD;
             }
             else
             {
                 neighborStates[0] = BinaryState.DEAD;
-                neighborStates[2] = (BinaryState) getCellStateByCoordinates(neighborsStates.get(0));
+                neighborStates[2] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
             }
         }
         else
         {
             if(coords1Ds.get(0).getX() > coords1Ds.get(1).getX())
             {
-                neighborStates[0] = (BinaryState) getCellStateByCoordinates(neighborsStates.get(1));
-                neighborStates[2] = (BinaryState) getCellStateByCoordinates(neighborsStates.get(0));
+                neighborStates[0] = (BinaryState) getCellStateByIndex(neighborsStates.get(1));
+                neighborStates[2] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
             }
             else
             {
-                neighborStates[2] = (BinaryState) getCellStateByCoordinates(neighborsStates.get(1));
-                neighborStates[0] = (BinaryState) getCellStateByCoordinates(neighborsStates.get(0));
+                neighborStates[2] = (BinaryState) getCellStateByIndex(neighborsStates.get(1));
+                neighborStates[0] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
             }
         }
 

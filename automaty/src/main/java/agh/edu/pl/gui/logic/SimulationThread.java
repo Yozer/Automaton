@@ -18,7 +18,7 @@ class SimulationThread implements Runnable
     private volatile boolean pauseThreadFlag = true;
     private volatile boolean isPausedFlag = true;
 
-    private final int FPS_LIMIT = (int) (1000/2f);
+    private final int FPS_LIMIT = (int) (1000/60f);
 
     private final DrawingThread drawingThread;
     private final Thread drawingThreadObject;
@@ -44,10 +44,10 @@ class SimulationThread implements Runnable
             avgStep++;
             timerTotal.start();
 
-            if(sumTotalTime >= FPS_LIMIT)
-            {
-                drawingThread.draw();
-            }
+//            if(sumTotalTime >= FPS_LIMIT)
+//            {
+//                drawingThread.draw();
+//            }
 
             checkForPausedAndWait();
             timerSimulation.start();
@@ -55,11 +55,11 @@ class SimulationThread implements Runnable
             timerSimulation.stop();
             manager.statistics.generationTime.set(timerSimulation.getElapsed());
 
-            if(sumTotalTime >= FPS_LIMIT)
-            {
-                waitForDrawing();
-                sumTotalTime = 0;
-            }
+//            if(sumTotalTime >= FPS_LIMIT)
+//            {
+//                waitForDrawing();
+//                sumTotalTime = 0;
+//            }
 
             manager.automaton.endCalculatingNextState();
             manager.statistics.generationCount.incrementAndGet();
