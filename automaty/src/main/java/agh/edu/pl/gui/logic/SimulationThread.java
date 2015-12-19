@@ -42,10 +42,10 @@ class SimulationThread implements Runnable
 
             timerTotal.start();
 
-            //if(draw % 20 == 0)
+            //if(draw % 500 == 0)
             //{
                 drawingThread.draw();
-                //draw = 0;
+               // draw = 0;
             //}
 
             checkForPausedAndWait();
@@ -54,7 +54,7 @@ class SimulationThread implements Runnable
             timerSimulation.stop();
             manager.statistics.generationTime.set(timerSimulation.getElapsed());
 
-            //if(draw % 20 == 0)
+            //if(draw % 500 == 0)
             //{
                 waitForDrawing();
                 //draw = 0;

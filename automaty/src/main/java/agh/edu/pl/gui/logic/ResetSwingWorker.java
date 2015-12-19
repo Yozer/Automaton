@@ -88,8 +88,23 @@ class InsertPrimeSwingWorker extends SwingWorker<Void, Void>
     @Override
     protected Void doInBackground()
     {
-        /*List<Cell> primeStructure = new ArrayList<>(manager.settings.getHeight() * manager.settings.getHeight());
-        primeStructure.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(0, 3)));
+        List<Cell> primeStructure = new ArrayList<>(manager.settings.getHeight() * manager.settings.getHeight());
+        /*primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 5)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 4)));
+        primeStructure.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(7, 6)));
+        primeStructure.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(8, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(8, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(12, 5)));*/
+
+        /*primeStructure.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(0, 3)));
         primeStructure.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(1, 3)));
         primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(2, 3)));
         primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(3, 3)));
@@ -121,7 +136,7 @@ class InsertPrimeSwingWorker extends SwingWorker<Void, Void>
         primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 3)));
         primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 3)));*/
 
-        /*BufferedReader reader = null;
+        BufferedReader reader = null;
         File file = new File("primes.wi");
         try
         {
@@ -145,7 +160,7 @@ class InsertPrimeSwingWorker extends SwingWorker<Void, Void>
         } catch (IOException e)
         {
             e.printStackTrace();
-        }*/
+        }
 
         manager.automaton.insertStructure(primeStructure);
         manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
