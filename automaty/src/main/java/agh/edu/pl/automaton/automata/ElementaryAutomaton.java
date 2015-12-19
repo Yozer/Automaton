@@ -72,6 +72,18 @@ public class ElementaryAutomaton extends Automaton1Dim
         return state == BinaryState.ALIVE;
     }
 
+    @Override
+    protected boolean cellChangedToAlive(CellState newState, CellState oldState)
+    {
+        return newState == BinaryState.ALIVE;
+    }
+
+    @Override
+    protected boolean cellChangedToDead(CellState newState, CellState oldState)
+    {
+        return newState == BinaryState.DEAD;
+    }
+
     public int getRule()
     {
         return rule;

@@ -20,7 +20,7 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     protected JPanel settingsPanel;
     protected JSlider sliderDelay;
 
-    protected JButton randButton, startButton, pauseButton;
+    protected JButton randButton, startButton, pauseButton, clearButton, insertPrimeButton;
 
     // helps get default settings
     private final AutomatonSettings automatonSettings = new AutomatonSettings();
@@ -96,7 +96,7 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         slider.addChangeListener(this);
         settingsPanel.add(slider);
         // ------------------------------------------------------------------------ \\
-        JPanel navigationButtonsPanel = new JPanel(new GridLayout(1, 3));
+        JPanel navigationButtonsPanel = new JPanel(new GridLayout(3, 2));
         startButton = new JButton("Start");
         startButton.setActionCommand(Commands.START_AUTOMATON.toString());
         startButton.addActionListener(this);
@@ -113,6 +113,15 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         randButton.setActionCommand(Commands.RAND_CELLS.toString());
         randButton.addActionListener(this);
         navigationButtonsPanel.add(randButton);
+        settingsPanel.add(navigationButtonsPanel);
+        clearButton = new JButton("Wyczyść");
+        clearButton.setActionCommand(Commands.CLEAR_PLANE.toString());
+        clearButton.addActionListener(this);
+        navigationButtonsPanel.add(clearButton);
+        insertPrimeButton = new JButton("Wstaw generator liczb pierwszych");
+        insertPrimeButton.setActionCommand(Commands.INSERT_PRIME.toString());
+        insertPrimeButton.addActionListener(this);
+        navigationButtonsPanel.add(insertPrimeButton);
         settingsPanel.add(navigationButtonsPanel);
         // ------------------------------------------------------------------------ \\
         JPanel statisticsPanel = new JPanel(new GridLayout(4,2));

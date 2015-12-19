@@ -85,4 +85,16 @@ public class QuadLife extends GameOfLife
     {
         return state != QuadState.DEAD;
     }
+
+    @Override
+    protected boolean cellChangedToAlive(CellState newState, CellState oldState)
+    {
+        return newState != QuadState.DEAD;
+    }
+
+    @Override
+    protected boolean cellChangedToDead(CellState newState, CellState oldState)
+    {
+        return newState == QuadState.DEAD;
+    }
 }

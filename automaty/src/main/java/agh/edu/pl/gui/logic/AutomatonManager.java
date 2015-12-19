@@ -55,6 +55,11 @@ public class AutomatonManager
         SwingWorker swingWorker = new PauseSwingWorker(this, invokeAfter);
         swingWorker.execute();
     }
+    public void insertPrimeCounter(Runnable invokeAfter)
+    {
+        SwingWorker swingWorker = new InsertPrimeSwingWorker(this, invokeAfter);
+        swingWorker.execute();
+    }
 
     void reset()
     {

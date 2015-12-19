@@ -35,20 +35,30 @@ class SimulationThread implements Runnable
     {
         Timer timerTotal = new Timer();
         Timer timerSimulation = new Timer();
+        int draw = 1;
 
         while (true)
         {
             checkForPausedAndWait();
             timerTotal.start();
 
-            drawingThread.draw();
+            if(draw % 20 == 0)
+            {
+                drawingThread.draw();
+                draw = 0;
+            }
 
             timerSimulation.start();
             manager.automaton.beginCalculatingNextState();
             timerSimulation.stop();
             manager.statistics.generationTime.set(timerSimulation.getElapsed());
 
-            waitForDrawing();
+            if(draw % 20 == 0)
+            {
+                waitForDrawing();
+                draw = 0;
+            }
+            draw++;
 
             manager.automaton.endCalculatingNextState();
             manager.statistics.generationCount.incrementAndGet();

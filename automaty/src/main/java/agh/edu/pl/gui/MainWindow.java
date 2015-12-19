@@ -14,6 +14,8 @@ import java.util.Objects;
 
 public class MainWindow extends MainWindowDesign
 {
+    // TODO make something with enabling/disabling btns
+
     private final Timer timerStatistics;
     private final int statisticUpdateEvery = 500; // ms
 
@@ -53,7 +55,10 @@ public class MainWindow extends MainWindowDesign
     private void resetAutomaton()
     {
         disableSettingsPanel();
-        automaton.reset(() -> {}, false);
+        automaton.reset(() -> {
+            enableSettingsPanel();
+            pauseButton.setEnabled(false);
+        }, false);
     }
     private void randCells()
     {
@@ -78,6 +83,14 @@ public class MainWindow extends MainWindowDesign
             disableSettingsPanel();
             pauseButton.setEnabled(true);
             sliderDelay.setEnabled(true);
+        });
+    }
+    private void insertPrimeCounter()
+    {
+        disableSettingsPanel();
+        automaton.insertPrimeCounter(() -> {
+            enableSettingsPanel();
+            pauseButton.setEnabled(false);
         });
     }
     private ActionListener updateStatistics()
@@ -117,6 +130,14 @@ public class MainWindow extends MainWindowDesign
         else if(cmd.equals(Commands.RAND_CELLS.toString()))
         {
             randCells();
+        }
+        else if(cmd.equals(Commands.CLEAR_PLANE.toString()))
+        {
+            resetAutomaton();
+        }
+        else if(cmd.equals(Commands.INSERT_PRIME.toString()))
+        {
+            insertPrimeCounter();
         }
     }
 

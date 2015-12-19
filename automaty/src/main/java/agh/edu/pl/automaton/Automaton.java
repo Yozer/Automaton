@@ -75,7 +75,7 @@ public abstract class Automaton implements Iterable<Cell>
         {
             int from = i * step;
             int to = i == processorsCount - 1 ? currentChangeListSize : (i + 1) * step;
-            if(from >= cellCount || to > cellCount)
+            if(from >= currentChangeListSize || to > currentChangeListSize)
                 break;
 
             threadPool.execute(() ->
@@ -121,9 +121,9 @@ public abstract class Automaton implements Iterable<Cell>
 
             if (currentCells[index].getState() != newState)
             {
-                if (cellIsAlive(newState))
+                if(cellChangedToAlive(newState, currentCells[index].getState()))
                     currentAliveCount.incrementAndGet();
-                else
+                else if(cellChangedToDead(newState, currentCells[index].getState()))
                     currentAliveCount.decrementAndGet();
             }
             currentCells[index].setState(newState);
@@ -157,9 +157,9 @@ public abstract class Automaton implements Iterable<Cell>
 
             if (currentCells[index].getState() != cell.getState())
             {
-                if (cellIsAlive(cell.getState()))
+                if(cellChangedToAlive(cell.getState(), currentCells[index].getState()))
                     currentAliveCount.incrementAndGet();
-                else
+                else if(cellChangedToDead(cell.getState(), currentCells[index].getState()))
                     currentAliveCount.decrementAndGet();
             }
             currentCells[index].setState(cell.getState());
@@ -189,14 +189,13 @@ public abstract class Automaton implements Iterable<Cell>
             List<CellCoordinates> neighbors = neighborhoodStrategy.cellNeighbors(cell.getCoords());
             CellState newState = nextCellState(cell, neighbors);
 
-            Cell backbufferCell = setBackBufferCellState(cell, newState);
-            if(backbufferCell.hasChanged())
+            Cell nextGenerationCell = setNextGenerationCellState(cell, newState);
+            if(nextGenerationCell.hasChanged())
             {
-                if(cellIsAlive(newState))
+                if(cellChangedToAlive(newState, cell.getState()))
                     nextGenerationAliveCount.incrementAndGet();
-                else
+                else if(cellChangedToDead(newState, cell.getState()))
                     nextGenerationAliveCount.decrementAndGet();
-
 
                 if (!nextGenerationSet[cellIndex].getAndSet(true))
                 {
@@ -227,11 +226,11 @@ public abstract class Automaton implements Iterable<Cell>
 
     private void swapBuffers()
     {
-
         for(int i = 0; i < currentChangeListSize; ++i)
         {
             currentSet[currentChangeList[i]].set(false);
         }
+
         Cell[] tmp = nextGenerationCells;
         nextGenerationCells = currentCells;
         currentCells = tmp;
@@ -250,7 +249,7 @@ public abstract class Automaton implements Iterable<Cell>
         currentAliveCount.set(nextGenerationAliveCount.get());
     }
 
-    private Cell setBackBufferCellState(Cell cell, CellState newState)
+    private Cell setNextGenerationCellState(Cell cell, CellState newState)
     {
         Cell backBufferCell = nextGenerationCells[getCoordsIndex(cell.getCoords())];
         backBufferCell.isChanged(cell.getState() != newState);
@@ -292,6 +291,8 @@ public abstract class Automaton implements Iterable<Cell>
     protected abstract CellCoordinates nextCoordinates();
     protected abstract int getCoordsIndex(CellCoordinates coord);
     protected abstract boolean cellIsAlive(CellState state);
+    protected abstract boolean cellChangedToAlive(CellState newState, CellState oldState);
+    protected abstract boolean cellChangedToDead(CellState newState, CellState oldState);
 
     protected CellState getCellStateByCoordinates(CellCoordinates coordinates)
     {

@@ -20,7 +20,7 @@ public enum WireElectronState implements CellState
                 @Override
                 public Color toColor()
                 {
-                    return Color.YELLOW;
+                    return new Color(255, 122, 17);
                 }
             },
     ELECTRON_HEAD
@@ -36,7 +36,7 @@ public enum WireElectronState implements CellState
                 @Override
                 public Color toColor()
                 {
-                    return Color.RED;
+                    return Color.WHITE;
                 }
             }
 }

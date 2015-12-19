@@ -1,6 +1,8 @@
 package agh.edu.pl.gui.logic;
 
+import agh.edu.pl.automaton.automata.WireWorld;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
@@ -9,10 +11,8 @@ import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -75,6 +75,60 @@ class PauseSwingWorker extends SwingWorker<Void, Void>
     }
 }
 
+class InsertPrimeSwingWorker extends SwingWorker<Void, Void>
+{
+    private final AutomatonManager manager;
+    private final Runnable invokeAfter;
+
+    public InsertPrimeSwingWorker(AutomatonManager manager, Runnable invokeAfter)
+    {
+        this.manager = manager;
+        this.invokeAfter = invokeAfter;
+    }
+    @Override
+    protected Void doInBackground()
+    {
+        List<Cell> primeStructure = new ArrayList<>(manager.settings.getHeight() * manager.settings.getHeight());
+        BufferedReader reader = null;
+        File file = new File("primes.wi");
+        try
+        {
+            reader = new BufferedReader(new FileReader(file));
+            String line;
+            int x = 50;
+            while ((line = reader.readLine()) != null)
+            {
+                int y = 50;
+                for(int i = 0; i < line.length(); i++, y++)
+                {
+                    primeStructure.add(new Cell(line.charAt(i) == ' ' ? WireElectronState.VOID :
+                            line.charAt(i) == '#' ? WireElectronState.WIRE :
+                                    line.charAt(i) == '@' ? WireElectronState.ELECTRON_HEAD : WireElectronState.ELECTRON_TAIL, new Coords2D(y, x)));
+                }
+                x++;
+            }
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        manager.automaton.insertStructure(primeStructure);
+        manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
+        manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
+        manager.drawCurrentAutomaton();
+        manager.automatonPanel.paintImmediately(0, 0, manager.automatonPanel.getWidth(), manager.automatonPanel.getHeight());
+        return null;
+    }
+    @Override
+    protected void done()
+    {
+        invokeAfter.run();
+    }
+}
+
 class RandCellsWorker extends SwingWorker<Void, Void>
 {
     private final AutomatonManager manager;
@@ -87,7 +141,7 @@ class RandCellsWorker extends SwingWorker<Void, Void>
     }
 
     @Override
-    protected Void doInBackground() throws Exception
+    protected Void doInBackground()
     {
         List<Cell> someRand = new ArrayList<>(manager.settings.getHeight() * manager.settings.getHeight());
         Random random = new Random();
@@ -121,11 +175,12 @@ class RandCellsWorker extends SwingWorker<Void, Void>
             }
         }
 
+
         /*HashMap<CellCoordinates, CellState> blinker = new HashMap<>();
         blinker.put(new Coords2D(15, 20), BinaryState.ALIVE);
         blinker.put(new Coords2D(15, 21), BinaryState.ALIVE);
         blinker.put(new Coords2D(15, 22), BinaryState.ALIVE);
-        automaton.insertStructure(blinker);*/
+        manager.automaton.insertStructure(blinker);*/
 
         /*HashMap<CellCoordinates, CellState> glider = new HashMap<>();
         glider.put(new Coords2D(5, 5), BinaryState.ALIVE);
@@ -133,8 +188,8 @@ class RandCellsWorker extends SwingWorker<Void, Void>
         glider.put(new Coords2D(7, 5), BinaryState.ALIVE);
         glider.put(new Coords2D(7, 4), BinaryState.ALIVE);
         glider.put(new Coords2D(6, 3), BinaryState.ALIVE);
-        automaton.insertStructure(glider);*/
-        //automaton.start();
+        manager.automaton.insertStructure(glider);*/
+
         manager.automaton.insertStructure(someRand);
         manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
         manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());

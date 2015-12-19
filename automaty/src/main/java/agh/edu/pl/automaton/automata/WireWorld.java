@@ -1,6 +1,5 @@
 package agh.edu.pl.automaton.automata;
 
-import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
@@ -48,6 +47,19 @@ public class WireWorld extends Automaton2Dim
     @Override
     protected boolean cellIsAlive(CellState state)
     {
-        return state != WireElectronState.VOID;
+        return state == WireElectronState.ELECTRON_HEAD;
+    }
+
+    @Override
+    protected boolean cellChangedToAlive(CellState newState, CellState oldState)
+    {
+        return newState == WireElectronState.ELECTRON_HEAD;
+    }
+
+    @Override
+    protected boolean cellChangedToDead(CellState newState, CellState oldState)
+    {
+        return (oldState == WireElectronState.ELECTRON_HEAD || oldState == WireElectronState.ELECTRON_TAIL)
+        && (newState == WireElectronState.WIRE || newState == WireElectronState.VOID);
     }
 }

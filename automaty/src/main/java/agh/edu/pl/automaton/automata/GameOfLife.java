@@ -50,6 +50,18 @@ public class GameOfLife extends Automaton2Dim
         return state == BinaryState.ALIVE;
     }
 
+    @Override
+    protected boolean cellChangedToAlive(CellState newState, CellState oldState)
+    {
+        return newState == BinaryState.ALIVE;
+    }
+
+    @Override
+    protected boolean cellChangedToDead(CellState newState, CellState oldState)
+    {
+        return newState == BinaryState.DEAD;
+    }
+
     public Set<Integer> getSurviveFactors()
     {
         return surviveFactors;
