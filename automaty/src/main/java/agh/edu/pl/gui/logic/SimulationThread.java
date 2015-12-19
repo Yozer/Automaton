@@ -18,6 +18,8 @@ class SimulationThread implements Runnable
     private volatile boolean pauseThreadFlag = true;
     private volatile boolean isPausedFlag = true;
 
+    private final int FPS_LIMIT = (int) (1000/1f);
+
     private final DrawingThread drawingThread;
     private final Thread drawingThreadObject;
 
@@ -35,18 +37,17 @@ class SimulationThread implements Runnable
     {
         Timer timerTotal = new Timer();
         Timer timerSimulation = new Timer();
-        int draw = 1;
-
+        int sumTotalTime = 0;
+        int avgStep = 0;
         while (true)
         {
-
+            avgStep++;
             timerTotal.start();
 
-            //if(draw % 500 == 0)
-            //{
+            if(sumTotalTime >= FPS_LIMIT)
+            {
                 drawingThread.draw();
-               // draw = 0;
-            //}
+            }
 
             checkForPausedAndWait();
             timerSimulation.start();
@@ -54,12 +55,11 @@ class SimulationThread implements Runnable
             timerSimulation.stop();
             manager.statistics.generationTime.set(timerSimulation.getElapsed());
 
-            //if(draw % 500 == 0)
-            //{
+            if(sumTotalTime >= FPS_LIMIT)
+            {
                 waitForDrawing();
-                //draw = 0;
-            //}
-            //draw++;
+                sumTotalTime = 0;
+            }
 
             manager.automaton.endCalculatingNextState();
             manager.statistics.generationCount.incrementAndGet();
@@ -67,11 +67,13 @@ class SimulationThread implements Runnable
             manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
 
             timerTotal.stop();
+            sumTotalTime += timerTotal.getElapsed();
             manager.statistics.timeOfOnePass.set(timerTotal.getElapsed());
 
             int currentDelay = manager.getDelayFromSettings() - timerTotal.getElapsed();
             if(currentDelay > 10)
             {
+                sumTotalTime += currentDelay;
                 try
                 {
                     Thread.sleep(currentDelay);

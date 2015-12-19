@@ -96,11 +96,11 @@ public class AutomatonManager
         {
             for (Cell cell : automaton)
             {
-                if (cell.hasChanged())
-                {
+                //if (cell.hasChanged())
+                //{
                     Coords2D coords = (Coords2D) cell.getCoords();
                     bufferedImage.setRGB(coords.getX(), coords.getY(), cell.getState().toColor().getRGB());
-                }
+                //}
             }
         }
 

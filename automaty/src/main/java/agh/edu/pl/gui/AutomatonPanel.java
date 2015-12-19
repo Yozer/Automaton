@@ -81,13 +81,6 @@ public class AutomatonPanel extends JPanel
             }
 
             graphics2D.dispose();
-            try {
-                // retrieve image
-                File outputfile = new File("saved.png");
-                ImageIO.write(bufferedImageBorder, "png", outputfile);
-            } catch (IOException e) {
-
-            }
         }
         else
         {
