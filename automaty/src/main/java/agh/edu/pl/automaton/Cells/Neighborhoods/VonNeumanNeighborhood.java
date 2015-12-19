@@ -23,7 +23,7 @@ public class VonNeumanNeighborhood implements CellNeighborhood
     }
 
     @Override
-    public List<CellCoordinates> cellNeighbors(CellCoordinates cell)
+    public void cellNeighbors(CellCoordinates cell, ArrayWrapper arrayWrapper)
     {
         List<CellCoordinates> result = new ArrayList<>((2*r + 1)*(2*r + 1));
 
@@ -44,8 +44,6 @@ public class VonNeumanNeighborhood implements CellNeighborhood
                 }
             }
         }
-
-        return result;
     }
 
     public int getHeight()
@@ -66,5 +64,11 @@ public class VonNeumanNeighborhood implements CellNeighborhood
     public int getR()
     {
         return r;
+    }
+
+    @Override
+    public ArrayWrapper createArray()
+    {
+        return null;
     }
 }

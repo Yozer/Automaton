@@ -26,7 +26,7 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
         this.width = width;
     }
     @Override
-    public List<CellCoordinates> cellNeighbors(CellCoordinates cell)
+    public void cellNeighbors(CellCoordinates cell, ArrayWrapper arrayWrapper)
     {
         List<CellCoordinates> result = new ArrayList<>(2*r + 1);
 
@@ -43,8 +43,6 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
                     result.add(coords1D);
             }
         }
-
-        return result;
     }
 
     public int getWidth()
@@ -60,5 +58,11 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
     public int getR()
     {
         return r;
+    }
+
+    @Override
+    public ArrayWrapper createArray()
+    {
+        return null;
     }
 }

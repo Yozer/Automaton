@@ -18,7 +18,7 @@ class SimulationThread implements Runnable
     private volatile boolean pauseThreadFlag = true;
     private volatile boolean isPausedFlag = true;
 
-    private final int FPS_LIMIT = (int) (1000/1f);
+    private final int FPS_LIMIT = (int) (1000/2f);
 
     private final DrawingThread drawingThread;
     private final Thread drawingThreadObject;

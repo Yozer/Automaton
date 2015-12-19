@@ -10,6 +10,7 @@ import java.util.Set;
  */
 public interface CellNeighborhood
 {
-    List<CellCoordinates> cellNeighbors(CellCoordinates cell);
+    void cellNeighbors(CellCoordinates cell, ArrayWrapper result);
+    ArrayWrapper createArray();
 }
 

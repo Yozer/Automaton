@@ -5,6 +5,7 @@ import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
+import agh.edu.pl.automaton.cells.neighborhoods.ArrayWrapper;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.BinaryAntState;
 import agh.edu.pl.automaton.cells.states.BinaryState;
@@ -57,29 +58,30 @@ public class LangtonAnt extends Automaton2Dim
     }*/
 
     @Override
-    protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
+    protected CellState nextCellState(Cell cell, ArrayWrapper neighborsStates)
     {
-        Optional<Ant> anyAnt = ants.stream().filter(t -> t.getCoordinates().equals(cell.getCoords())).findAny();
-
-        if(!anyAnt.isPresent())
-            return cell.getState();
-
-        Ant ant = anyAnt.get();
-        BinaryAntState state = (BinaryAntState) cell.getState();
-
-        if(state.getBinaryState() == BinaryState.ALIVE)
-        {
-            ant.rotateLeft();
-            state = new BinaryAntState(BinaryState.DEAD);
-        }
-        else if(state.getBinaryState() == BinaryState.DEAD)
-        {
-            ant.rotateRight();
-            state = new BinaryAntState(BinaryState.ALIVE, ant.getAntColor());
-        }
-
-        ant.move();
-        return state;
+//        Optional<Ant> anyAnt = ants.stream().filter(t -> t.getCoordinates().equals(cell.getCoords())).findAny();
+//
+//        if(!anyAnt.isPresent())
+//            return cell.getState();
+//
+//        Ant ant = anyAnt.get();
+//        BinaryAntState state = (BinaryAntState) cell.getState();
+//
+//        if(state.getBinaryState() == BinaryState.ALIVE)
+//        {
+//            ant.rotateLeft();
+//            state = new BinaryAntState(BinaryState.DEAD);
+//        }
+//        else if(state.getBinaryState() == BinaryState.DEAD)
+//        {
+//            ant.rotateRight();
+//            state = new BinaryAntState(BinaryState.ALIVE, ant.getAntColor());
+//        }
+//
+//        ant.move();
+//        return state;
+        return BinaryState.ALIVE;
     }
 
     @Override

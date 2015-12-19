@@ -3,6 +3,7 @@ package agh.edu.pl.automaton.automata;
 import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
+import agh.edu.pl.automaton.cells.neighborhoods.ArrayWrapper;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
@@ -25,12 +26,12 @@ public class GameOfLife extends Automaton2Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, List<CellCoordinates> neighborsStates)
+    protected CellState nextCellState(Cell cell, ArrayWrapper neighborsStates)
     {
         int countAlive = 0;
-        for(CellCoordinates coords : neighborsStates)
+        for(int i = 0; i < neighborsStates.getLength(); ++i)
         {
-            if(getCellStateByCoordinates(coords) == BinaryState.ALIVE)
+            if(getCellStateByCoordinates(neighborsStates.get(i)) == BinaryState.ALIVE)
                 countAlive++;
         }
 

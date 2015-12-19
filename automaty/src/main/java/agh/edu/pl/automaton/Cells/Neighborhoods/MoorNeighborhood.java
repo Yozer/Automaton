@@ -24,10 +24,15 @@ public class MoorNeighborhood implements CellNeighborhood
     }
 
     @Override
-    public List<CellCoordinates> cellNeighbors(CellCoordinates cell)
+    public ArrayWrapper createArray()
     {
-        List<CellCoordinates> result = new ArrayList<>((2*r + 1)*(2*r + 1));
+        return new ArrayWrapper((2*r + 1)*(2*r + 1));
+    }
 
+    @Override
+    public void cellNeighbors(CellCoordinates cell, ArrayWrapper result)
+    {
+        result.setLength(0);
         Coords2D initalCoords = (Coords2D)cell;
 
         int x = initalCoords.getX() - r;
@@ -41,12 +46,10 @@ public class MoorNeighborhood implements CellNeighborhood
                 {
                     Coords2D coords2D = WrapCoordinatesHelper.fixCoord(new Coords2D(x + i, y + j), wrap, width, height);
                     if(coords2D != null)
-                        result.add(coords2D);
+                        result.push(coords2D);
                 }
             }
         }
-
-        return result;
     }
 
     public int getHeight()
@@ -69,3 +72,4 @@ public class MoorNeighborhood implements CellNeighborhood
         return r;
     }
 }
+
