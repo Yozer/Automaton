@@ -1,4 +1,4 @@
-package agh.edu.pl.gui;
+package agh.edu.pl.gui.logic;
 
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
@@ -6,6 +6,7 @@ import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
+import agh.edu.pl.gui.enums.PossibleAutomaton;
 
 import javax.swing.*;
 import java.util.ArrayList;

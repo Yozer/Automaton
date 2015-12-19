@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class AutomatonPanel extends JPanel
+public class AutomatonPanel extends JPanel
 {
     private BufferedImage bufferedImage;
     private BufferedImage bufferedImageBorder;

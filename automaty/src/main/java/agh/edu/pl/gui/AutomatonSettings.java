@@ -1,5 +1,7 @@
 package agh.edu.pl.gui;
 
+import agh.edu.pl.gui.enums.*;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,7 +10,7 @@ public class AutomatonSettings
 {
     private float cellSize = 5;
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLive;
-    private int simulationDelay = 15;
+    private int simulationDelay = 0;
     private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2, 3));
     private Set<Integer> comeAliveFactors= new HashSet<>(Arrays.asList(3));
     private CellNeighborhoodType neighborhoodType = CellNeighborhoodType.Moore;

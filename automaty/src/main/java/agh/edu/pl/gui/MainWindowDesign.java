@@ -1,5 +1,6 @@
 package agh.edu.pl.gui;
 
+import agh.edu.pl.gui.enums.*;
 import com.horstmann.corejava.GBC;
 
 import javax.swing.*;

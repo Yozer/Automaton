@@ -1,5 +1,9 @@
 package agh.edu.pl.gui;
 
+
+import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.logic.AutomatonManager;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
@@ -136,36 +140,6 @@ public class MainWindow extends MainWindowDesign
                 automaton.setSimulationDelay(slider.getValue());
             }
         }
-    }
-}
-
-enum PossibleAutomaton
-{
-    GameOfLive,
-    QuadLife,
-    WireWorld,
-    Langton,
-    OneDim
-}
-
-enum Commands
-{
-    CHANGE_AUTOMATON("CHANGE_AUTOMATON"),
-    CHANGE_CELL_SIZE("CHANGE_CELL_SIZE"),
-    START_AUTOMATON("START_AUTOMATON"),
-    PAUSE_AUTOMATON("PAUSE_AUTOMATON"),
-    RAND_CELLS("RAND_CELLS"),
-    CHANGE_SIMULATION_DELAY("CHANGE_SIMULATION_DELAY");
-
-    private final String text;
-
-    Commands(final String text) {
-        this.text = text;
-    }
-
-    @Override
-    public String toString() {
-        return text;
     }
 }
 

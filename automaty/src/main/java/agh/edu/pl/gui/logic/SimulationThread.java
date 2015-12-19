@@ -1,4 +1,4 @@
-package agh.edu.pl.gui;
+package agh.edu.pl.gui.logic;
 
 import agh.edu.pl.gui.helpers.Timer;
 
@@ -26,7 +26,7 @@ class SimulationThread implements Runnable
         this.manager = manager;
         this.drawingThread = new DrawingThread(manager, DRAWING_MONITOR, isDrawning);
 
-        drawingThreadObject = new Thread(drawingThread);
+        drawingThreadObject = new Thread(drawingThread, "DrawingThread");
         drawingThreadObject.start();
     }
 

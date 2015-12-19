@@ -1,4 +1,4 @@
-package agh.edu.pl.gui;
+package agh.edu.pl.gui.enums;
 
 /**
  * Created by Dominik on 2015-12-13.

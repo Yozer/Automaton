@@ -1,34 +1,24 @@
-package agh.edu.pl.gui;
+package agh.edu.pl.gui.logic;
 
-import agh.edu.pl.automaton.Automaton;
-import agh.edu.pl.automaton.Automaton2Dim;
-import agh.edu.pl.automaton.automata.ElementaryAutomaton;
-import agh.edu.pl.automaton.automata.GameOfLife;
-import agh.edu.pl.automaton.automata.QuadLife;
-import agh.edu.pl.automaton.automata.WireWorld;
+import agh.edu.pl.automaton.*;
+import agh.edu.pl.automaton.automata.*;
 import agh.edu.pl.automaton.automata.langton.LangtonAnt;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
-import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
-import agh.edu.pl.automaton.cells.neighborhoods.MoorNeighborhood;
-import agh.edu.pl.automaton.cells.neighborhoods.OneDimensionalNeighborhood;
-import agh.edu.pl.automaton.cells.neighborhoods.VonNeumanNeighborhood;
+import agh.edu.pl.automaton.cells.neighborhoods.*;
 import agh.edu.pl.automaton.cells.states.*;
-import agh.edu.pl.automaton.satefactory.UniformStateFactory;
+import agh.edu.pl.automaton.satefactory.*;
+import agh.edu.pl.gui.*;
+import agh.edu.pl.gui.enums.*;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-// TODO make this class easier to read, extract some threads etc
-// TODO remove drawing from GUI thread (in simulation Thread)
 
 /**
  * Created by Dominik on 2015-12-13.
  */
-class AutomatonManager
+public class AutomatonManager
 {
     Automaton automaton;
 
@@ -44,7 +34,7 @@ class AutomatonManager
     {
         this.automatonPanel = automatonPanel;
         this.simulationThread = new SimulationThread(this);
-        this.simulationThreadObject = new Thread(simulationThread);
+        this.simulationThreadObject = new Thread(simulationThread, "SimulationThread");
         simulationThreadObject.start();
     }
 
@@ -83,6 +73,33 @@ class AutomatonManager
         automatonPanel.createBufferedImage(settings.getWidth(), settings.getHeight());
         drawCurrentAutomaton();
         automatonPanel.paintImmediately(0, 0, automatonPanel.getWidth(), automatonPanel.getHeight());
+    }
+    void pause()
+    {
+        simulationThread.pauseThread();
+    }
+    void start()
+    {
+        simulationThread.resumeThread();
+    }
+
+
+    void drawCurrentAutomaton()
+    {
+        BufferedImage bufferedImage = automatonPanel.getBitmapForDrawing();
+        if(automaton instanceof Automaton2Dim)
+        {
+            for (Cell cell : automaton)
+            {
+                if (cell.hasChanged())
+                {
+                    Coords2D coords = (Coords2D) cell.getCoords();
+                    bufferedImage.setRGB(coords.getX(), coords.getY(), cell.getState().toColor().getRGB());
+                }
+            }
+        }
+
+        automatonPanel.releaseBitmapAfterDrawing();
     }
 
     private Automaton getAutomatonFromSettings()
@@ -126,36 +143,6 @@ class AutomatonManager
         else if(neighborhoodType == CellNeighborhoodType.OneDim)
             return new OneDimensionalNeighborhood(settings.getWrap(), settings.getWidth());
         return null;
-    }
-
-    void start()
-    {
-        simulationThread.resumeThread();
-    }
-
-
-    void drawCurrentAutomaton()
-    {
-        BufferedImage bufferedImage = automatonPanel.getBitmapForDrawing();
-        if(automaton instanceof Automaton2Dim)
-        {
-            for (Cell cell : automaton)
-            {
-                if (cell.hasChanged())
-                {
-                    Coords2D coords = (Coords2D) cell.getCoords();
-                    bufferedImage.setRGB(coords.getX(), coords.getY(), cell.getState().toColor().getRGB());
-                }
-            }
-        }
-
-        automatonPanel.releaseBitmapAfterDrawing();
-    }
-
-
-    void pause()
-    {
-        simulationThread.pauseThread();
     }
 
     public void randCells(Runnable invokeAfter)

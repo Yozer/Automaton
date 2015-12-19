@@ -1,4 +1,4 @@
-package agh.edu.pl.gui;
+package agh.edu.pl.gui.logic;
 
 import javax.swing.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by Dominik on 2015-12-18.
  */
-public class DrawingThread implements Runnable
+class DrawingThread implements Runnable
 {
     private final AutomatonManager manager;
     private final Object DRAWING_MONITOR;
