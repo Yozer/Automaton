@@ -32,7 +32,8 @@ public abstract class Automaton implements Iterable<Cell>
     private final int cellCount;
     private final int processorsCount;
     private final ForkJoinPool threadPool;
-    private final AtomicInteger aliveCount = new AtomicInteger(0);
+    private final AtomicInteger currentAliveCount = new AtomicInteger(0);
+    private final AtomicInteger nextGenerationAliveCount = new AtomicInteger(0);
 
     private boolean isInitiated = false;
 
@@ -56,7 +57,7 @@ public abstract class Automaton implements Iterable<Cell>
 
     public int getAliveCount()
     {
-        return aliveCount.get();
+        return currentAliveCount.get();
     }
 
     public void beginCalculatingNextState()
@@ -68,11 +69,14 @@ public abstract class Automaton implements Iterable<Cell>
         }
 
         int step = getStep(processorsCount, currentChangeListSize);
+        nextGenerationAliveCount.set(currentAliveCount.get());
 
         for(int i = 0; i < processorsCount; ++i)
         {
             int from = i * step;
             int to = i == processorsCount - 1 ? currentChangeListSize : (i + 1) * step;
+            if(from >= cellCount || to > cellCount)
+                break;
 
             threadPool.execute(() ->
             {
@@ -85,6 +89,22 @@ public abstract class Automaton implements Iterable<Cell>
     public void endCalculatingNextState()
     {
         swapBuffers();
+    }
+    @Override
+    public Iterator<Cell> iterator()
+    {
+        if(!isInitiated)
+        {
+            initAutomaton();
+            isInitiated = true;
+        }
+        return new CellIterator();
+    }
+
+    public void calculateNextState()
+    {
+        beginCalculatingNextState();
+        endCalculatingNextState();
     }
     public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
     {
@@ -102,9 +122,9 @@ public abstract class Automaton implements Iterable<Cell>
             if (currentCells[index].getState() != newState)
             {
                 if (cellIsAlive(newState))
-                    aliveCount.incrementAndGet();
+                    currentAliveCount.incrementAndGet();
                 else
-                    aliveCount.decrementAndGet();
+                    currentAliveCount.decrementAndGet();
             }
             currentCells[index].setState(newState);
 
@@ -138,9 +158,9 @@ public abstract class Automaton implements Iterable<Cell>
             if (currentCells[index].getState() != cell.getState())
             {
                 if (cellIsAlive(cell.getState()))
-                    aliveCount.incrementAndGet();
+                    currentAliveCount.incrementAndGet();
                 else
-                    aliveCount.decrementAndGet();
+                    currentAliveCount.decrementAndGet();
             }
             currentCells[index].setState(cell.getState());
 
@@ -173,9 +193,9 @@ public abstract class Automaton implements Iterable<Cell>
             if(backbufferCell.hasChanged())
             {
                 if(cellIsAlive(newState))
-                    aliveCount.incrementAndGet();
+                    nextGenerationAliveCount.incrementAndGet();
                 else
-                    aliveCount.decrementAndGet();
+                    nextGenerationAliveCount.decrementAndGet();
 
 
                 if (!nextGenerationSet[cellIndex].getAndSet(true))
@@ -199,6 +219,9 @@ public abstract class Automaton implements Iterable<Cell>
 
     private int getStep(int processorsCount, int arraySize)
     {
+        if(arraySize < 10000)
+            return arraySize;
+
         return (int) (arraySize / ((float) processorsCount));
     }
 
@@ -223,12 +246,8 @@ public abstract class Automaton implements Iterable<Cell>
         AtomicBoolean[] y = currentSet;
         currentSet = nextGenerationSet;
         nextGenerationSet = y;
-                /*
-        for(int i = 0; i < changeListSetBackBuffer.length; i++)
-        {
-            changeListSetBackBuffer[i].set(false);
-        }*/
 
+        currentAliveCount.set(nextGenerationAliveCount.get());
     }
 
     private Cell setBackBufferCellState(Cell cell, CellState newState)
@@ -256,7 +275,7 @@ public abstract class Automaton implements Iterable<Cell>
             current = nextCoordinates();
             CellState initialState = stateFactory.initialState(current);
             if(cellIsAlive(initialState))
-                aliveCount.incrementAndGet();
+                currentAliveCount.incrementAndGet();
 
             int cellIndex = getCoordsIndex(current);
             currentCells[cellIndex] = new Cell(initialState, current);
@@ -277,17 +296,6 @@ public abstract class Automaton implements Iterable<Cell>
     protected CellState getCellStateByCoordinates(CellCoordinates coordinates)
     {
         return currentCells[getCoordsIndex(coordinates)].getState();
-    }
-
-    @Override
-    public Iterator<Cell> iterator()
-    {
-        if(!isInitiated)
-        {
-            initAutomaton();
-            isInitiated = true;
-        }
-        return new CellIterator();
     }
 
     private class CellIterator implements java.util.Iterator<Cell>

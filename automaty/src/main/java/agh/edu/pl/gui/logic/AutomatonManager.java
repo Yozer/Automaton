@@ -124,7 +124,7 @@ public class AutomatonManager
         else if(settings.getSelectedAutomaton() == PossibleAutomaton.OneDim)
         {
             UniformStateFactory stateFactory = new UniformStateFactory(BinaryState.DEAD);
-            return new ElementaryAutomaton(settings.getWidth(), settings.getOneDimRule(), stateFactory, neighborhood);
+            return new ElementaryAutomaton(settings.getWidth(), settings.getOneDimRule(), stateFactory);
         }
         else if(settings.getSelectedAutomaton() == PossibleAutomaton.Langton)
         {

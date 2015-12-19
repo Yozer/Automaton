@@ -40,7 +40,7 @@ public class Cell
     @Override
     public boolean equals(Object obj)
     {
-        return ((Cell) obj).getCoords().equals(this.getCoords());
+        return obj instanceof Cell && ((Cell) obj).getCoords().equals(this.getCoords());
     }
 
     @Override

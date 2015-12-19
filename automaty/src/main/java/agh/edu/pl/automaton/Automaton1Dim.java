@@ -28,7 +28,7 @@ public abstract class Automaton1Dim extends Automaton
     protected boolean hasNextCoordinates(CellCoordinates coords)
     {
         Coords1D coords2D = (Coords1D)coords;
-        return coords2D.getX() < size;
+        return coords2D.getX() < size - 1;
     }
 
     @Override
