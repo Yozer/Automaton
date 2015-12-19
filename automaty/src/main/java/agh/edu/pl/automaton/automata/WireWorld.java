@@ -59,7 +59,6 @@ public class WireWorld extends Automaton2Dim
     @Override
     protected boolean cellChangedToDead(CellState newState, CellState oldState)
     {
-        return (oldState == WireElectronState.ELECTRON_HEAD || oldState == WireElectronState.ELECTRON_TAIL)
-        && (newState == WireElectronState.WIRE || newState == WireElectronState.VOID);
+        return oldState == WireElectronState.ELECTRON_HEAD;
     }
 }

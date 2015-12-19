@@ -39,26 +39,27 @@ class SimulationThread implements Runnable
 
         while (true)
         {
-            checkForPausedAndWait();
+
             timerTotal.start();
 
-            if(draw % 20 == 0)
-            {
+            //if(draw % 20 == 0)
+            //{
                 drawingThread.draw();
-                draw = 0;
-            }
+                //draw = 0;
+            //}
 
+            checkForPausedAndWait();
             timerSimulation.start();
             manager.automaton.beginCalculatingNextState();
             timerSimulation.stop();
             manager.statistics.generationTime.set(timerSimulation.getElapsed());
 
-            if(draw % 20 == 0)
-            {
+            //if(draw % 20 == 0)
+            //{
                 waitForDrawing();
-                draw = 0;
-            }
-            draw++;
+                //draw = 0;
+            //}
+            //draw++;
 
             manager.automaton.endCalculatingNextState();
             manager.statistics.generationCount.incrementAndGet();

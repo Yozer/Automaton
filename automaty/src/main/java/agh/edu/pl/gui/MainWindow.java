@@ -131,7 +131,7 @@ public class MainWindow extends MainWindowDesign
         {
             randCells();
         }
-        else if(cmd.equals(Commands.CLEAR_PLANE.toString()))
+        else if(cmd.equals(Commands.INIT.toString()))
         {
             resetAutomaton();
         }

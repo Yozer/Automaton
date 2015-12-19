@@ -20,7 +20,7 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     protected JPanel settingsPanel;
     protected JSlider sliderDelay;
 
-    protected JButton randButton, startButton, pauseButton, clearButton, insertPrimeButton;
+    protected JButton randButton, startButton, pauseButton, inicjiuj, insertPrimeButton;
 
     // helps get default settings
     private final AutomatonSettings automatonSettings = new AutomatonSettings();
@@ -114,10 +114,10 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         randButton.addActionListener(this);
         navigationButtonsPanel.add(randButton);
         settingsPanel.add(navigationButtonsPanel);
-        clearButton = new JButton("Wyczyść");
-        clearButton.setActionCommand(Commands.CLEAR_PLANE.toString());
-        clearButton.addActionListener(this);
-        navigationButtonsPanel.add(clearButton);
+        inicjiuj = new JButton("Iniciuj");
+        inicjiuj.setActionCommand(Commands.INIT.toString());
+        inicjiuj.addActionListener(this);
+        navigationButtonsPanel.add(inicjiuj);
         insertPrimeButton = new JButton("Wstaw generator liczb pierwszych");
         insertPrimeButton.setActionCommand(Commands.INSERT_PRIME.toString());
         insertPrimeButton.addActionListener(this);
