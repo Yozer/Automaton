@@ -7,5 +7,6 @@ public enum AutomatonState
 {
     BUSY,
     PAUSED,
+    INSERTING_STRUCT,
     RUNNING
 }

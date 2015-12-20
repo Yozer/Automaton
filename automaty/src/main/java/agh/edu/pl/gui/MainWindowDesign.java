@@ -1,6 +1,8 @@
 package agh.edu.pl.gui;
 
 import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.structures.StructureInfo;
+import agh.edu.pl.gui.structures.StructureLoader;
 import com.horstmann.corejava.GBC;
 
 import javax.swing.*;
@@ -8,12 +10,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Dominik on 2015-12-10.
  */
-public abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener
+abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener
 {
     protected AutomatonPanel automatonPanel;
 
@@ -21,10 +25,14 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     private Label renderTimeLabel;
     private JPanel settingsPanel;
 
+    private JComboBox<StructureInfo> structuresList;
+    private JButton insertStructButton;
+
     private ArrayList<Component> disabledWhenRunning = new ArrayList<>();
     private ArrayList<Component> disabledWhenNotRunning= new ArrayList<>();
 
     private AutomatonState automatonState;
+    private AutomatonState rememberState;
 
     // helps get default settings
     private final AutomatonSettings automatonSettings = new AutomatonSettings();
@@ -122,22 +130,25 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         randButton.setActionCommand(Commands.RAND_CELLS.toString());
         randButton.addActionListener(this);
         navigationButtonsPanel.add(randButton);
-        settingsPanel.add(navigationButtonsPanel);
         disabledWhenRunning.add(randButton);
 
         JButton clearButton = new JButton("Wyczyść");
         clearButton.setActionCommand(Commands.CLEAR_AUTOMATON.toString());
         clearButton.addActionListener(this);
         navigationButtonsPanel.add(clearButton);
-        settingsPanel.add(navigationButtonsPanel);
         disabledWhenRunning.add(clearButton);
 
-        JButton insertPrimeButton = new JButton("Wstaw generator liczb pierwszych");
-        insertPrimeButton.setActionCommand(Commands.INSERT_PRIME.toString());
-        insertPrimeButton.addActionListener(this);
-        navigationButtonsPanel.add(insertPrimeButton);
+        structuresList = new JComboBox<>();
+        setStructureList(automatonSettings.getSelectedAutomaton());
+        navigationButtonsPanel.add(structuresList);
+
+        insertStructButton = new JButton("Wstaw strukturę");
+        insertStructButton.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        insertStructButton.setActionCommand(Commands.INSERT_STRUCT.toString());
+        insertStructButton.addActionListener(this);
+        navigationButtonsPanel.add(insertStructButton);
+
         settingsPanel.add(navigationButtonsPanel);
-        disabledWhenRunning.add(insertPrimeButton);
         // ------------------------------------------------------------------------ \\
         JPanel statisticsPanel = new JPanel(new GridLayout(4,2));
         statisticsPanel.setName("statisticPanel");
@@ -159,6 +170,13 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         // ------------------------------------------------------------------------ \\
 
         add(mainPanel);
+    }
+
+    protected void setStructureList(PossibleAutomaton selectedAutomaton)
+    {
+        structuresList.removeAllItems();
+        for(StructureInfo structureInfo : StructureLoader.getAvalibleStructures(selectedAutomaton))
+            structuresList.addItem(structureInfo);
     }
 
     protected void setGenerationCountLabel(int count)
@@ -200,6 +218,24 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     {
         automatonState = AutomatonState.BUSY;
         disableSettingsPanel();
+    }
+    protected void setStateSelectingStruct()
+    {
+        rememberState = automatonState;
+        automatonState = AutomatonState.INSERTING_STRUCT;
+        disableSettingsPanel();
+        insertStructButton.setEnabled(true);
+        insertStructButton.setText("Anuluj wstawianie");
+        insertStructButton.setActionCommand(Commands.CANCEL_INSERTING_STRUCT.toString());
+    }
+    protected void setStateCancelSelectingStruct()
+    {
+        insertStructButton.setText("Wstaw strukturę");
+        insertStructButton.setActionCommand(Commands.INSERT_STRUCT.toString());
+        if(rememberState == AutomatonState.PAUSED)
+            setStatePaused();
+        else if(rememberState == AutomatonState.RUNNING)
+            setStateRunning();
     }
 
     private void enableListOfComponents(ArrayList<Component> componentList) { switchState(componentList, true);}

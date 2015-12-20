@@ -3,13 +3,17 @@ package agh.edu.pl.gui;
 
 import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.logic.AutomatonManager;
+import agh.edu.pl.gui.structures.StructureInfo;
+import agh.edu.pl.gui.structures.StructureLoader;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MainWindow extends MainWindowDesign
 {
@@ -79,6 +83,8 @@ public class MainWindow extends MainWindowDesign
             JRadioButton btn = (JRadioButton) e.getSource();
             PossibleAutomaton selectedAutomaton = Arrays.stream(PossibleAutomaton.values()).filter(t -> Objects.equals(t.toString(), btn.getText())).findAny().get();
             automaton.setSelectedAutomaton(selectedAutomaton);
+
+            setStructureList(selectedAutomaton);
             initAutomaton();
         }
         else if(cmd.equals(Commands.START_AUTOMATON.toString()))
@@ -97,9 +103,13 @@ public class MainWindow extends MainWindowDesign
         {
             initAutomaton();
         }
-        else if(cmd.equals(Commands.INSERT_PRIME.toString()))
+        else if(cmd.equals(Commands.INSERT_STRUCT.toString()))
         {
-            insertStructure();
+            setStateSelectingStruct();
+        }
+        else if(cmd.equals(Commands.CANCEL_INSERTING_STRUCT.toString()))
+        {
+            setStateCancelSelectingStruct();
         }
     }
 

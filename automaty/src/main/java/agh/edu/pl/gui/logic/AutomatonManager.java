@@ -18,6 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
+// TODO add adding structures
+
 public class AutomatonManager
 {
     Automaton automaton;
