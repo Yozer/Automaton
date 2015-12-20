@@ -1,8 +1,6 @@
 package agh.edu.pl.gui.logic;
 
-import agh.edu.pl.automaton.automata.WireWorld;
 import agh.edu.pl.automaton.cells.Cell;
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
@@ -18,13 +16,13 @@ import java.util.stream.Collectors;
 /**
  * Created by Dominik on 2015-12-18.
  */
-class ResetSwingWorker extends SwingWorker<Void, Void>
+class InitSwingWorker extends SwingWorker<Void, Void>
 {
     private final AutomatonManager automatonManager;
     private final Runnable invokeAfter;
     private final boolean startImmediately;
 
-    public ResetSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter, boolean startImmediately)
+    public InitSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter, boolean startImmediately)
     {
         this.automatonManager = automatonManager;
         this.invokeAfter = invokeAfter;
@@ -34,7 +32,7 @@ class ResetSwingWorker extends SwingWorker<Void, Void>
     @Override
     protected Void doInBackground()
     {
-        automatonManager.reset();
+        automatonManager.init();
         return null;
     }
 
@@ -166,7 +164,7 @@ class InsertPrimeSwingWorker extends SwingWorker<Void, Void>
         manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
         manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
         manager.drawCurrentAutomaton();
-        manager.automatonPanel.paintImmediately(0, 0, manager.automatonPanel.getWidth(), manager.automatonPanel.getHeight());
+        manager.automatonPanel.repaint();
         return null;
     }
     @Override
@@ -193,7 +191,7 @@ class RandCellsWorker extends SwingWorker<Void, Void>
         List<Cell> someRand = new ArrayList<>(manager.settings.getHeight() * manager.settings.getHeight());
         Random random = new Random();
 
-        manager.reset();
+        manager.init();
         List<CellState> values = null;
         if (manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
         {
@@ -241,7 +239,7 @@ class RandCellsWorker extends SwingWorker<Void, Void>
         manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
         manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
         manager.drawCurrentAutomaton();
-        manager.automatonPanel.paintImmediately(0, 0, manager.automatonPanel.getWidth(), manager.automatonPanel.getHeight());
+        manager.automatonPanel.repaint();
         return null;
     }
 

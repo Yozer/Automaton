@@ -106,6 +106,11 @@ public abstract class Automaton implements Iterable<Cell>
     }
     public Iterator<Cell> iteratorChangedOnly()
     {
+        if(!isInitiated)
+        {
+            initAutomaton();
+            isInitiated = true;
+        }
         return new CellIteratorChangedOnly();
     }
 

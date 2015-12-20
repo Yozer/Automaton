@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 /**
  * Created by Dominik on 2015-12-10.
@@ -15,12 +16,15 @@ import java.awt.event.ActionListener;
 public abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener
 {
     protected AutomatonPanel automatonPanel;
-    protected Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel, deadCellsLabel, totalCellsLabel, onePassTimeLabel;
-    protected Label renderTimeLabel;
-    protected JPanel settingsPanel;
-    protected JSlider sliderDelay;
 
-    protected JButton randButton, startButton, pauseButton, inicjiuj, insertPrimeButton;
+    private Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel, deadCellsLabel, totalCellsLabel, onePassTimeLabel;
+    private Label renderTimeLabel;
+    private JPanel settingsPanel;
+
+    private ArrayList<Component> disabledWhenRunning = new ArrayList<>();
+    private ArrayList<Component> disabledWhenNotRunning= new ArrayList<>();
+
+    private AutomatonState automatonState;
 
     // helps get default settings
     private final AutomatonSettings automatonSettings = new AutomatonSettings();
@@ -28,6 +32,7 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     protected MainWindowDesign()
     {
         initUI();
+        setStatePaused();
     }
 
     private void initUI()
@@ -57,6 +62,7 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         for (PossibleAutomaton automaton : PossibleAutomaton.values())
         {
             JRadioButton radio = new JRadioButton(automaton.toString());
+            disabledWhenRunning.add(radio);
             radio.setActionCommand(Commands.CHANGE_AUTOMATON.toString());
             group.add(radio);
             radio.addActionListener(this);
@@ -82,11 +88,12 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         slider.setValue((int) automatonSettings.getCellSize());
         slider.addChangeListener(this);
         settingsPanel.add(slider);
+        disabledWhenRunning.add(slider);
         // ------------------------------------------------------------------------ \\
 
         settingsPanel.add(new Label("Opóźnienie między kolejnymi symulacjami [ms]"));
 
-        sliderDelay = slider = new JSlider(0, 1000, 0);
+        slider = new JSlider(0, 1000, 0);
         slider.setMinorTickSpacing(50);
         slider.setMajorTickSpacing(250);
         slider.setPaintTicks(true);
@@ -97,32 +104,40 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
         settingsPanel.add(slider);
         // ------------------------------------------------------------------------ \\
         JPanel navigationButtonsPanel = new JPanel(new GridLayout(3, 2));
-        startButton = new JButton("Start");
+        JButton startButton = new JButton("Start");
         startButton.setActionCommand(Commands.START_AUTOMATON.toString());
         startButton.addActionListener(this);
         startButton.setEnabled(false);
         navigationButtonsPanel.add(startButton);
+        disabledWhenRunning.add(startButton);
 
-        pauseButton = new JButton("Pauza");
+        JButton pauseButton = new JButton("Pauza");
         pauseButton.setActionCommand(Commands.PAUSE_AUTOMATON.toString());
         pauseButton.addActionListener(this);
         pauseButton.setEnabled(false);
         navigationButtonsPanel.add(pauseButton);
+        disabledWhenNotRunning.add(pauseButton);
 
-        randButton = new JButton("Losuj");
+        JButton randButton = new JButton("Losuj");
         randButton.setActionCommand(Commands.RAND_CELLS.toString());
         randButton.addActionListener(this);
         navigationButtonsPanel.add(randButton);
         settingsPanel.add(navigationButtonsPanel);
-        inicjiuj = new JButton("Iniciuj");
-        inicjiuj.setActionCommand(Commands.INIT.toString());
-        inicjiuj.addActionListener(this);
-        navigationButtonsPanel.add(inicjiuj);
-        insertPrimeButton = new JButton("Wstaw generator liczb pierwszych");
+        disabledWhenRunning.add(randButton);
+
+        JButton clearButton = new JButton("Wyczyść");
+        clearButton.setActionCommand(Commands.CLEAR_AUTOMATON.toString());
+        clearButton.addActionListener(this);
+        navigationButtonsPanel.add(clearButton);
+        settingsPanel.add(navigationButtonsPanel);
+        disabledWhenRunning.add(clearButton);
+
+        JButton insertPrimeButton = new JButton("Wstaw generator liczb pierwszych");
         insertPrimeButton.setActionCommand(Commands.INSERT_PRIME.toString());
         insertPrimeButton.addActionListener(this);
         navigationButtonsPanel.add(insertPrimeButton);
         settingsPanel.add(navigationButtonsPanel);
+        disabledWhenRunning.add(insertPrimeButton);
         // ------------------------------------------------------------------------ \\
         JPanel statisticsPanel = new JPanel(new GridLayout(4,2));
         statisticsPanel.setName("statisticPanel");
@@ -150,14 +165,8 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     {
         generationCountLabel.setText("Liczba generacji: " + count);
     }
-    protected void setSimulationTimeLabel(int time)
-    {
-        simulationTimeLabel.setText("Czas symulacji jednej generacji: " + time);
-    }
-    protected void setAliveCellsCountLabel(int count)
-    {
-        aliveCellsCountLabel.setText("Liczba żywych komórek: " + count);
-    }
+    protected void setSimulationTimeLabel(int time) { simulationTimeLabel.setText("Czas symulacji jednej generacji: " + time); }
+    protected void setAliveCellsCountLabel(int count) { aliveCellsCountLabel.setText("Liczba żywych komórek: " + count); }
     protected void setTotalCellsLabel(int count)
     {
         totalCellsLabel.setText("Wszystkich komórek: " + count);
@@ -173,5 +182,47 @@ public abstract class MainWindowDesign extends JFrame implements ActionListener,
     protected void setOnePassTimeLabel(int time)
     {
         onePassTimeLabel.setText("Czas jednego przejścia: " + time);
+    }
+
+    protected void setStatePaused()
+    {
+        automatonState = AutomatonState.PAUSED;
+        enableSettingsPanel();
+        disableListOfComponents(disabledWhenNotRunning);
+    }
+    protected void setStateRunning()
+    {
+        automatonState = AutomatonState.RUNNING;
+        enableSettingsPanel();
+        disableListOfComponents(disabledWhenRunning);
+    }
+    protected void setStateBusy()
+    {
+        automatonState = AutomatonState.BUSY;
+        disableSettingsPanel();
+    }
+
+    private void enableListOfComponents(ArrayList<Component> componentList) { switchState(componentList, true);}
+    private void disableListOfComponents(ArrayList<Component> componentList) { switchState(componentList, false);}
+    private void switchState(ArrayList<Component> componentList, boolean state)
+    {
+        for(Component component : componentList)
+            component.setEnabled(state);
+    }
+
+    private void disableSettingsPanel() { switchStatePanel(settingsPanel, false);}
+    private void enableSettingsPanel() { switchStatePanel(settingsPanel, true);}
+    private void switchStatePanel(JPanel panel, boolean state)
+    {
+        panel.setEnabled(state);
+
+        Component[] components = panel.getComponents();
+
+        for(int i = 0; i < components.length; i++) {
+            if(components[i].getClass().getName() == "javax.swing.JPanel") {
+                switchStatePanel((JPanel) components[i], state);
+            }
+            components[i].setEnabled(state);
+        }
     }
 }

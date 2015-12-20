@@ -18,7 +18,6 @@ class SimulationThread implements Runnable
     private volatile boolean pauseThreadFlag = true;
     private volatile boolean isPausedFlag = true;
 
-    private final int FPS_LIMIT = (int) (1000/60f);
 
     private final DrawingThread drawingThread;
     private final Thread drawingThreadObject;
@@ -37,17 +36,12 @@ class SimulationThread implements Runnable
     {
         Timer timerTotal = new Timer();
         Timer timerSimulation = new Timer();
-        int sumTotalTime = 0;
-        int avgStep = 0;
+
         while (true)
         {
-            avgStep++;
             timerTotal.start();
 
-//            if(sumTotalTime >= FPS_LIMIT)
-//            {
-                drawingThread.draw();
-//            }
+            drawingThread.draw();
 
             checkForPausedAndWait();
             timerSimulation.start();
@@ -55,11 +49,7 @@ class SimulationThread implements Runnable
             timerSimulation.stop();
             manager.statistics.generationTime.set(timerSimulation.getElapsed());
 
-//            if(sumTotalTime >= FPS_LIMIT)
-//            {
-                waitForDrawing();
-//                sumTotalTime = 0;
-//            }
+            waitForDrawing();
 
             manager.automaton.endCalculatingNextState();
             manager.statistics.generationCount.incrementAndGet();
@@ -67,13 +57,11 @@ class SimulationThread implements Runnable
             manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
 
             timerTotal.stop();
-            sumTotalTime += timerTotal.getElapsed();
             manager.statistics.timeOfOnePass.set(timerTotal.getElapsed());
 
             int currentDelay = manager.getDelayFromSettings() - timerTotal.getElapsed();
             if(currentDelay > 10)
             {
-                sumTotalTime += currentDelay;
                 try
                 {
                     Thread.sleep(currentDelay);

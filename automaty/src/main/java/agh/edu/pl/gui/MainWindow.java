@@ -6,7 +6,6 @@ import agh.edu.pl.gui.logic.AutomatonManager;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -30,68 +29,31 @@ public class MainWindow extends MainWindowDesign
         timerStatistics.setCoalesce(true);
         timerStatistics.start();
     }
-    private void disableSettingsPanel()
-    {
-        setPanelState(settingsPanel, false);
-    }
-    private void enableSettingsPanel()
-    {
-        setPanelState(settingsPanel, true);
-    }
-    private void setPanelState(JPanel panel, Boolean isEnabled) {
-        panel.setEnabled(isEnabled);
 
-        Component[] components = panel.getComponents();
-
-        for(int i = 0; i < components.length; i++) {
-            if(Objects.equals(components[i].getClass().getName(), "javax.swing.JPanel") &&
-                    !Objects.equals(components[i].getName(), "statisticPanel")) {
-                setPanelState((JPanel) components[i], isEnabled);
-            }
-
-            components[i].setEnabled(isEnabled);
-        }
-    }
-    private void resetAutomaton()
+    private void initAutomaton()
     {
-        disableSettingsPanel();
-        automaton.reset(() -> {
-            enableSettingsPanel();
-            pauseButton.setEnabled(false);
-        }, false);
+        //setStateBusy();
+        automaton.init(this::setStatePaused, false);
     }
     private void randCells()
     {
-        disableSettingsPanel();
-        automaton.randCells(() -> {
-            enableSettingsPanel();
-            pauseButton.setEnabled(false);
-        });
+        setStateBusy();
+        automaton.randCells(this::setStatePaused);
     }
     private void pauseAutomaton()
     {
-        disableSettingsPanel();
-        automaton.pause(() -> {
-            enableSettingsPanel();
-            pauseButton.setEnabled(false);
-        });
+        setStateBusy();
+        automaton.pause(this::setStatePaused);
     }
     private void startAutomaton()
     {
-        disableSettingsPanel();
-        automaton.start(() -> {
-            disableSettingsPanel();
-            pauseButton.setEnabled(true);
-            sliderDelay.setEnabled(true);
-        });
+        setStateBusy();
+        automaton.start(this::setStateRunning);
     }
-    private void insertPrimeCounter()
+    private void insertStructure()
     {
-        disableSettingsPanel();
-        automaton.insertPrimeCounter(() -> {
-            enableSettingsPanel();
-            pauseButton.setEnabled(false);
-        });
+        setStateBusy();
+        automaton.insertPrimeCounter(this::setStatePaused);
     }
     private ActionListener updateStatistics()
     {
@@ -117,7 +79,7 @@ public class MainWindow extends MainWindowDesign
             JRadioButton btn = (JRadioButton) e.getSource();
             PossibleAutomaton selectedAutomaton = Arrays.stream(PossibleAutomaton.values()).filter(t -> Objects.equals(t.toString(), btn.getText())).findAny().get();
             automaton.setSelectedAutomaton(selectedAutomaton);
-            startButton.setEnabled(false);
+            initAutomaton();
         }
         else if(cmd.equals(Commands.START_AUTOMATON.toString()))
         {
@@ -131,13 +93,13 @@ public class MainWindow extends MainWindowDesign
         {
             randCells();
         }
-        else if(cmd.equals(Commands.INIT.toString()))
+        else if(cmd.equals(Commands.CLEAR_AUTOMATON.toString()))
         {
-            resetAutomaton();
+            initAutomaton();
         }
         else if(cmd.equals(Commands.INSERT_PRIME.toString()))
         {
-            insertPrimeCounter();
+            insertStructure();
         }
     }
 
@@ -152,9 +114,8 @@ public class MainWindow extends MainWindowDesign
             String name = slider.getName();
             if (name.equals(Commands.CHANGE_CELL_SIZE.toString()))
             {
-                // TODO it has restart automaton? I don't think so
                 automaton.setCellSize(slider.getValue());
-                //resetAutomaton();
+                initAutomaton();
             }
             else if(name.equals(Commands.CHANGE_SIMULATION_DELAY.toString()))
             {

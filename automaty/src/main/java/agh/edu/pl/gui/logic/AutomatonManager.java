@@ -12,7 +12,6 @@ import agh.edu.pl.gui.*;
 import agh.edu.pl.gui.enums.*;
 
 import javax.swing.*;
-import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,13 +40,17 @@ public class AutomatonManager
 
     public void start(Runnable invokeAfter)
     {
+        // automaton was not initiated (user didn't change any settings)
+        if(automaton == null)
+            init();
+
         simulationThread.resumeThread();
         invokeAfter.run();
     }
 
-    public void reset(Runnable invokeAfter, boolean startImmediately)
+    public void init(Runnable invokeAfter, boolean startImmediately)
     {
-        SwingWorker swingWorker = new ResetSwingWorker(this, invokeAfter, startImmediately);
+        SwingWorker swingWorker = new InitSwingWorker(this, invokeAfter, startImmediately);
         swingWorker.execute();
     }
 
@@ -62,7 +65,7 @@ public class AutomatonManager
         swingWorker.execute();
     }
 
-    void reset()
+    void init()
     {
         pause();
         statistics.resetStatistics();
@@ -78,7 +81,7 @@ public class AutomatonManager
 
         automatonPanel.createBufferedImage(settings.getWidth(), settings.getHeight());
         drawCurrentAutomaton();
-        automatonPanel.paintImmediately(0, 0, automatonPanel.getWidth(), automatonPanel.getHeight());
+        automatonPanel.repaint();
     }
     void pause()
     {
@@ -92,20 +95,22 @@ public class AutomatonManager
 
     void drawCurrentAutomaton()
     {
-        int[] pixels = automatonPanel.getPixelsForDrawing();
-        if(automaton instanceof Automaton2Dim)
+        synchronized (automatonPanel.LOCKER)
         {
-            Iterator<Cell> cellIterator = automaton.iteratorChangedOnly();
-            Cell cell = null;
-            while (cellIterator.hasNext())
+            int[] pixels = automatonPanel.getPixelsForDrawing();
+
+            if (automaton instanceof Automaton2Dim)
             {
-                cell = cellIterator.next();
-                Coords2D coords = (Coords2D) cell.getCoords();
-                pixels[coords.getY() * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
+                Iterator<Cell> cellIterator = automaton.iteratorChangedOnly();
+                Cell cell = null;
+                while (cellIterator.hasNext())
+                {
+                    cell = cellIterator.next();
+                    Coords2D coords = (Coords2D) cell.getCoords();
+                    pixels[coords.getY() * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
+                }
             }
         }
-
-        automatonPanel.releaseBitmapAfterDrawing();
     }
 
     private Automaton getAutomatonFromSettings()
