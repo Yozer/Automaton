@@ -13,6 +13,7 @@ import agh.edu.pl.gui.enums.*;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -94,13 +95,13 @@ public class AutomatonManager
         int[] pixels = automatonPanel.getPixelsForDrawing();
         if(automaton instanceof Automaton2Dim)
         {
-            for (Cell cell : automaton)
+            Iterator<Cell> cellIterator = automaton.iteratorChangedOnly();
+            Cell cell = null;
+            while (cellIterator.hasNext())
             {
-                if (cell.hasChanged())
-                {
-                    Coords2D coords = (Coords2D) cell.getCoords();
-                    pixels[coords.getY() * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
-                }
+                cell = cellIterator.next();
+                Coords2D coords = (Coords2D) cell.getCoords();
+                pixels[coords.getY() * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
             }
         }
 

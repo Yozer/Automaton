@@ -4,45 +4,38 @@ import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class OneDimensionalNeighborhood implements CellNeighborhood
 {
-    private int r;
     private boolean wrap;
-    private int width;
+    private int width = 2;
+    private final int r = 1;
 
     public OneDimensionalNeighborhood(boolean wrap, int width)
     {
-        this(1, wrap, width);
-    }
-    public OneDimensionalNeighborhood(int r, boolean wrap, int width)
-    {
-        this.r = r;
         this.wrap = wrap;
         this.width = width;
     }
     @Override
-    public void cellNeighbors(CellCoordinates cell, ArrayWrapper arrayWrapper)
+    public NeighborhoodArray cellNeighbors(CellCoordinates cell, NeighborhoodArray result)
     {
-        List<CellCoordinates> result = new ArrayList<>(2*r + 1);
-
+        result.setLength(0);
         Coords1D initalCoords = (Coords1D)cell;
 
-        int x = initalCoords.getX() - r;
+        int originalX = initalCoords.getX();
+        if(originalX - 1 >= 0)
+            result.push(originalX - 1);
+        else if(wrap)
+            result.push(width - 1);
 
-        for(int i = 0; i < 2*r + 1; i++)
-        {
-            if(x + i != initalCoords.getX())
-            {
-                Coords1D coords1D = WrapCoordinatesHelper.fixCoord(new Coords1D(x + i), wrap, width);
-                if(coords1D != null)
-                    result.add(coords1D);
-            }
-        }
+        if(originalX + 1 < width)
+            result.push(originalX + 1);
+        else if(wrap)
+            result.push(0);
+
+        return result;
     }
 
     public int getWidth()
@@ -61,8 +54,8 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
     }
 
     @Override
-    public ArrayWrapper createArray()
+    public NeighborhoodArray createArray()
     {
-        return null;
+        return new NeighborhoodArray(2*r);
     }
 }

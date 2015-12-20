@@ -4,9 +4,7 @@ import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class VonNeumanNeighborhood implements CellNeighborhood
 {
@@ -21,29 +19,54 @@ public class VonNeumanNeighborhood implements CellNeighborhood
         this.width = width;
         this.height = height;
     }
+    @Override
+    public NeighborhoodArray createArray()
+    {
+        return new NeighborhoodArray(2*r*(r+1));
+    }
 
     @Override
-    public void cellNeighbors(CellCoordinates cell, ArrayWrapper arrayWrapper)
+    public NeighborhoodArray cellNeighbors(CellCoordinates cell, NeighborhoodArray result)
     {
-        List<CellCoordinates> result = new ArrayList<>((2*r + 1)*(2*r + 1));
-
+        result.setLength(0);
         Coords2D initalCoords = (Coords2D)cell;
 
-        int x = initalCoords.getX();
-        int y = initalCoords.getY();
+        int xOriginal = initalCoords.getX();
+        int yOriginal = initalCoords.getY();
+        int limitX = xOriginal + r + 1;
+        int limitY = yOriginal + r + 1;
+        int xN;
+        int yN;
 
-        for(int i = x - r; i <= x + 2*r; i++)
+        for(int x = xOriginal - r; x < limitX; x++)
         {
-            for(int j = y - r; j <= y + 2*r; j++)
+            for(int y = yOriginal - r; y < limitY; y++)
             {
-                if(Math.abs(i - x) + Math.abs(j - y) <= r && (i != x || j != y))
+                if(Math.abs(x - xOriginal) + Math.abs(y - yOriginal) <= r && (x != xOriginal || y != yOriginal))
                 {
-                    Coords2D coords2D = WrapCoordinatesHelper.fixCoord(new Coords2D(i, j), wrap, width, height);
-                    if(coords2D != null)
-                        result.add(coords2D);
+                    if(wrap)
+                    {
+                        xN = x;
+                        yN = y;
+                        if (xN < 0 || xN >= width)
+                            xN = Math.floorMod(xN, width);
+                        if (yN < 0 || yN >= height)
+                            yN = Math.floorMod(yN, height);
+                        result.push(yN * width + xN);
+                    }
+                    else if(x < 0 || x >= width || y < 0 || y >= height)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        result.push(y * width + x);
+                    }
                 }
             }
         }
+
+        return result;
     }
 
     public int getHeight()
@@ -66,9 +89,4 @@ public class VonNeumanNeighborhood implements CellNeighborhood
         return r;
     }
 
-    @Override
-    public ArrayWrapper createArray()
-    {
-        return null;
-    }
 }

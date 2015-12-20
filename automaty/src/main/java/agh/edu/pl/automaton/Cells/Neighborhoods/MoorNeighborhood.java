@@ -4,11 +4,6 @@ package agh.edu.pl.automaton.cells.neighborhoods;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 public class MoorNeighborhood implements CellNeighborhood
 {
     private int r;
@@ -24,38 +19,53 @@ public class MoorNeighborhood implements CellNeighborhood
     }
 
     @Override
-    public ArrayWrapper createArray()
+    public NeighborhoodArray createArray()
     {
-        return new ArrayWrapper((2*r + 1)*(2*r + 1));
+        return new NeighborhoodArray((2*r + 1)*(2*r + 1) - 1);
     }
 
     @Override
-    public void cellNeighbors(CellCoordinates cell, ArrayWrapper result)
+    public NeighborhoodArray cellNeighbors(CellCoordinates cell, NeighborhoodArray result)
     {
         result.setLength(0);
         Coords2D initalCoords = (Coords2D)cell;
 
-        int x = initalCoords.getX() - r;
-        int y = initalCoords.getY() - r;
+        int xOriginal = initalCoords.getX();
+        int yOriginal = initalCoords.getY();
+        int limitX = xOriginal + r + 1;
+        int limitY = yOriginal + r + 1;
+        int xN;
+        int yN;
 
-        int xN, yN;
-        for(int i = 0; i < 2*r + 1; i++)
+        for(int x = xOriginal - r; x < limitX; x++)
         {
-            for(int j = 0; j < 2*r + 1; j++)
+            for(int y = yOriginal - r; y < limitY; y++)
             {
-                if(x + i != initalCoords.getX() || y + j != initalCoords.getY())
+                if(x != xOriginal || y != yOriginal)
                 {
-                    xN = x + i;
-                    yN = y + j;
-                    if (xN < 0 || xN >= width )
-                        xN = Math.floorMod(xN, width);
-                    if(yN < 0 || yN >= height)
-                        yN = Math.floorMod(yN, height) ;
-
-                    result.push(yN * width + xN);
+                    if(wrap)
+                    {
+                        xN = x;
+                        yN = y;
+                        if (xN < 0 || xN >= width)
+                            xN = Math.floorMod(xN, width);
+                        if (yN < 0 || yN >= height)
+                            yN = Math.floorMod(yN, height);
+                        result.push(yN * width + xN);
+                    }
+                    else if(x < 0 || x >= width || y < 0 || y >= height)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        result.push(y * width + x);
+                    }
                 }
             }
         }
+
+        return result;
     }
 
     public int getHeight()

@@ -2,13 +2,10 @@ package agh.edu.pl.automaton.automata;
 
 import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
-import agh.edu.pl.automaton.cells.neighborhoods.ArrayWrapper;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
-
-import java.util.List;
 
 public class WireWorld extends Automaton2Dim
 {
@@ -18,7 +15,7 @@ public class WireWorld extends Automaton2Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, ArrayWrapper neighborsStates)
+    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates)
     {
         WireElectronState state = ((WireElectronState)cell.getState());
 

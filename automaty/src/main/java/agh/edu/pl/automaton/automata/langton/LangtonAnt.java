@@ -1,13 +1,10 @@
 package agh.edu.pl.automaton.automata.langton;
 
-import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
-import agh.edu.pl.automaton.cells.neighborhoods.ArrayWrapper;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
-import agh.edu.pl.automaton.cells.states.BinaryAntState;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
@@ -58,7 +55,7 @@ public class LangtonAnt extends Automaton2Dim
     }*/
 
     @Override
-    protected CellState nextCellState(Cell cell, ArrayWrapper neighborsStates)
+    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates)
     {
 //        Optional<Ant> anyAnt = ants.stream().filter(t -> t.getCoordinates().equals(cell.getCoords())).findAny();
 //

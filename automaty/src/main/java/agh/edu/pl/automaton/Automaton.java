@@ -2,12 +2,11 @@ package agh.edu.pl.automaton;
 
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
-import agh.edu.pl.automaton.cells.neighborhoods.ArrayWrapper;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
@@ -21,9 +20,10 @@ public abstract class Automaton implements Iterable<Cell>
     private Cell[] nextGenerationCells;
     private int[] currentChangeList;
     private int[] nextGenerationChangeList;
-    
     private AtomicBoolean[] currentSet;
     private AtomicBoolean[] nextGenerationSet;
+
+    private final NeighborhoodArray[] neighborhoodArrays;
 
     private int currentChangeListSize;
     private AtomicInteger nextGenerationChangeListSize = new AtomicInteger(0);
@@ -36,7 +36,6 @@ public abstract class Automaton implements Iterable<Cell>
     private final ForkJoinPool threadPool;
     private final AtomicInteger currentAliveCount = new AtomicInteger(0);
     private final AtomicInteger nextGenerationAliveCount = new AtomicInteger(0);
-    private final ArrayWrapper[] arrayWrappers;
 
     private boolean isInitiated = false;
 
@@ -56,7 +55,7 @@ public abstract class Automaton implements Iterable<Cell>
 
         processorsCount = Runtime.getRuntime().availableProcessors() == 1 ? 1 : Runtime.getRuntime().availableProcessors() - 1;
         threadPool = new ForkJoinPool(processorsCount);
-        arrayWrappers = new ArrayWrapper[processorsCount];
+        neighborhoodArrays = new NeighborhoodArray[processorsCount];
     }
 
     public int getAliveCount()
@@ -105,6 +104,10 @@ public abstract class Automaton implements Iterable<Cell>
         }
         return new CellIterator();
     }
+    public Iterator<Cell> iteratorChangedOnly()
+    {
+        return new CellIteratorChangedOnly();
+    }
 
     public void calculateNextState()
     {
@@ -118,7 +121,7 @@ public abstract class Automaton implements Iterable<Cell>
             initAutomaton();
             isInitiated = true;
         }
-        ArrayWrapper arrayWrapper = arrayWrappers[0];
+        NeighborhoodArray neighborhoodArray = neighborhoodArrays[0];
 
         for (CellCoordinates coords : structure.keySet())
         {
@@ -138,10 +141,10 @@ public abstract class Automaton implements Iterable<Cell>
             {
                 currentChangeList[currentChangeListSize++] = index;
             }
-            neighborhoodStrategy.cellNeighbors(coords, arrayWrapper);
-            for (int i = 0; i < arrayWrapper.getLength(); ++i)
+            neighborhoodStrategy.cellNeighbors(coords, neighborhoodArray);
+            for (int i = 0; i < neighborhoodArray.getLength(); ++i)
             {
-                int indexN = arrayWrapper.get(i);
+                int indexN = neighborhoodArray.get(i);
                 if (!currentSet[index].getAndSet(true))
                 {
                     currentChangeList[currentChangeListSize++] = indexN;
@@ -158,7 +161,7 @@ public abstract class Automaton implements Iterable<Cell>
             isInitiated = true;
         }
 
-        ArrayWrapper arrayWrapper = arrayWrappers[0];
+        NeighborhoodArray neighborhoodArray = neighborhoodArrays[0];
         for (Cell cell : structure)
         {
             int index = getCoordsIndex(cell.getCoords());
@@ -176,10 +179,10 @@ public abstract class Automaton implements Iterable<Cell>
             {
                 currentChangeList[currentChangeListSize++] = index;
             }
-            neighborhoodStrategy.cellNeighbors(cell.getCoords(), arrayWrapper);
-            for (int i = 0; i < arrayWrapper.getLength(); ++i)
+            neighborhoodStrategy.cellNeighbors(cell.getCoords(), neighborhoodArray);
+            for (int i = 0; i < neighborhoodArray.getLength(); ++i)
             {
-                int indexN = arrayWrapper.get(i);
+                int indexN = neighborhoodArray.get(i);
                 if (!currentSet[index].getAndSet(true))
                 {
                     currentChangeList[currentChangeListSize++] = indexN;
@@ -190,14 +193,14 @@ public abstract class Automaton implements Iterable<Cell>
 
     private void simulateSlice(int from, int to, int procId)
     {
-        ArrayWrapper arrayWrapper = arrayWrappers[procId];
+        NeighborhoodArray neighborhoodArray = neighborhoodArrays[procId];
         for(int j = from; j < to; j++)
         {
             int cellIndex = currentChangeList[j];
             Cell cell = currentCells[cellIndex];
 
-            neighborhoodStrategy.cellNeighbors(cell.getCoords(), arrayWrapper);
-            CellState newState = nextCellState(cell, arrayWrapper);
+            neighborhoodStrategy.cellNeighbors(cell.getCoords(), neighborhoodArray);
+            CellState newState = nextCellState(cell, neighborhoodArray);
 
             Cell nextGenerationCell = setNextGenerationCellState(cell, newState);
             if(nextGenerationCell.hasChanged())
@@ -212,9 +215,9 @@ public abstract class Automaton implements Iterable<Cell>
                     nextGenerationChangeList[nextGenerationChangeListSize.getAndIncrement()] = cellIndex;
                 }
 
-                for(int i = 0; i < arrayWrapper.getLength(); i++)
+                for(int i = 0; i < neighborhoodArray.getLength(); i++)
                 {
-                    int index = arrayWrapper.get(i);
+                    int index = neighborhoodArray.get(i);
 
                     if (!nextGenerationSet[index].getAndSet(true))
                     {
@@ -228,7 +231,7 @@ public abstract class Automaton implements Iterable<Cell>
 
     private int getStep(int processorsCount, int arraySize)
     {
-        if(arraySize < 10000)
+        if(arraySize < 500)
             return arraySize;
 
         return (int) (arraySize / ((float) processorsCount));
@@ -277,9 +280,10 @@ public abstract class Automaton implements Iterable<Cell>
             nextGenerationSet[i] = new AtomicBoolean(false);
         }
 
+        // get buffers from neighborhood
         for(int i = 0; i < processorsCount; i++)
         {
-            arrayWrappers[i] = neighborhoodStrategy.createArray();
+            neighborhoodArrays[i] = neighborhoodStrategy.createArray();
         }
 
         // iterate over all coordinates and get initial state for each cell
@@ -300,7 +304,7 @@ public abstract class Automaton implements Iterable<Cell>
         }
     }
 
-    protected abstract CellState nextCellState(Cell cell, ArrayWrapper neighborsStates);
+    protected abstract CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates);
     protected abstract boolean hasNextCoordinates(CellCoordinates coords);
     protected abstract CellCoordinates initialCoordinates();
     protected abstract CellCoordinates nextCoordinates();
@@ -316,6 +320,28 @@ public abstract class Automaton implements Iterable<Cell>
     protected CellState getCellStateByIndex(int i)
     {
         return currentCells[i].getState();
+    }
+
+    private class CellIteratorChangedOnly implements Iterator<Cell>
+    {
+        int i = -1;
+        @Override
+        public boolean hasNext()
+        {
+            return i < currentChangeListSize - 1;
+        }
+
+        @Override
+        public Cell next()
+        {
+            return currentCells[currentChangeList[++i]];
+        }
+        @Override
+        public void remove()
+        {
+            throw new UnsupportedOperationException("remove method not implemented");
+        }
+
     }
 
     private class CellIterator implements java.util.Iterator<Cell>

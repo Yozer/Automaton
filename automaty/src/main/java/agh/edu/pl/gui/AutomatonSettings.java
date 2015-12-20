@@ -11,7 +11,7 @@ public class AutomatonSettings
     private float cellSize = 5;
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLive;
     private int simulationDelay = 0;
-    private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2, 3));
+    private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2,3));
     private Set<Integer> comeAliveFactors= new HashSet<>(Arrays.asList(3));
     private CellNeighborhoodType neighborhoodType = CellNeighborhoodType.Moore;
     private int oneDimRule;

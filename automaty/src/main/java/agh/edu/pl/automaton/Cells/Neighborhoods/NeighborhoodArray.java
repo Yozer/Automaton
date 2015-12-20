@@ -1,14 +1,11 @@
 package agh.edu.pl.automaton.cells.neighborhoods;
 
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
-import agh.edu.pl.automaton.cells.coordinates.Coords2D;
-
-public class ArrayWrapper
+public class NeighborhoodArray
 {
     private int[] array;
     private int length = 0;
 
-    public ArrayWrapper(int size)
+    public NeighborhoodArray(int size)
     {
         array = new int[size];
     }

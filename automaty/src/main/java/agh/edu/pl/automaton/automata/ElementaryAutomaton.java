@@ -3,8 +3,7 @@ package agh.edu.pl.automaton.automata;
 import agh.edu.pl.automaton.Automaton1Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.*;
-import agh.edu.pl.automaton.cells.neighborhoods.ArrayWrapper;
-import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
 import agh.edu.pl.automaton.cells.neighborhoods.OneDimensionalNeighborhood;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
@@ -31,15 +30,15 @@ public class ElementaryAutomaton extends Automaton1Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, ArrayWrapper neighborsStates)
+    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates)
     {
-        List<Coords1D> coords1Ds = (List)neighborsStates;
         BinaryState[] neighborStates = new BinaryState[3];
         neighborStates[1] = (BinaryState) cell.getState();
 
-        if(coords1Ds.size() == 1)
+        int x = neighborsStates.get(0);
+        if(neighborsStates.getLength() == 1)
         {
-            if(coords1Ds.get(0).getX() < ((Coords1D) cell.getCoords()).getX())
+            if(x < ((Coords1D) cell.getCoords()).getX())
             {
                 neighborStates[0] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
                 neighborStates[2] = BinaryState.DEAD;
@@ -52,7 +51,8 @@ public class ElementaryAutomaton extends Automaton1Dim
         }
         else
         {
-            if(coords1Ds.get(0).getX() > coords1Ds.get(1).getX())
+            int x2 = neighborsStates.get(1);
+            if(x > x2)
             {
                 neighborStates[0] = (BinaryState) getCellStateByIndex(neighborsStates.get(1));
                 neighborStates[2] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
