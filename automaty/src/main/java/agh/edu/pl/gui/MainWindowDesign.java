@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Dominik on 2015-12-10.
  */
-abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener
+abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener, MouseListener
 {
     protected AutomatonPanel automatonPanel;
 
@@ -178,6 +179,10 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         for(StructureInfo structureInfo : StructureLoader.getAvalibleStructures(selectedAutomaton))
             structuresList.addItem(structureInfo);
     }
+    protected StructureInfo getSelectedStructure()
+    {
+        return (StructureInfo) structuresList.getSelectedItem();
+    }
 
     protected void setGenerationCountLabel(int count)
     {
@@ -202,6 +207,16 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         onePassTimeLabel.setText("Czas jednego przejścia: " + time);
     }
 
+    protected AutomatonState getCurrentState()
+    {
+        return automatonState;
+    }
+    protected AutomatonState getRememberedState()
+    {
+        if(getCurrentState() != AutomatonState.INSERTING_STRUCT)
+            throw new IllegalArgumentException("Cannot get remembered state if current is different that inserting struct");
+        return rememberState;
+    }
     protected void setStatePaused()
     {
         automatonState = AutomatonState.PAUSED;

@@ -4,16 +4,14 @@ package agh.edu.pl.gui;
 import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.logic.AutomatonManager;
 import agh.edu.pl.gui.structures.StructureInfo;
-import agh.edu.pl.gui.structures.StructureLoader;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class MainWindow extends MainWindowDesign
 {
@@ -28,6 +26,8 @@ public class MainWindow extends MainWindowDesign
     {
         super();
         automaton = new AutomatonManager(automatonPanel);
+        automatonPanel.addMouseListener(this);
+
         timerStatistics = new Timer(statisticUpdateEvery, updateStatistics());
         timerStatistics.setRepeats(true);
         timerStatistics.setCoalesce(true);
@@ -54,10 +54,14 @@ public class MainWindow extends MainWindowDesign
         setStateBusy();
         automaton.start(this::setStateRunning);
     }
-    private void insertStructure()
+    private void insertStructure(StructureInfo structureInfo)
     {
-        setStateBusy();
-        automaton.insertPrimeCounter(this::setStatePaused);
+        // TODO check if it has to be done in different thread
+        if(getRememberedState() == AutomatonState.RUNNING)
+            automaton.pause(this::setStatePaused);
+        automaton.insertStructure(structureInfo);
+        if(getRememberedState() == AutomatonState.RUNNING)
+            automaton.start(this::setStateRunning);
     }
     private ActionListener updateStatistics()
     {
@@ -132,6 +136,41 @@ public class MainWindow extends MainWindowDesign
                 automaton.setSimulationDelay(slider.getValue());
             }
         }
+    }
+
+    // fires when clicked on automaton panel
+    @Override
+    public void mouseClicked(MouseEvent e)
+    {
+        if(getCurrentState() == AutomatonState.INSERTING_STRUCT)
+        {
+            StructureInfo structureInfo = getSelectedStructure();
+            insertStructure(structureInfo);
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e)
+    {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e)
+    {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e)
+    {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e)
+    {
+
     }
 }
 

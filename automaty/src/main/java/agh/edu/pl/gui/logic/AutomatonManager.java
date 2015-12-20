@@ -10,9 +10,12 @@ import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.*;
 import agh.edu.pl.gui.*;
 import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.structures.StructureInfo;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -61,10 +64,28 @@ public class AutomatonManager
         SwingWorker swingWorker = new PauseSwingWorker(this, invokeAfter);
         swingWorker.execute();
     }
-    public void insertPrimeCounter(Runnable invokeAfter)
+    public void insertStructure(StructureInfo structureInfo)
     {
-        SwingWorker swingWorker = new InsertPrimeSwingWorker(this, invokeAfter);
-        swingWorker.execute();
+//        SwingWorker swingWorker = new InsertPrimeSwingWorker(this, invokeAfter);
+//        swingWorker.execute();
+        List<Cell> primeStructure = new ArrayList<>(structureInfo.getWidth() * structureInfo.getHeight());
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 5)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 4)));
+        primeStructure.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(7, 6)));
+        primeStructure.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(8, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(8, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 6)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 4)));
+        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(12, 5)));
+        automaton.insertStructure(primeStructure);
+        drawCurrentAutomaton();
+        automatonPanel.repaint();
     }
 
     void init()
