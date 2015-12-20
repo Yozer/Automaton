@@ -1,5 +1,6 @@
 package agh.edu.pl.gui.logic;
 
+import agh.edu.pl.Main;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.BinaryState;
@@ -135,10 +136,11 @@ class InsertPrimeSwingWorker extends SwingWorker<Void, Void>
         primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 3)));*/
 
         BufferedReader reader = null;
-        File file = new File("primes2");
+        InputStream stream = Main.class.getClassLoader().getResourceAsStream("primes");
+        //File file = new File(get);
         try
         {
-            reader = new BufferedReader(new FileReader(file));
+            reader = new BufferedReader(new InputStreamReader(stream));
             String line;
             int x = 50;
             while ((line = reader.readLine()) != null)
