@@ -15,7 +15,8 @@ import java.util.Objects;
 
 public class MainWindow extends MainWindowDesign
 {
-    // TODO make something with enabling/disabling btns
+    // TODO check why diod isn't simulating at max speed with prime generator
+    // TODO got hang one time - look's like btn's didn't switched after pause
 
     private final Timer timerStatistics;
     private final int statisticUpdateEvery = 500; // ms
@@ -54,14 +55,16 @@ public class MainWindow extends MainWindowDesign
         setStateBusy();
         automaton.start(this::setStateRunning);
     }
-    private void insertStructure(StructureInfo structureInfo)
+    private void insertStructure(StructureInfo structureInfo, int x, int y)
     {
         // TODO check if it has to be done in different thread
         if(getRememberedState() == AutomatonState.RUNNING)
-            automaton.pause(this::setStatePaused);
-        automaton.insertStructure(structureInfo);
+            automaton.pause(() -> {});
+
+        automaton.insertStructure(structureInfo, x, y);
+
         if(getRememberedState() == AutomatonState.RUNNING)
-            automaton.start(this::setStateRunning);
+            automaton.start(() -> {});
     }
     private ActionListener updateStatistics()
     {
@@ -145,7 +148,7 @@ public class MainWindow extends MainWindowDesign
         if(getCurrentState() == AutomatonState.INSERTING_STRUCT)
         {
             StructureInfo structureInfo = getSelectedStructure();
-            insertStructure(structureInfo);
+            insertStructure(structureInfo, e.getX(), e.getY());
         }
     }
 

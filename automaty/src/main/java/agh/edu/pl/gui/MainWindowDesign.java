@@ -149,7 +149,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         insertStructButton.addActionListener(this);
         navigationButtonsPanel.add(insertStructButton);
 
-        settingsPanel.add(navigationButtonsPanel);
+
         // ------------------------------------------------------------------------ \\
         JPanel statisticsPanel = new JPanel(new GridLayout(4,2));
         statisticsPanel.setName("statisticPanel");
@@ -168,6 +168,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         statisticsPanel.add(onePassTimeLabel);
         statisticsPanel.add(totalCellsLabel);
         settingsPanel.add(statisticsPanel);
+        settingsPanel.add(navigationButtonsPanel);
         // ------------------------------------------------------------------------ \\
 
         add(mainPanel);
@@ -240,6 +241,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         automatonState = AutomatonState.INSERTING_STRUCT;
         disableSettingsPanel();
         insertStructButton.setEnabled(true);
+        structuresList.setEnabled(true);
         insertStructButton.setText("Anuluj wstawianie");
         insertStructButton.setActionCommand(Commands.CANCEL_INSERTING_STRUCT.toString());
     }

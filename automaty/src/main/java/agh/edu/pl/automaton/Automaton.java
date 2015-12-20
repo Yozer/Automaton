@@ -150,7 +150,7 @@ public abstract class Automaton implements Iterable<Cell>
             for (int i = 0; i < neighborhoodArray.getLength(); ++i)
             {
                 int indexN = neighborhoodArray.get(i);
-                if (!currentSet[index].getAndSet(true))
+                if (!currentSet[indexN].getAndSet(true))
                 {
                     currentChangeList[currentChangeListSize++] = indexN;
                 }
@@ -185,10 +185,11 @@ public abstract class Automaton implements Iterable<Cell>
                 currentChangeList[currentChangeListSize++] = index;
             }
             neighborhoodStrategy.cellNeighbors(cell.getCoords(), neighborhoodArray);
+
             for (int i = 0; i < neighborhoodArray.getLength(); ++i)
             {
                 int indexN = neighborhoodArray.get(i);
-                if (!currentSet[index].getAndSet(true))
+                if (!currentSet[indexN].getAndSet(true))
                 {
                     currentChangeList[currentChangeListSize++] = indexN;
                 }

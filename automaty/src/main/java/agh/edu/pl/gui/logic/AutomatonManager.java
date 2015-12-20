@@ -11,6 +11,7 @@ import agh.edu.pl.automaton.satefactory.*;
 import agh.edu.pl.gui.*;
 import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.structures.StructureInfo;
+import agh.edu.pl.gui.structures.WireWorldStructureLoader;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -64,26 +65,20 @@ public class AutomatonManager
         SwingWorker swingWorker = new PauseSwingWorker(this, invokeAfter);
         swingWorker.execute();
     }
-    public void insertStructure(StructureInfo structureInfo)
+    public void insertStructure(StructureInfo structureInfo, int x, int y)
     {
 //        SwingWorker swingWorker = new InsertPrimeSwingWorker(this, invokeAfter);
 //        swingWorker.execute();
-        List<Cell> primeStructure = new ArrayList<>(structureInfo.getWidth() * structureInfo.getHeight());
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 5)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 4)));
-        primeStructure.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(7, 6)));
-        primeStructure.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(8, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(8, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(12, 5)));
-        automaton.insertStructure(primeStructure);
+
+        Coords2D atPoint = new Coords2D((int)(x / settings.getCellSize()), (int)(y / settings.getCellSize()));
+        if(atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
+            return;
+
+        List<Cell> structure = null;
+        if(settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
+            structure = new WireWorldStructureLoader().getStructure(structureInfo, atPoint);
+
+        automaton.insertStructure(structure);
         drawCurrentAutomaton();
         automatonPanel.repaint();
     }

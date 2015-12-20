@@ -2,6 +2,7 @@ package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.Main;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 
 import java.io.*;
@@ -54,5 +55,5 @@ public abstract class StructureLoader
 
         return structureInfos;
     }
-    public abstract List<Cell> getStructure(StructureInfo structureInfo);
+    public abstract List<Cell> getStructure(StructureInfo structureInfo, Coords2D startPoint);
 }

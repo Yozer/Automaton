@@ -1,6 +1,7 @@
 package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class GameOfLiveStructureLoader extends StructureLoader
 {
     @Override
-    public List<Cell> getStructure(StructureInfo structureInfo)
+    public List<Cell> getStructure(StructureInfo structureInfo, Coords2D startPoint)
     {
         return null;
     }
