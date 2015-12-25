@@ -15,8 +15,8 @@ import java.util.Objects;
 
 public class MainWindow extends MainWindowDesign
 {
-    // TODO check why diod isn't simulating at max speed with prime generator
-    // TODO got hang one time - look's like btn's didn't switched after pause
+    // TODO refactor neighborhood
+    // TODO make drawing 60fps
 
     private final Timer timerStatistics;
     private final int statisticUpdateEvery = 500; // ms
@@ -58,13 +58,7 @@ public class MainWindow extends MainWindowDesign
     private void insertStructure(StructureInfo structureInfo, int x, int y)
     {
         // TODO check if it has to be done in different thread
-        if(getRememberedState() == AutomatonState.RUNNING)
-            automaton.pause(() -> {});
-
         automaton.insertStructure(structureInfo, x, y);
-
-        if(getRememberedState() == AutomatonState.RUNNING)
-            automaton.start(() -> {});
     }
     private ActionListener updateStatistics()
     {
@@ -145,17 +139,17 @@ public class MainWindow extends MainWindowDesign
     @Override
     public void mouseClicked(MouseEvent e)
     {
-        if(getCurrentState() == AutomatonState.INSERTING_STRUCT)
-        {
-            StructureInfo structureInfo = getSelectedStructure();
-            insertStructure(structureInfo, e.getX(), e.getY());
-        }
+
     }
 
     @Override
     public void mousePressed(MouseEvent e)
     {
-
+        if(getCurrentState() == AutomatonState.INSERTING_STRUCT)
+        {
+            StructureInfo structureInfo = getSelectedStructure();
+            insertStructure(structureInfo, e.getX(), e.getY());
+        }
     }
 
     @Override

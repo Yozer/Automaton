@@ -165,7 +165,7 @@ public abstract class Automaton implements Iterable<Cell>
             initAutomaton();
             isInitiated = true;
         }
-
+        System.out.println("Wstawiam: " + currentChangeListSize);
         NeighborhoodArray neighborhoodArray = neighborhoodArrays[0];
         for (Cell cell : structure)
         {
@@ -195,6 +195,8 @@ public abstract class Automaton implements Iterable<Cell>
                 }
             }
         }
+
+        System.out.println("Wstawiłem: " + currentChangeListSize);
     }
 
     private void simulateSlice(int from, int to, int procId)

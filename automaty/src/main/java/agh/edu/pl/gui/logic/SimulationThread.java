@@ -145,5 +145,10 @@ class SimulationThread implements Runnable
             PAUSE_MONITOR.notify();
         }
     }
+
+    public boolean isRunning()
+    {
+        return !pauseThreadFlag;
+    }
 }
 

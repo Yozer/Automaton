@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-// TODO add adding structures
 
 public class AutomatonManager
 {
@@ -78,9 +77,16 @@ public class AutomatonManager
         if(settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
             structure = new WireWorldStructureLoader().getStructure(structureInfo, atPoint);
 
+        boolean isRunning = simulationThread.isRunning();
+        if(isRunning)
+            pause();
+
         automaton.insertStructure(structure);
         drawCurrentAutomaton();
         automatonPanel.repaint();
+
+        if(isRunning)
+            start();
     }
 
     void init()
