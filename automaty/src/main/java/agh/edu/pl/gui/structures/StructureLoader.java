@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public abstract class StructureLoader
 {
-    public static List<StructureInfo> getAvalibleStructures(PossibleAutomaton automaton)
+    public static List<StructureInfo> getAvailableStructures(PossibleAutomaton automaton)
     {
         String directoryName = "structures" + File.separator;
         List<StructureInfo> structureInfos = new ArrayList<>();

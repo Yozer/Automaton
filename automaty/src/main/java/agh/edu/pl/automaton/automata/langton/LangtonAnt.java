@@ -5,6 +5,7 @@ import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
+import agh.edu.pl.automaton.cells.states.BinaryAntState;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
@@ -12,6 +13,7 @@ import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LangtonAnt extends Automaton2Dim
 {
@@ -36,49 +38,40 @@ public class LangtonAnt extends Automaton2Dim
     public List<Ant> getAnts()
     {
         List<Ant> antsList = new ArrayList<>(ants.size());
-        for(Ant ant : ants)
-        {
-            antsList.add(ant);
-        }
-
+        antsList.addAll(ants.stream().collect(Collectors.toList()));
         return antsList;
     }
-
-    /*@Override
-    protected Automaton newInstance(CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
-    {
-        LangtonAnt langtonAnt = new LangtonAnt(getWidth(), getHeight(), cellStateFactory, cellNeighborhood);
-        for(Ant ant : ants)
-            langtonAnt.ants.add(ant);
-
-        return langtonAnt;
-    }*/
 
     @Override
     protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates)
     {
-//        Optional<Ant> anyAnt = ants.stream().filter(t -> t.getCoordinates().equals(cell.getCoords())).findAny();
-//
-//        if(!anyAnt.isPresent())
-//            return cell.getState();
-//
-//        Ant ant = anyAnt.get();
-//        BinaryAntState state = (BinaryAntState) cell.getState();
-//
-//        if(state.getBinaryState() == BinaryState.ALIVE)
-//        {
-//            ant.rotateLeft();
-//            state = new BinaryAntState(BinaryState.DEAD);
-//        }
-//        else if(state.getBinaryState() == BinaryState.DEAD)
-//        {
-//            ant.rotateRight();
-//            state = new BinaryAntState(BinaryState.ALIVE, ant.getAntColor());
-//        }
-//
-//        ant.move();
-//        return state;
-        return BinaryState.ALIVE;
+        Ant ant = null;
+        for(Ant a : ants)
+        {
+            if(a.getCoordinates().equals(cell.getCoords()))
+            {
+                ant = a;
+                break;
+            }
+        }
+        if(ant == null)
+            return cell.getState();
+
+        BinaryAntState state = (BinaryAntState) cell.getState();
+
+        if(state.getBinaryState() == BinaryState.ALIVE)
+        {
+            ant.rotateLeft();
+            state = new BinaryAntState(BinaryState.DEAD);
+        }
+        else if(state.getBinaryState() == BinaryState.DEAD)
+        {
+            ant.rotateRight();
+            state = new BinaryAntState(BinaryState.ALIVE, ant.getAntColor());
+        }
+
+        ant.move();
+        return state;
     }
 
     @Override
@@ -98,7 +91,5 @@ public class LangtonAnt extends Automaton2Dim
     {
         return newState == BinaryState.DEAD && oldState == BinaryState.ALIVE;
     }
-
-
 }
 

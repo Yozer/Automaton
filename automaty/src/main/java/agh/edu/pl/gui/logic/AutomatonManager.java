@@ -2,6 +2,8 @@ package agh.edu.pl.gui.logic;
 
 import agh.edu.pl.automaton.*;
 import agh.edu.pl.automaton.automata.*;
+import agh.edu.pl.automaton.automata.langton.Ant;
+import agh.edu.pl.automaton.automata.langton.AntState;
 import agh.edu.pl.automaton.automata.langton.LangtonAnt;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
@@ -10,12 +12,13 @@ import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.*;
 import agh.edu.pl.gui.*;
 import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.structures.LangtonAntStructureLoader;
 import agh.edu.pl.gui.structures.StructureInfo;
 import agh.edu.pl.gui.structures.WireWorldStructureLoader;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -66,9 +69,6 @@ public class AutomatonManager
     }
     public void insertStructure(StructureInfo structureInfo, int x, int y)
     {
-//        SwingWorker swingWorker = new InsertPrimeSwingWorker(this, invokeAfter);
-//        swingWorker.execute();
-
         Coords2D atPoint = new Coords2D((int)(x / settings.getCellSize()), (int)(y / settings.getCellSize()));
         if(atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
             return;
@@ -82,6 +82,29 @@ public class AutomatonManager
             pause();
 
         automaton.insertStructure(structure);
+
+        drawCurrentAutomaton();
+        automatonPanel.repaint();
+
+        if(isRunning)
+            start();
+
+    }
+
+    public void insertAnt(StructureInfo structureInfo, int x, int y, Color antColor)
+    {
+        Coords2D atPoint = new Coords2D((int)(x / settings.getCellSize()), (int)(y / settings.getCellSize()));
+        if(atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
+            return;
+
+        LangtonAntStructureLoader.AntInfo ant = new LangtonAntStructureLoader().loadAnt(structureInfo, atPoint);
+
+        boolean isRunning = simulationThread.isRunning();
+        if(isRunning)
+            pause();
+
+        ((LangtonAnt) automaton).addAnt(ant.getAntCoords(), antColor, ant.getAntState());
+        automaton.insertStructure(Collections.singletonList(new Cell(new BinaryAntState(BinaryState.DEAD), atPoint)));
         drawCurrentAutomaton();
         automatonPanel.repaint();
 
@@ -134,6 +157,14 @@ public class AutomatonManager
                     pixels[coords.getY() * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
                 }
             }
+            if(settings.getSelectedAutomaton() == PossibleAutomaton.Langton)
+            {
+                LangtonAnt langtonAnt = ((LangtonAnt) automaton);
+                for (Ant ant : langtonAnt.getAnts())
+                {
+                    pixels[ant.getCoordinates().getY() * settings.getWidth() + ant.getCoordinates().getX()] = Color.YELLOW.getRGB();
+                }
+            }
         }
     }
 
@@ -164,7 +195,7 @@ public class AutomatonManager
         else if(settings.getSelectedAutomaton() == PossibleAutomaton.Langton)
         {
             UniformStateFactory stateFactory = new UniformStateFactory(new BinaryAntState(BinaryState.DEAD));
-            return new LangtonAnt(settings.getWidth(), settings.getHeight(), stateFactory, neighborhood);
+            return  new LangtonAnt(settings.getWidth(), settings.getHeight(), stateFactory, neighborhood);
         }
         return null;
     }
@@ -240,6 +271,11 @@ public class AutomatonManager
     public int getDelayFromSettings()
     {
         return this.simulationDelay.get();
+    }
+
+    public PossibleAutomaton getCurrentAutomatonType()
+    {
+        return settings.getSelectedAutomaton();
     }
 
 

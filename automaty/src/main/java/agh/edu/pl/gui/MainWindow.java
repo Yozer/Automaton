@@ -7,6 +7,7 @@ import agh.edu.pl.gui.structures.StructureInfo;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -58,7 +59,10 @@ public class MainWindow extends MainWindowDesign
     private void insertStructure(StructureInfo structureInfo, int x, int y)
     {
         // TODO check if it has to be done in different thread
-        automaton.insertStructure(structureInfo, x, y);
+        if(automaton.getCurrentAutomatonType() == PossibleAutomaton.Langton)
+            automaton.insertAnt(structureInfo, x, y, getColorFromChooser());
+        else
+            automaton.insertStructure(structureInfo, x, y);
     }
     private ActionListener updateStatistics()
     {
@@ -84,6 +88,10 @@ public class MainWindow extends MainWindowDesign
             JRadioButton btn = (JRadioButton) e.getSource();
             PossibleAutomaton selectedAutomaton = Arrays.stream(PossibleAutomaton.values()).filter(t -> Objects.equals(t.toString(), btn.getText())).findAny().get();
             automaton.setSelectedAutomaton(selectedAutomaton);
+            if(selectedAutomaton == PossibleAutomaton.Langton)
+                showColorChooser();
+            else
+                hideColorChooser();
 
             setStructureList(selectedAutomaton);
             initAutomaton();

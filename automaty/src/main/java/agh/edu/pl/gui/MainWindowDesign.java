@@ -4,6 +4,7 @@ import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.structures.StructureInfo;
 import agh.edu.pl.gui.structures.StructureLoader;
 import com.horstmann.corejava.GBC;
+import javafx.scene.control.ColorPicker;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,8 +13,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Dominik on 2015-12-10.
@@ -28,6 +27,9 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
     private JComboBox<StructureInfo> structuresList;
     private JButton insertStructButton;
+
+    private JButton colorPicker;
+    private Color choosedColor = Color.RED;
 
     private ArrayList<Component> disabledWhenRunning = new ArrayList<>();
     private ArrayList<Component> disabledWhenNotRunning= new ArrayList<>();
@@ -112,7 +114,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         slider.addChangeListener(this);
         settingsPanel.add(slider);
         // ------------------------------------------------------------------------ \\
-        JPanel navigationButtonsPanel = new JPanel(new GridLayout(3, 2));
+        JPanel navigationButtonsPanel = new JPanel(new GridLayout(4, 2));
         JButton startButton = new JButton("Start");
         startButton.setActionCommand(Commands.START_AUTOMATON.toString());
         startButton.addActionListener(this);
@@ -149,6 +151,16 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         insertStructButton.addActionListener(this);
         navigationButtonsPanel.add(insertStructButton);
 
+        colorPicker = new JButton("Wybierz kolor");
+        colorPicker.setVisible(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.Langton);
+        colorPicker.addActionListener(e ->
+        {
+            Color c = JColorChooser.showDialog(null, "Wybierz kolor", Color.RED);
+            if(c != null)
+                choosedColor = c;
+        });
+        navigationButtonsPanel.add(colorPicker);
+
 
         // ------------------------------------------------------------------------ \\
         JPanel statisticsPanel = new JPanel(new GridLayout(4,2));
@@ -177,7 +189,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     protected void setStructureList(PossibleAutomaton selectedAutomaton)
     {
         structuresList.removeAllItems();
-        for(StructureInfo structureInfo : StructureLoader.getAvalibleStructures(selectedAutomaton))
+        for(StructureInfo structureInfo : StructureLoader.getAvailableStructures(selectedAutomaton))
             structuresList.addItem(structureInfo);
     }
     protected StructureInfo getSelectedStructure()
@@ -253,6 +265,18 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
             setStatePaused();
         else if(rememberState == AutomatonState.RUNNING)
             setStateRunning();
+    }
+    protected void showColorChooser()
+    {
+        colorPicker.setVisible(true);
+    }
+    protected void hideColorChooser()
+    {
+        colorPicker.setVisible(false);
+    }
+    protected Color getColorFromChooser()
+    {
+        return choosedColor;
     }
 
     private void enableListOfComponents(ArrayList<Component> componentList) { switchState(componentList, true);}

@@ -14,7 +14,7 @@ class SimulationThread implements Runnable
     private final Object DRAWING_MONITOR = new Object();
     private final AutomatonManager manager;
 
-    private AtomicBoolean isDrawning = new AtomicBoolean();
+    private AtomicBoolean isDrawing = new AtomicBoolean();
     private volatile boolean pauseThreadFlag = true;
     private volatile boolean isPausedFlag = true;
 
@@ -25,7 +25,7 @@ class SimulationThread implements Runnable
     public SimulationThread(AutomatonManager manager)
     {
         this.manager = manager;
-        this.drawingThread = new DrawingThread(manager, DRAWING_MONITOR, isDrawning);
+        this.drawingThread = new DrawingThread(manager, DRAWING_MONITOR, isDrawing);
 
         drawingThreadObject = new Thread(drawingThread, "DrawingThread");
         drawingThreadObject.start();
@@ -75,7 +75,7 @@ class SimulationThread implements Runnable
     {
         synchronized (DRAWING_MONITOR)
         {
-            while (isDrawning.get())
+            while (isDrawing.get())
             {
                 try
                 {

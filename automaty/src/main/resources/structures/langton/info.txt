@@ -1,0 +1,4 @@
+Mrówka w lewo:1:1:ant_l
+Mrówka w prawo:1:1:ant_r
+Mrówka do góry:1:1:ant_u
+Mrówka w dół:1:1:ant_d
