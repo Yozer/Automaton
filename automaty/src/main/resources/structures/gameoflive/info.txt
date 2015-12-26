@@ -1,1 +1,16 @@
+Żywa komórka:1:1:alive
+Martwa komórka:1:1:dead
 Blinker:3:3:blinker
+Glider:3:3:glider
+Gosper glider gun:32:9:gosper_glider_gun
+Diagonal Twin Tubeater c/5:55:60:diagonal_twin_tubeater
+Small spaceship:5:4:small_spaceship
+Weekender + tagalong:37:24:weekender_tagalong
+Weekender spaceship:16:11:weekender_spaceship
+Tagalong spaceship:19:17:tagalong_spaceship
+Tagalong spaceship v2:25:19:tagalong2_spaceship
+Spaceship 1 c/4:197:243:spaceship1
+Spaceships Army:530:479:spaceships_army
+Potwór:286:199:monster
+Smok:29:18:drake
+Sprout:120:64:sprout

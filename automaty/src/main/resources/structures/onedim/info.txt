@@ -1,0 +1,2 @@
+Żywa komórka:1:1:alive
+Martwa komórka:1:1:dead

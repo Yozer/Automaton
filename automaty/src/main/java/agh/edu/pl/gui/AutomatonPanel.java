@@ -92,8 +92,8 @@ public class AutomatonPanel extends JPanel
     }
     public void createBufferedImage(int width, int height)
     {
-        if (bufferedImage != null && bufferedImage.getWidth() == width && bufferedImage.getHeight() == height)
-            return;
+//        if (bufferedImage != null && bufferedImage.getWidth() == width && bufferedImage.getHeight() == height)
+//            return;
 
         bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();

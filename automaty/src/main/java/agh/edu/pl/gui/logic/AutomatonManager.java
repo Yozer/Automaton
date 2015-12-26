@@ -15,25 +15,27 @@ import agh.edu.pl.gui.structures.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Dominik on 2015-12-13.
  */
 // TODO add one dim
+// TODO add controlling distribution of each cell type during rand
 // TODO disable random for langton and enable color picker when insering structs (need to be refactored anyway)
 public class AutomatonManager
 {
     Automaton automaton;
 
-    private final SimulationThread simulationThread;
+    final SimulationThread simulationThread;
     private final Thread simulationThreadObject;
     private final AtomicInteger simulationDelay = new AtomicInteger(0);
 
     final AutomatonSettings settings = new AutomatonSettings();
     final AutomatonStatistics statistics = new AutomatonStatistics();
     final AutomatonPanel automatonPanel;
+
+    int automaton1DimRow;
 
     public AutomatonManager(AutomatonPanel automatonPanel)
     {
@@ -66,26 +68,8 @@ public class AutomatonManager
     }
     public void insertStructure(StructureInfo structureInfo, int x, int y)
     {
-        Coords2D atPoint = new Coords2D((int)(x / settings.getCellSize()), (int)(y / settings.getCellSize()));
-        if(atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
-            return;
-
-        List<Cell> structure = null;
-        if(settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
-            structure = new WireWorldStructureLoader().getStructure(structureInfo, atPoint);
-
-        boolean isRunning = simulationThread.isRunning();
-        if(isRunning)
-            pause();
-
-        automaton.insertStructure(structure);
-
-        drawCurrentAutomaton();
-        automatonPanel.repaint();
-
-        if(isRunning)
-            start();
-
+        SwingWorker swingWorker = new InsertStructureSwingWorker(this, structureInfo, x, y);
+        swingWorker.execute();
     }
 
     public void insertAnt(StructureInfo structureInfo, int x, int y, Color antColor)
@@ -121,6 +105,8 @@ public class AutomatonManager
 
         // get automaton from settings
         automaton = getAutomatonFromSettings();
+        if(automaton instanceof Automaton1Dim)
+            automaton1DimRow = 0;
 
         automatonPanel.createBufferedImage(settings.getWidth(), settings.getHeight());
         drawCurrentAutomaton();
@@ -152,14 +138,33 @@ public class AutomatonManager
                     Coords2D coords = (Coords2D) cell.getCoords();
                     pixels[coords.getY() * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
                 }
-            }
-            if(settings.getSelectedAutomaton() == PossibleAutomaton.Langton)
-            {
-                LangtonAnt langtonAnt = ((LangtonAnt) automaton);
-                for (Ant ant : langtonAnt.getAnts())
+
+                if(settings.getSelectedAutomaton() == PossibleAutomaton.Langton)
                 {
-                    pixels[ant.getCoordinates().getY() * settings.getWidth() + ant.getCoordinates().getX()] = Color.YELLOW.getRGB();
+                    LangtonAnt langtonAnt = ((LangtonAnt) automaton);
+                    for (Ant ant : langtonAnt.getAnts())
+                    {
+                        pixels[ant.getCoordinates().getY() * settings.getWidth() + ant.getCoordinates().getX()] = Color.YELLOW.getRGB();
+                    }
                 }
+            }
+            else if(automaton instanceof Automaton1Dim)
+            {
+                if(automaton1DimRow == settings.getHeight())
+                {
+                    for(int row = 1; row < settings.getHeight(); row++)
+                    {
+                        System.arraycopy(pixels, row * settings.getWidth(), pixels, (row - 1) * settings.getWidth(), settings.getWidth());
+                    }
+                    --automaton1DimRow;
+                }
+
+                for(Cell cell : automaton)
+                {
+                    Coords1D coords = (Coords1D) cell.getCoords();
+                    pixels[automaton1DimRow * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
+                }
+                ++automaton1DimRow;
             }
         }
     }
@@ -191,7 +196,7 @@ public class AutomatonManager
         else if(settings.getSelectedAutomaton() == PossibleAutomaton.Langton)
         {
             UniformStateFactory stateFactory = new UniformStateFactory(new BinaryAntState(BinaryState.DEAD));
-            return  new LangtonAnt(settings.getWidth(), settings.getHeight(), stateFactory, neighborhood);
+            return new LangtonAnt(settings.getWidth(), settings.getHeight(), stateFactory, neighborhood);
         }
         return null;
     }
@@ -209,6 +214,10 @@ public class AutomatonManager
 
     public void randCells(Runnable invokeAfter)
     {
+        // doesn't make sense for this automaton
+        if(settings.getSelectedAutomaton() == PossibleAutomaton.Langton)
+            return;
+
         SwingWorker worker = new RandCellsWorker(this, invokeAfter);
         worker.execute();
     }

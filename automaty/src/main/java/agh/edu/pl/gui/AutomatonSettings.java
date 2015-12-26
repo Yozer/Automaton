@@ -14,7 +14,7 @@ public class AutomatonSettings
     private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2,3));
     private Set<Integer> comeAliveFactors= new HashSet<>(Arrays.asList(3));
     private CellNeighborhoodType neighborhoodType = CellNeighborhoodType.Moore;
-    private int oneDimRule;
+    private int oneDimRule = 94;
     private int neighborhoodRadius = 1;
     private boolean wrap = true;
 

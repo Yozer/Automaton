@@ -16,7 +16,7 @@ public class ElementaryAutomaton extends Automaton1Dim
     private List<Integer> neighborList;
     private List<BinaryState> ruleMapper;
 
-    public ElementaryAutomaton(int rule, int size, CellStateFactory stateFactory)
+    public ElementaryAutomaton(int size, int rule, CellStateFactory stateFactory)
     {
         super(size, new OneDimensionalNeighborhood(false, size), stateFactory);
         this.generateNeighborList();

@@ -2,6 +2,7 @@ package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.Main;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 
@@ -27,6 +28,10 @@ public abstract class StructureLoader
             directoryName += "langton";
         else if(automaton == PossibleAutomaton.WireWorld)
             directoryName += "wireworld";
+        else if(automaton == PossibleAutomaton.OneDim)
+            directoryName += "onedim";
+        else
+            return structureInfos;
 
 
         directoryName += File.separator;
@@ -55,5 +60,5 @@ public abstract class StructureLoader
 
         return structureInfos;
     }
-    public abstract List<Cell> getStructure(StructureInfo structureInfo, Coords2D startPoint);
+    public abstract List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint);
 }

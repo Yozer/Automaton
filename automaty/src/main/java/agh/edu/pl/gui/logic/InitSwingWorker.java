@@ -1,16 +1,21 @@
 package agh.edu.pl.gui.logic;
 
-import agh.edu.pl.Main;
+import agh.edu.pl.automaton.Automaton1Dim;
+import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
+import agh.edu.pl.gui.structures.GameOfLiveStructureLoader;
+import agh.edu.pl.gui.structures.OneDimStructureLoader;
+import agh.edu.pl.gui.structures.StructureInfo;
+import agh.edu.pl.gui.structures.WireWorldStructureLoader;
 
 import javax.swing.*;
-import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,105 +79,58 @@ class PauseSwingWorker extends SwingWorker<Void, Void>
     }
 }
 
-class InsertPrimeSwingWorker extends SwingWorker<Void, Void>
+class InsertStructureSwingWorker extends SwingWorker<Void, Void>
 {
     private final AutomatonManager manager;
-    private final Runnable invokeAfter;
+    private final StructureInfo structureInfo;
+    private final int x;
+    private final int y;
 
-    public InsertPrimeSwingWorker(AutomatonManager manager, Runnable invokeAfter)
+    public InsertStructureSwingWorker(AutomatonManager manager, StructureInfo structureInfo, int x, int y)
     {
         this.manager = manager;
-        this.invokeAfter = invokeAfter;
+        this.structureInfo = structureInfo;
+        this.x = x;
+        this.y = y;
     }
+
+
     @Override
-    protected Void doInBackground()
+    protected Void doInBackground() throws Exception
     {
-        List<Cell> primeStructure = new ArrayList<>(manager.settings.getHeight() * manager.settings.getHeight());
-        /*primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 5)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 4)));
-        primeStructure.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(7, 6)));
-        primeStructure.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(8, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(8, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 6)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(12, 5)));*/
+        if(manager.automaton == null)
+            manager.init();
 
-        /*primeStructure.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(0, 3)));
-        primeStructure.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(1, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(2, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(3, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(4, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 2)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 2)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(8, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 3)));*/
+        Coords2D atPoint = new Coords2D((int)(x / manager.settings.getCellSize()), (int)(y / manager.settings.getCellSize()));
+        if(atPoint.getX() + structureInfo.getWidth() > manager.settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > manager.settings.getHeight())
+            return null;
 
-        /*primeStructure.add(new Cell(WireElectronState.ELECTRON_TAIL, new Coords2D(0, 3)));
-        primeStructure.add(new Cell(WireElectronState.ELECTRON_HEAD, new Coords2D(1, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(2, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(3, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(4, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(5, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 2)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(6, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 2)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(7, 4)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(8, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(9, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(10, 3)));
-        primeStructure.add(new Cell(WireElectronState.WIRE, new Coords2D(11, 3)));*/
+        List<Cell> structure = null;
+        if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
+            structure = new WireWorldStructureLoader().getStructure(structureInfo, atPoint);
+        else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
+            structure = new GameOfLiveStructureLoader().getStructure(structureInfo, atPoint);
+        else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.OneDim)
+            structure = new OneDimStructureLoader().getStructure(structureInfo, atPoint);
 
-        BufferedReader reader = null;
-        InputStream stream = Main.class.getClassLoader().getResourceAsStream("primes");
-        //File file = new File(get);
-        try
-        {
-            reader = new BufferedReader(new InputStreamReader(stream));
-            String line;
-            int x = 50;
-            while ((line = reader.readLine()) != null)
-            {
-                int y = 50;
-                for(int i = 0; i < line.length(); i++, y++)
-                {
-                    primeStructure.add(new Cell(line.charAt(i) == ' ' ? WireElectronState.VOID :
-                            line.charAt(i) == '#' ? WireElectronState.WIRE :
-                                    line.charAt(i) == '@' ? WireElectronState.ELECTRON_HEAD : WireElectronState.ELECTRON_TAIL, new Coords2D(y, x)));
-                }
-                x++;
-            }
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        boolean isRunning = manager.simulationThread.isRunning();
+        if(isRunning)
+            manager.pause();
 
-        manager.automaton.insertStructure(primeStructure);
-        manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
-        manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
+        manager.automaton.insertStructure(structure);
+        manager.automaton1DimRow = 0;
         manager.drawCurrentAutomaton();
-        manager.automatonPanel.repaint();
+        manager. automatonPanel.repaint();
+
+        if(isRunning)
+            manager.start();
         return null;
     }
+
     @Override
     protected void done()
     {
-        invokeAfter.run();
+
     }
 }
 
@@ -190,12 +148,18 @@ class RandCellsWorker extends SwingWorker<Void, Void>
     @Override
     protected Void doInBackground()
     {
-        List<Cell> someRand = new ArrayList<>(manager.settings.getHeight() * manager.settings.getHeight());
+        List<Cell> someRand = null;
+        if(manager.automaton instanceof Automaton2Dim)
+            someRand = new ArrayList<>(manager.settings.getHeight() * manager.settings.getWidth());
+        else if(manager.automaton instanceof Automaton1Dim)
+            someRand = new ArrayList<>(manager.settings.getWidth());
+
         Random random = new Random();
 
         manager.init();
         List<CellState> values = null;
-        if (manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
+        if (manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
+                manager.settings.getSelectedAutomaton() == PossibleAutomaton.OneDim)
         {
             values = Arrays.stream(BinaryState.values()).collect(Collectors.toList());
             for (int i = 0; i < 3; i++)
@@ -214,32 +178,28 @@ class RandCellsWorker extends SwingWorker<Void, Void>
                 values.add(WireElectronState.VOID);
         }
 
-        for (int x = 0; x < manager.settings.getWidth(); x++)
+        if(manager.automaton instanceof Automaton2Dim)
         {
-            for (int y = 0; y < manager.settings.getHeight(); y++)
+            for (int x = 0; x < manager.settings.getWidth(); x++)
             {
-                someRand.add(new Cell(values.get(random.nextInt(values.size())), new Coords2D(x, y)));
+                for (int y = 0; y < manager.settings.getHeight(); y++)
+                {
+                    someRand.add(new Cell(values.get(random.nextInt(values.size())), new Coords2D(x, y)));
+                }
             }
         }
-
-
-        /*HashMap<CellCoordinates, CellState> blinker = new HashMap<>();
-        blinker.put(new Coords2D(15, 20), BinaryState.ALIVE);
-        blinker.put(new Coords2D(15, 21), BinaryState.ALIVE);
-        blinker.put(new Coords2D(15, 22), BinaryState.ALIVE);
-        manager.automaton.insertStructure(blinker);*/
-
-        /*HashMap<CellCoordinates, CellState> glider = new HashMap<>();
-        glider.put(new Coords2D(5, 5), BinaryState.ALIVE);
-        glider.put(new Coords2D(6, 5), BinaryState.ALIVE);
-        glider.put(new Coords2D(7, 5), BinaryState.ALIVE);
-        glider.put(new Coords2D(7, 4), BinaryState.ALIVE);
-        glider.put(new Coords2D(6, 3), BinaryState.ALIVE);
-        manager.automaton.insertStructure(glider);*/
+        else if(manager.automaton instanceof Automaton1Dim)
+        {
+            for (int x = 0; x < manager.settings.getWidth(); x++)
+            {
+                someRand.add(new Cell(values.get(random.nextInt(values.size())), new Coords1D(x)));
+            }
+        }
 
         manager.automaton.insertStructure(someRand);
         manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
         manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
+        manager.automaton1DimRow = 0;
         manager.drawCurrentAutomaton();
         manager.automatonPanel.repaint();
         return null;

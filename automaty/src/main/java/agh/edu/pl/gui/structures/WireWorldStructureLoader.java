@@ -2,6 +2,8 @@ package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.Main;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
+import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
 
@@ -19,19 +21,21 @@ import java.util.Objects;
 public class WireWorldStructureLoader extends StructureLoader
 {
     @Override
-    public List<Cell> getStructure(StructureInfo structureInfo, Coords2D startPoint)
+    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint)
     {
         InputStreamReader streamReader = new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
         List<Cell> result = new ArrayList<>(structureInfo.getWidth() * structureInfo.getHeight());
+        int startY = ((Coords2D) startPoint).getY();
+        int startX = ((Coords2D) startPoint).getX();
 
         try(BufferedReader reader = new BufferedReader(streamReader))
         {
             String line = null;
-            int y = startPoint.getY();
+            int y = startY;
 
             while((line = reader.readLine())!= null)
             {
-                int x = startPoint.getX();
+                int x = startX;
                 for(int i = 0; i < line.length(); i++, x++)
                 {
                     if(line.charAt(i) ==  ' ')
