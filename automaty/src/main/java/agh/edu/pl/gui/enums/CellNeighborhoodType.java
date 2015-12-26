@@ -6,6 +6,6 @@ package agh.edu.pl.gui.enums;
 public enum CellNeighborhoodType
 {
     Moore,
-    VonNeuman,
+    VonNeumann,
     OneDim
 }

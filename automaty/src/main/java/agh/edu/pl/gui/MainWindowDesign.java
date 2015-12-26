@@ -1,16 +1,18 @@
 package agh.edu.pl.gui;
 
 import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.logic.AutomatonSettings;
 import agh.edu.pl.gui.structures.StructureInfo;
 import agh.edu.pl.gui.structures.StructureLoader;
 import com.horstmann.corejava.GBC;
-import javafx.scene.control.ColorPicker;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseListener;
 import java.util.*;
 
@@ -24,9 +26,12 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel, deadCellsLabel, totalCellsLabel, onePassTimeLabel;
     private Label renderTimeLabel;
     private JPanel settingsPanel;
+    private JCheckBox wrappingCheckBox;
 
     private JComboBox<StructureInfo> structuresList;
     private JButton insertStructButton;
+    private JSpinner radiusSpinner;
+    private TextField textFieldRules;
 
     private JButton colorPicker;
     private Color choosedColor = Color.RED;
@@ -62,13 +67,13 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         mainPanel.add(automatonPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
 
         settingsPanel = new JPanel();
-        settingsPanel.setLayout(new GridLayout(10, 1));
+        settingsPanel.setLayout(new GridLayout(12, 1));
         settingsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         mainPanel.add(settingsPanel, new GBC(1, 0).setFill(GridBagConstraints.BOTH).setWeight(0.01, 1));
 
         // ------------------------------------------------------------------------ \\
         JPanel panel = new JPanel(new GridLayout(2, 1));
-        panel.add(new Label("Typ automatu"));
+        panel.add(new BoldLabel("Typ automatu"));
         ButtonGroup group = new ButtonGroup();
         JPanel panelRadio = new JPanel();
         for (PossibleAutomaton automaton : PossibleAutomaton.values())
@@ -91,7 +96,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
         // ------------------------------------------------------------------------ \\
         panel = new JPanel(new GridLayout(2, 1));
-        panel.add(new Label("Rozmiar komórki"));
+        panel.add(new BoldLabel("Rozmiar komórki"));
 
         JSlider slider = new JSlider(1, 20, 5);
         slider.setMinorTickSpacing(1);
@@ -105,9 +110,94 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         disabledWhenRunning.add(slider);
         settingsPanel.add(panel);
         // ------------------------------------------------------------------------ \\
+        panel = new JPanel(new GridLayout(3, 1));
+        panel.add(new BoldLabel("Wybierz zasady"));
+
+        JPanel tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        tmpPanel.add(new Label("Zasada dla jednowymiarowego [0-255]:"));
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(automatonSettings.getOneDimRule(), 0, 255, 1);
+        radiusSpinner = new JSpinner(spinnerModel);
+        radiusSpinner.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy);
+        radiusSpinner.addChangeListener(this);
+        radiusSpinner.setName(Commands.CHANGE_ONE_DIM_RULES.toString());
+        tmpPanel.add(radiusSpinner);
+        panel.add(tmpPanel);
+        disabledWhenRunning.add(radiusSpinner);
+
+        tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        tmpPanel.add(new Label("Zasada dla GameOfLive/QuadLive:"));
+        textFieldRules = new TextField(automatonSettings.getFormattedRules());
+        textFieldRules.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
+                        automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
+        tmpPanel.add(textFieldRules);
+        disabledWhenRunning.add(textFieldRules);
+        JButton applyBtn = new JButton("Zastosuj zasadę");
+        applyBtn.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
+                automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
+        applyBtn.addActionListener(this);
+        applyBtn.setActionCommand(Commands.CHANGE_TWO_DIM_RULES.toString());
+        disabledWhenRunning.add(applyBtn);
+        tmpPanel.add(applyBtn);
+        panel.add(tmpPanel);
+
+        settingsPanel.add(panel);
+        // ------------------------------------------------------------------------ \\
 
         panel = new JPanel(new GridLayout(2, 1));
-        panel.add(new Label("Opóźnienie między kolejnymi symulacjami [ms]"));
+        panel.add(new BoldLabel("Typ sąsiedztwa"));
+        group = new ButtonGroup();
+
+        tmpPanel = new JPanel(new GridLayout(1, 3));
+
+        JRadioButton radioButton = new JRadioButton("Moore");
+        radioButton.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
+        radioButton.addActionListener(this);
+        radioButton.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.Moore);
+        group.add(radioButton);
+        tmpPanel.add(radioButton);
+        disabledWhenRunning.add(radioButton);
+
+        radioButton = new JRadioButton("von Neumann");
+        radioButton.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
+        radioButton.addActionListener(this);
+        radioButton.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.VonNeumann);
+        group.add(radioButton);
+        tmpPanel.add(radioButton);
+        disabledWhenRunning.add(radioButton);
+
+        radioButton = new JRadioButton("Jednowymiarowe");
+        radioButton.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
+        radioButton.addActionListener(this);
+        radioButton.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.OneDim);
+        group.add(radioButton);
+        tmpPanel.add(radioButton);
+        disabledWhenRunning.add(radioButton);
+
+        panel.add(tmpPanel);
+        settingsPanel.add(panel);
+        // ------------------------------------------------------------------------ \\
+        panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panel.add(new BoldLabel("Promień sąsiedztwa (r)"));
+        spinnerModel = new SpinnerNumberModel(automatonSettings.getNeighborhoodRadius(), 0, 100, 1);
+
+        radiusSpinner = new JSpinner(spinnerModel);
+        radiusSpinner.addChangeListener(this);
+        radiusSpinner.setName(Commands.CHANGE_NEIGHBORHOOD_RADIUS.toString());
+        radiusSpinner.setMaximumSize(new Dimension(25, 25));
+        panel.add(radiusSpinner);
+
+        wrappingCheckBox = new JCheckBox("Zawijać planszę?");
+        wrappingCheckBox.addActionListener(this);
+        wrappingCheckBox.setSelected(automatonSettings.getWrap());
+        wrappingCheckBox.setActionCommand(Commands.SET_WRAP.toString());
+        panel.add(wrappingCheckBox);
+
+        disabledWhenRunning.add(radiusSpinner);
+        disabledWhenRunning.add(wrappingCheckBox);
+        settingsPanel.add(panel);
+        // ------------------------------------------------------------------------ \\
+        panel = new JPanel(new GridLayout(2, 1));
+        panel.add(new BoldLabel("Opóźnienie między kolejnymi symulacjami [ms]"));
 
         slider = new JSlider(0, 1000, 0);
         slider.setMinorTickSpacing(50);
@@ -193,6 +283,10 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         add(mainPanel);
     }
 
+    protected String getRulesString()
+    {
+        return textFieldRules.getText();
+    }
     protected void setStructureList(PossibleAutomaton selectedAutomaton)
     {
         structuresList.removeAllItems();
@@ -227,16 +321,15 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         onePassTimeLabel.setText("Czas jednego przejścia: " + time);
     }
 
+    protected boolean isWrappingSelected()
+    {
+        return wrappingCheckBox.isSelected();
+    }
     protected AutomatonState getCurrentState()
     {
         return automatonState;
     }
-    protected AutomatonState getRememberedState()
-    {
-        if(getCurrentState() != AutomatonState.INSERTING_STRUCT)
-            throw new IllegalArgumentException("Cannot get remembered state if current is different that inserting struct");
-        return rememberState;
-    }
+
     protected void setStatePaused()
     {
         automatonState = AutomatonState.PAUSED;
@@ -288,6 +381,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         return choosedColor;
     }
 
+
     private void enableListOfComponents(ArrayList<Component> componentList) { switchState(componentList, true);}
     private void disableListOfComponents(ArrayList<Component> componentList) { switchState(componentList, false);}
     private void switchState(ArrayList<Component> componentList, boolean state)
@@ -310,5 +404,42 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
             }
             components[i].setEnabled(state);
         }
+    }
+}
+
+class BoldLabel extends Label
+{
+    public BoldLabel(String text)
+    {
+        super(text);
+        final BoldLabel boldLabel = this;
+        super.addComponentListener(new ComponentListener()
+        {
+            @Override
+            public void componentResized(ComponentEvent e)
+            {
+                Font font = boldLabel.getFont();
+                font = new Font(font.getName(), Font.BOLD, font.getSize());
+                boldLabel.setFont(font);
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e)
+            {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e)
+            {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e)
+            {
+
+            }
+        });
     }
 }

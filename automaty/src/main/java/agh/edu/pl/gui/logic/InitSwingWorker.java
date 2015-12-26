@@ -110,7 +110,7 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void>
             structure = new WireWorldStructureLoader().getStructure(structureInfo, atPoint);
         else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
             structure = new GameOfLiveStructureLoader().getStructure(structureInfo, atPoint);
-        else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.OneDim)
+        else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
             structure = new OneDimStructureLoader().getStructure(structureInfo, atPoint);
 
         boolean isRunning = manager.simulationThread.isRunning();
@@ -159,7 +159,7 @@ class RandCellsWorker extends SwingWorker<Void, Void>
         manager.init();
         List<CellState> values = null;
         if (manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
-                manager.settings.getSelectedAutomaton() == PossibleAutomaton.OneDim)
+                manager.settings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
         {
             values = Arrays.stream(BinaryState.values()).collect(Collectors.toList());
             for (int i = 0; i < 3; i++)

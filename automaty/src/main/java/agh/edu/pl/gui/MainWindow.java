@@ -7,7 +7,6 @@ import agh.edu.pl.gui.structures.StructureInfo;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -59,7 +58,7 @@ public class MainWindow extends MainWindowDesign
     private void insertStructure(StructureInfo structureInfo, int x, int y)
     {
         // TODO check if it has to be done in different thread
-        if(automaton.getCurrentAutomatonType() == PossibleAutomaton.Langton)
+        if(automaton.getSettings().getSelectedAutomaton() == PossibleAutomaton.Langton)
             automaton.insertAnt(structureInfo, x, y, getColorFromChooser());
         else
             automaton.insertStructure(structureInfo, x, y);
@@ -98,6 +97,13 @@ public class MainWindow extends MainWindowDesign
         }
         else if(cmd.equals(Commands.START_AUTOMATON.toString()))
         {
+            if(automaton.getSettings().getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy &&
+                    automaton.getSettings().getNeighborHood() != CellNeighborhoodType.OneDim)
+            {
+                JOptionPane.showMessageDialog(null, "Dla jednowymiarowego automatu wybierz jednowymiarowe sąsiedztwo!", "Ostrzeżenie", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             startAutomaton();
         }
         else if(cmd.equals(Commands.PAUSE_AUTOMATON.toString()))
@@ -120,6 +126,21 @@ public class MainWindow extends MainWindowDesign
         {
             setStateCancelSelectingStruct();
         }
+        else if(cmd.equals(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString()))
+        {
+            String btnText = ((JRadioButton) e.getSource()).getText();
+            automaton.setNeighborhoodType(btnText.equals("Moore") ? CellNeighborhoodType.Moore :
+                    btnText.equals("Von Neumann") ? CellNeighborhoodType.VonNeumann :
+                    btnText.equals("Jednowymiarowe") ? CellNeighborhoodType.OneDim : null);
+        }
+        else if(cmd.equals(Commands.SET_WRAP.toString()))
+        {
+            automaton.setWrap(isWrappingSelected());
+        }
+        else if(cmd.equals(Commands.CHANGE_TWO_DIM_RULES.toString()))
+        {
+            automaton.setRulesTwoDim(getRulesString());
+        }
     }
 
     @Override
@@ -139,6 +160,19 @@ public class MainWindow extends MainWindowDesign
             else if(name.equals(Commands.CHANGE_SIMULATION_DELAY.toString()))
             {
                 automaton.setSimulationDelay(slider.getValue());
+            }
+        }
+        else if(source instanceof JSpinner)
+        {
+            JSpinner jSpinner = (JSpinner)source;
+            String name = jSpinner.getName();
+            if(name.equals(Commands.CHANGE_NEIGHBORHOOD_RADIUS.toString()))
+            {
+                automaton.setNeighborhoodRadius((Integer) jSpinner.getValue());
+            }
+            else if(name.equals(Commands.CHANGE_ONE_DIM_RULES.toString()))
+            {
+                automaton.setRuleOneDim((Integer) jSpinner.getValue());
             }
         }
     }
@@ -177,5 +211,6 @@ public class MainWindow extends MainWindowDesign
     {
 
     }
+
 }
 

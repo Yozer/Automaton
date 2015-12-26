@@ -20,9 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-// TODO add one dim
+// TODO add resetting automaton after changing new options
 // TODO add controlling distribution of each cell type during rand
-// TODO disable random for langton and enable color picker when insering structs (need to be refactored anyway)
+// TODO disable random for langton and enable color picker when inserting structs (need to be refactored anyway)
+// TODO add error checking for rules parsing
+// TODO add better disabling/enabling controls
 public class AutomatonManager
 {
     Automaton automaton;
@@ -188,7 +190,7 @@ public class AutomatonManager
             UniformStateFactory stateFactory = new UniformStateFactory(WireElectronState.VOID);
             return new WireWorld(settings.getWidth(), settings.getHeight(), stateFactory, neighborhood);
         }
-        else if(settings.getSelectedAutomaton() == PossibleAutomaton.OneDim)
+        else if(settings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
         {
             UniformStateFactory stateFactory = new UniformStateFactory(BinaryState.DEAD);
             return new ElementaryAutomaton(settings.getWidth(), settings.getOneDimRule(), stateFactory);
@@ -205,7 +207,7 @@ public class AutomatonManager
     {
         if(neighborhoodType == CellNeighborhoodType.Moore)
             return new MoorNeighborhood(settings.getNeighborhoodRadius(), settings.getWrap(), settings.getWidth(), settings.getHeight());
-        else if(neighborhoodType == CellNeighborhoodType.VonNeuman)
+        else if(neighborhoodType == CellNeighborhoodType.VonNeumann)
             return new VonNeumanNeighborhood(settings.getNeighborhoodRadius(), settings.getWrap(), settings.getWidth(), settings.getHeight());
         else if(neighborhoodType == CellNeighborhoodType.OneDim)
             return new OneDimensionalNeighborhood(settings.getWrap(), settings.getWidth());
@@ -278,9 +280,34 @@ public class AutomatonManager
         return this.simulationDelay.get();
     }
 
-    public PossibleAutomaton getCurrentAutomatonType()
+    public AutomatonSettings getSettings()
     {
-        return settings.getSelectedAutomaton();
+        return settings;
+    }
+
+    public void setNeighborhoodType(CellNeighborhoodType neighborhoodType)
+    {
+        settings.setNeighborhood(neighborhoodType);
+    }
+
+    public void setNeighborhoodRadius(int neighborhoodRadius)
+    {
+        settings.setNeighborhoodRadius(neighborhoodRadius);
+    }
+
+    public void setWrap(boolean wrap)
+    {
+        settings.setWrap(wrap);
+    }
+
+    public void setRulesTwoDim(String rulesTwoDim)
+    {
+        settings.setFormattedRules(rulesTwoDim);
+    }
+
+    public void setRuleOneDim(Integer ruleOneDim)
+    {
+        settings.setOneDimRule(ruleOneDim);
     }
 
 

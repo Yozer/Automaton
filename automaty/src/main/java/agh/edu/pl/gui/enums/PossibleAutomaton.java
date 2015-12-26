@@ -9,5 +9,5 @@ public enum PossibleAutomaton
     QuadLife,
     WireWorld,
     Langton,
-    OneDim
+    Jednowymiarowy
 }
