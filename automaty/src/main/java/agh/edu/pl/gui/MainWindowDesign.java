@@ -49,7 +49,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private void initUI()
     {
         setTitle("Automat komórkowy");
-        //setSize(1700, 800);
+        setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -62,12 +62,13 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         mainPanel.add(automatonPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
 
         settingsPanel = new JPanel();
-        settingsPanel.setLayout(new GridLayout(16, 1));
+        settingsPanel.setLayout(new GridLayout(10, 1));
         settingsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         mainPanel.add(settingsPanel, new GBC(1, 0).setFill(GridBagConstraints.BOTH).setWeight(0.01, 1));
 
         // ------------------------------------------------------------------------ \\
-        settingsPanel.add(new Label("Typ automatu"));
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+        panel.add(new Label("Typ automatu"));
         ButtonGroup group = new ButtonGroup();
         JPanel panelRadio = new JPanel();
         for (PossibleAutomaton automaton : PossibleAutomaton.values())
@@ -85,10 +86,12 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
             panelRadio.add(radio);
         }
-        settingsPanel.add(panelRadio);
+        panel.add(panelRadio);
+        settingsPanel.add(panel);
 
         // ------------------------------------------------------------------------ \\
-        settingsPanel.add(new Label("Rozmiar komórki"));
+        panel = new JPanel(new GridLayout(2, 1));
+        panel.add(new Label("Rozmiar komórki"));
 
         JSlider slider = new JSlider(1, 20, 5);
         slider.setMinorTickSpacing(1);
@@ -98,11 +101,13 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         slider.setName(Commands.CHANGE_CELL_SIZE.toString());
         slider.setValue((int) automatonSettings.getCellSize());
         slider.addChangeListener(this);
-        settingsPanel.add(slider);
+        panel.add(slider);
         disabledWhenRunning.add(slider);
+        settingsPanel.add(panel);
         // ------------------------------------------------------------------------ \\
 
-        settingsPanel.add(new Label("Opóźnienie między kolejnymi symulacjami [ms]"));
+        panel = new JPanel(new GridLayout(2, 1));
+        panel.add(new Label("Opóźnienie między kolejnymi symulacjami [ms]"));
 
         slider = new JSlider(0, 1000, 0);
         slider.setMinorTickSpacing(50);
@@ -112,7 +117,8 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         slider.setName(Commands.CHANGE_SIMULATION_DELAY.toString());
         slider.setValue(automatonSettings.getSimulationDelay());
         slider.addChangeListener(this);
-        settingsPanel.add(slider);
+        panel.add(slider);
+        settingsPanel.add(panel);
         // ------------------------------------------------------------------------ \\
         JPanel navigationButtonsPanel = new JPanel(new GridLayout(4, 2));
         JButton startButton = new JButton("Start");
@@ -152,6 +158,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         navigationButtonsPanel.add(insertStructButton);
 
         colorPicker = new JButton("Wybierz kolor");
+        colorPicker.setEnabled(false);
         colorPicker.setVisible(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.Langton);
         colorPicker.addActionListener(e ->
         {
@@ -254,12 +261,14 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         disableSettingsPanel();
         insertStructButton.setEnabled(true);
         structuresList.setEnabled(true);
+        colorPicker.setEnabled(true);
         insertStructButton.setText("Anuluj wstawianie");
         insertStructButton.setActionCommand(Commands.CANCEL_INSERTING_STRUCT.toString());
     }
     protected void setStateCancelSelectingStruct()
     {
         insertStructButton.setText("Wstaw strukturę");
+        colorPicker.setEnabled(false);
         insertStructButton.setActionCommand(Commands.INSERT_STRUCT.toString());
         if(rememberState == AutomatonState.PAUSED)
             setStatePaused();

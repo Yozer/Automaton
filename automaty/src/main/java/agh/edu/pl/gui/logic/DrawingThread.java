@@ -33,8 +33,7 @@ class DrawingThread implements Runnable
             timer.stop();
             manager.statistics.renderTime.set(timer.getElapsed());
 
-            SwingUtilities.invokeLater(() ->
-                    manager.automatonPanel.repaint());
+            SwingUtilities.invokeLater(manager.automatonPanel::repaint);
 
             shouldStartDraw.set(false);
             synchronized (DRAWING_MONITOR)

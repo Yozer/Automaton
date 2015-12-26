@@ -28,11 +28,12 @@ public class LangtonAnt extends Automaton2Dim
     {
         if(antCoords.getX() < 0 || antCoords.getY() < 0 || antCoords.getX() >= getWidth() || antCoords.getY() >= getHeight())
         {
-            throw new IllegalArgumentException("Ant has to be inside plane!");
+            throw new IllegalArgumentException("Ant has to be inside plane");
         }
 
         Ant ant = new Ant(antCoords, antRotation, antColor, getWidth(), getHeight());
         ants.add(ant);
+        insertStructure(Collections.singletonList(new Cell(new BinaryAntState(BinaryState.DEAD), antCoords)));
         return ant;
     }
     public List<Ant> getAnts()

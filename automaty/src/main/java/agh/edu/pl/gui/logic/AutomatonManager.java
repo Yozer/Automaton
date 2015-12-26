@@ -2,19 +2,15 @@ package agh.edu.pl.gui.logic;
 
 import agh.edu.pl.automaton.*;
 import agh.edu.pl.automaton.automata.*;
-import agh.edu.pl.automaton.automata.langton.Ant;
-import agh.edu.pl.automaton.automata.langton.AntState;
-import agh.edu.pl.automaton.automata.langton.LangtonAnt;
+import agh.edu.pl.automaton.automata.langton.*;
 import agh.edu.pl.automaton.cells.Cell;
-import agh.edu.pl.automaton.cells.coordinates.Coords2D;
+import agh.edu.pl.automaton.cells.coordinates.*;
 import agh.edu.pl.automaton.cells.neighborhoods.*;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.*;
 import agh.edu.pl.gui.*;
 import agh.edu.pl.gui.enums.*;
-import agh.edu.pl.gui.structures.LangtonAntStructureLoader;
-import agh.edu.pl.gui.structures.StructureInfo;
-import agh.edu.pl.gui.structures.WireWorldStructureLoader;
+import agh.edu.pl.gui.structures.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-
+// TODO add one dim
+// TODO disable random for langton and enable color picker when insering structs (need to be refactored anyway)
 public class AutomatonManager
 {
     Automaton automaton;
@@ -104,7 +101,6 @@ public class AutomatonManager
             pause();
 
         ((LangtonAnt) automaton).addAnt(ant.getAntCoords(), antColor, ant.getAntState());
-        automaton.insertStructure(Collections.singletonList(new Cell(new BinaryAntState(BinaryState.DEAD), atPoint)));
         drawCurrentAutomaton();
         automatonPanel.repaint();
 
