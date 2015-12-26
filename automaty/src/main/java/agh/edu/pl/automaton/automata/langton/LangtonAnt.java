@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
 
 public class LangtonAnt extends Automaton2Dim
 {
-    private List<Ant> ants = new ArrayList<>();
+    private List<Ant> currentAnts = new ArrayList<>();
+    private List<Ant> nextStateAnts = new ArrayList<>();
 
     public LangtonAnt(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
@@ -32,46 +33,66 @@ public class LangtonAnt extends Automaton2Dim
         }
 
         Ant ant = new Ant(antCoords, antRotation, antColor, getWidth(), getHeight());
-        ants.add(ant);
+        currentAnts.add(ant);
         insertStructure(Collections.singletonList(new Cell(new BinaryAntState(BinaryState.DEAD), antCoords)));
+
+        nextStateAnts.add(ant.clone());
         return ant;
     }
     public List<Ant> getAnts()
     {
-        List<Ant> antsList = new ArrayList<>(ants.size());
-        antsList.addAll(ants.stream().collect(Collectors.toList()));
+        List<Ant> antsList = new ArrayList<>(currentAnts.size());
+        antsList.addAll(currentAnts.stream().collect(Collectors.toList()));
         return antsList;
+    }
+
+    @Override
+    public void endCalculatingNextState()
+    {
+        super.endCalculatingNextState();
+        List<Ant> tmp = currentAnts;
+        currentAnts = nextStateAnts;
+        nextStateAnts = tmp;
     }
 
     @Override
     protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates)
     {
-        Ant ant = null;
-        for(Ant a : ants)
+        Ant currentAnt = null, nextStateAnt = null;
+        for(Ant tmpAnt : currentAnts)
         {
-            if(a.getCoordinates().equals(cell.getCoords()))
+            if(tmpAnt.getCoordinates().equals(cell.getCoords()))
             {
-                ant = a;
+                currentAnt = tmpAnt;
+                for (int i = 0; i < nextStateAnts.size(); i++)
+                {
+                    if (currentAnt.getId() == nextStateAnts.get(i).getId())
+                    {
+                        nextStateAnts.set(i, currentAnt.clone());
+                        nextStateAnt = nextStateAnts.get(i);
+                        break;
+                    }
+                }
                 break;
             }
         }
-        if(ant == null)
+        if(currentAnt == null || nextStateAnt == null)
             return cell.getState();
 
         BinaryAntState state = (BinaryAntState) cell.getState();
 
         if(state.getBinaryState() == BinaryState.ALIVE)
         {
-            ant.rotateLeft();
+            nextStateAnt.rotateLeft();
             state = new BinaryAntState(BinaryState.DEAD);
         }
         else if(state.getBinaryState() == BinaryState.DEAD)
         {
-            ant.rotateRight();
-            state = new BinaryAntState(BinaryState.ALIVE, ant.getAntColor());
+            nextStateAnt.rotateRight();
+            state = new BinaryAntState(BinaryState.ALIVE, currentAnt.getAntColor());
         }
 
-        ant.move();
+        nextStateAnt.move();
         return state;
     }
 
