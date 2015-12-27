@@ -5,7 +5,7 @@ package agh.edu.pl.gui.enums;
  */
 public enum PossibleAutomaton
 {
-    GameOfLive,
+    GameOfLife,
     QuadLife,
     WireWorld,
     Langton,

@@ -22,23 +22,27 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Dominik on 2015-12-13.
  */
 // TODO add controlling distribution of each cell type during rand
-// TODO disable random for langton and enable color picker when inserting structs (need to be refactored anyway)
+// TODO refactor neighborhood
+// TODO make drawing 60fps - check if it would be faster then drawing each generation
+
 public class AutomatonManager
 {
-    Automaton automaton;
+    private Automaton automaton;
 
-    final SimulationThread simulationThread;
+    private final SimulationThread simulationThread;
     private final Thread simulationThreadObject;
     private final AtomicInteger simulationDelay = new AtomicInteger(0);
 
-    final AutomatonSettings settings = new AutomatonSettings();
-    final AutomatonStatistics statistics = new AutomatonStatistics();
-    final AutomatonPanel automatonPanel;
+    private final AutomatonSettings settings = new AutomatonSettings();
+    private final AutomatonStatistics statistics = new AutomatonStatistics();
+    private final AutomatonPanel automatonPanel;
 
-    int automaton1DimRow;
+    private int automaton1DimCurrentRow;
+    private boolean settingsHasChanged = true;
 
     public AutomatonManager(AutomatonPanel automatonPanel)
     {
+        this.simulationDelay.set(settings.getSimulationDelay());
         this.automatonPanel = automatonPanel;
         this.simulationThread = new SimulationThread(this);
         this.simulationThreadObject = new Thread(simulationThread, "SimulationThread");
@@ -47,8 +51,7 @@ public class AutomatonManager
 
     public void start(Runnable invokeAfter)
     {
-        if(automaton == null)
-            init();
+        resetAutomatonIfSettingsHasChanged();
 
         simulationThread.resumeThread();
         invokeAfter.run();
@@ -91,25 +94,26 @@ public class AutomatonManager
             start();
     }
 
+    public void randCells(Runnable invokeAfter)
+    {
+        resetAutomatonIfSettingsHasChanged();
+
+        SwingWorker worker = new RandCellsWorker(this, invokeAfter);
+        worker.execute();
+    }
+
     void init()
     {
         pause();
         statistics.resetStatistics();
 
-        // setup scale and dimensions
-        settings.setWidth((int) (automatonPanel.getWidth() /  settings.getCellSize()));
-        settings.setHeight((int) (automatonPanel.getHeight() /  settings.getCellSize()));
-        automatonPanel.setScale(settings.getCellSize());
-        statistics.totalCellsCount.set(settings.getWidth()*settings.getHeight());
-
         // get automaton from settings
         automaton = getAutomatonFromSettings();
         if(automaton instanceof Automaton1Dim)
-            automaton1DimRow = 0;
+            automaton1DimCurrentRow = 0;
 
-        automatonPanel.createBufferedImage(settings.getWidth(), settings.getHeight());
-        drawCurrentAutomaton();
-        automatonPanel.repaint();
+        clearAutomatonPanel();
+        statistics.setTotalCellsCount(settings.getWidth()*settings.getHeight());
     }
     void pause()
     {
@@ -118,6 +122,15 @@ public class AutomatonManager
     void start()
     {
         simulationThread.resumeThread();
+    }
+
+    Automaton getAutomaton()
+    {
+        return automaton;
+    }
+    void resetAutomatonOneDimRow()
+    {
+        automaton1DimCurrentRow = 0;
     }
 
     void drawCurrentAutomaton()
@@ -148,25 +161,37 @@ public class AutomatonManager
             }
             else if(automaton instanceof Automaton1Dim)
             {
-                if(automaton1DimRow == settings.getHeight())
+                if(automaton1DimCurrentRow == settings.getHeight())
                 {
                     for(int row = 1; row < settings.getHeight(); row++)
                     {
                         System.arraycopy(pixels, row * settings.getWidth(), pixels, (row - 1) * settings.getWidth(), settings.getWidth());
                     }
-                    --automaton1DimRow;
+                    --automaton1DimCurrentRow;
                 }
 
                 for(Cell cell : automaton)
                 {
                     Coords1D coords = (Coords1D) cell.getCoords();
-                    pixels[automaton1DimRow * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
+                    pixels[automaton1DimCurrentRow * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
                 }
-                ++automaton1DimRow;
+                ++automaton1DimCurrentRow;
             }
         }
     }
+    void repaint()
+    {
+        automatonPanel.repaint();
+    }
 
+    private void clearAutomatonPanel()
+    {
+        settings.setWidth((int) (automatonPanel.getWidth() /  settings.getCellSize()));
+        settings.setHeight((int) (automatonPanel.getHeight() /  settings.getCellSize()));
+        automatonPanel.setScale(settings.getCellSize());
+        automatonPanel.createBufferedImage(settings.getWidth(), settings.getHeight());
+        automatonPanel.repaint();
+    }
     private void executeActionWhenRunning(Runnable runnable)
     {
         if(automaton != null)
@@ -187,7 +212,7 @@ public class AutomatonManager
     {
         executeActionWhenRunning(() ->
         {
-            if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
+            if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife)
             {
                 ((GameOfLife) automaton).setComeAliveFactors(settings.getComeAliveFactors());
                 ((GameOfLife) automaton).setSurviveFactors(settings.getSurviveFactors());
@@ -202,7 +227,7 @@ public class AutomatonManager
     private Automaton getAutomatonFromSettings()
     {
         CellNeighborhood neighborhood = getCellNeighborhoodFromSettings();
-        if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
+        if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife)
         {
             UniformStateFactory stateFactory = new UniformStateFactory(BinaryState.DEAD);
             return new GameOfLife(settings.getSurviveFactors(), settings.getComeAliveFactors(), settings.getWidth(), settings.getHeight(),
@@ -243,66 +268,36 @@ public class AutomatonManager
         return null;
     }
 
-    public void randCells(Runnable invokeAfter)
+    private void resetAutomatonIfSettingsHasChanged()
     {
-        SwingWorker worker = new RandCellsWorker(this, invokeAfter);
-        worker.execute();
-    }
-
-    public int getLastSimulationTime()
-    {
-        return statistics.generationTime.get();
-    }
-
-    public int getGenerationCount()
-    {
-        return statistics.generationCount.get();
-    }
-
-    public int getAliveCellsCount()
-    {
-        return statistics.aliveCellsCount.get();
-    }
-
-    public int getRenderTime()
-    {
-        return statistics.renderTime.get();
-    }
-
-    public int getDeadCellsCount()
-    {
-        return statistics.deadCellsCount.get();
-    }
-
-    public int getTotalCellsCount()
-    {
-        return statistics.totalCellsCount.get();
-    }
-
-    public int getOnePassTime()
-    {
-        return statistics.timeOfOnePass.get();
-    }
-
-    public int getDelayFromSettings()
-    {
-        return this.simulationDelay.get();
+        if(settingsHasChanged)
+        {
+            init();
+            settingsHasChanged = false;
+        }
     }
 
     public AutomatonSettings getSettings()
     {
         return settings;
     }
+    public int getSimulationDelay()
+    {
+        return simulationDelay.get();
+    }
     public void setSelectedAutomaton(PossibleAutomaton selectedAutomaton)
     {
         settings.setSelectedAutomaton(selectedAutomaton);
-        init();
+        settingsHasChanged = true;
+        clearAutomatonPanel();
     }
 
     public void setCellSize(int cellSize)
     {
         settings.setCellSize(cellSize);
-        init();
+        automatonPanel.setScale(settings.getCellSize());
+        settingsHasChanged = true;
+        clearAutomatonPanel();
     }
 
     public void setSimulationDelay(int simulationDelay)
@@ -341,26 +336,13 @@ public class AutomatonManager
         setRulesFromSettings();
     }
 
-
-    class AutomatonStatistics
+    public AutomatonStatistics getStatistics()
     {
-        final AtomicInteger generationCount = new AtomicInteger();
-        final AtomicInteger aliveCellsCount = new AtomicInteger();
-        final AtomicInteger totalCellsCount = new AtomicInteger();
-        final AtomicInteger deadCellsCount  = new AtomicInteger();
-        final AtomicInteger renderTime = new AtomicInteger();
-        final AtomicInteger generationTime = new AtomicInteger();
-        final AtomicInteger timeOfOnePass = new AtomicInteger();
+        return statistics;
+    }
 
-        void resetStatistics()
-        {
-            statistics.generationCount.set(0);
-            statistics.renderTime.set(0);
-            statistics.generationTime.set(0);
-            statistics.aliveCellsCount.set(0);
-            statistics.deadCellsCount.set(0);
-            statistics.totalCellsCount.set(0);
-            statistics.timeOfOnePass.set(0);
-        }
+    public boolean isRunning()
+    {
+        return simulationThread.isRunning();
     }
 }

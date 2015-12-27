@@ -13,6 +13,7 @@ class SimulationThread implements Runnable
     private final Object IS_PAUSED_MONITOR = new Object();
     private final Object DRAWING_MONITOR = new Object();
     private final AutomatonManager manager;
+    private final AutomatonStatistics statistics;
 
     private AtomicBoolean isDrawing = new AtomicBoolean();
     private volatile boolean pauseThreadFlag = true;
@@ -25,6 +26,7 @@ class SimulationThread implements Runnable
     public SimulationThread(AutomatonManager manager)
     {
         this.manager = manager;
+        this.statistics = manager.getStatistics();
         this.drawingThread = new DrawingThread(manager, DRAWING_MONITOR, isDrawing);
 
         drawingThreadObject = new Thread(drawingThread, "DrawingThread");
@@ -45,21 +47,21 @@ class SimulationThread implements Runnable
 
             checkForPausedAndWait();
             timerSimulation.start();
-            manager.automaton.beginCalculatingNextState();
+            manager.getAutomaton().beginCalculatingNextState();
             timerSimulation.stop();
-            manager.statistics.generationTime.set(timerSimulation.getElapsed());
+            statistics.setGenerationTime(timerSimulation.getElapsed());
 
             waitForDrawing();
 
-            manager.automaton.endCalculatingNextState();
-            manager.statistics.generationCount.incrementAndGet();
-            manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
-            manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
+            manager.getAutomaton().endCalculatingNextState();
+            statistics.incrementGenerationsCount();
+            statistics.setAliveCellsCount(manager.getAutomaton().getAliveCount());
+            statistics.setDeadCellsCount(statistics.getTotalCellsCount()- statistics.getAliveCellsCount());
 
             timerTotal.stop();
-            manager.statistics.timeOfOnePass.set(timerTotal.getElapsed());
+            statistics.setTimeOfOnePass(timerTotal.getElapsed());
 
-            int currentDelay = manager.getDelayFromSettings() - 2*timerTotal.getElapsed();
+            int currentDelay = manager.getSimulationDelay() - 2*timerTotal.getElapsed();
             if(currentDelay > 1)
             {
                 try

@@ -33,7 +33,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private JSpinner radiusSpinnerOneDimRule, radiusSpinner;
     private TextField textFieldRules;
     private JRadioButton radioButtonMoore, radioButtonVonNeumann, radioButtonOneDim;
-    private JRadioButton oneDimAutomatonRadioButton, langtonAutomatonRadioButton, gameOfLiveAutomatonRadioButton;
+    private JRadioButton oneDimAutomatonRadioButton, langtonAutomatonRadioButton, gameOfLifeAutomatonRadioButton;
 
     private JButton colorPicker;
     private Color choosedColor = Color.RED;
@@ -85,8 +85,8 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
                 oneDimAutomatonRadioButton = radio;
             else if(automaton == PossibleAutomaton.Langton)
                 langtonAutomatonRadioButton = radio;
-            else if(automaton == PossibleAutomaton.GameOfLive)
-                gameOfLiveAutomatonRadioButton = radio;
+            else if(automaton == PossibleAutomaton.GameOfLife)
+                gameOfLifeAutomatonRadioButton = radio;
 
             disabledWhenRunning.add(radio);
             radio.setActionCommand(Commands.CHANGE_AUTOMATON.toString());
@@ -133,13 +133,13 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         panel.add(tmpPanel);
 
         tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        tmpPanel.add(new Label("Zasada dla GameOfLive/QuadLive:"));
+        tmpPanel.add(new Label("Zasada dla GameOfLife:"));
         textFieldRules = new TextField(automatonSettings.getFormattedRules());
-        textFieldRules.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
+        textFieldRules.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
                         automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
         tmpPanel.add(textFieldRules);
         applyRulesButton = new JButton("Zastosuj zasadę");
-        applyRulesButton.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
+        applyRulesButton.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
                 automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
         applyRulesButton.addActionListener(this);
         applyRulesButton.setActionCommand(Commands.CHANGE_TWO_DIM_RULES.toString());
@@ -202,7 +202,8 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         settingsPanel.add(panel);
         // ------------------------------------------------------------------------ \\
         panel = new JPanel(new GridLayout(2, 1));
-        panel.add(new BoldLabel("Opóźnienie między kolejnymi symulacjami [ms]"));
+        Label tmpLabel = new BoldLabel("Opóźnienie między kolejnymi symulacjami: " + automatonSettings.getSimulationDelay() + " [ms]");
+        panel.add(tmpLabel);
 
         slider = new JSlider(0, 1000, 0);
         slider.setMinorTickSpacing(50);
@@ -212,6 +213,8 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         slider.setName(Commands.CHANGE_SIMULATION_DELAY.toString());
         slider.setValue(automatonSettings.getSimulationDelay());
         slider.addChangeListener(this);
+        final JSlider finalSlider = slider;
+        slider.addChangeListener(e1 -> tmpLabel.setText("Opóźnienie między kolejnymi symulacjami: " + finalSlider.getValue() + " [ms]"));
         panel.add(slider);
         settingsPanel.add(panel);
         // ------------------------------------------------------------------------ \\
@@ -434,7 +437,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
             radiusSpinnerOneDimRule.setEnabled(false);
         }
 
-        if(!gameOfLiveAutomatonRadioButton.isSelected())
+        if(!gameOfLifeAutomatonRadioButton.isSelected())
         {
             textFieldRules.setEnabled(false);
             applyRulesButton.setEnabled(false);

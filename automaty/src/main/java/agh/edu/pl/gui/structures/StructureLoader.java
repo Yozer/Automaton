@@ -21,8 +21,8 @@ public abstract class StructureLoader
         String directoryName = "structures" + File.separator;
         List<StructureInfo> structureInfos = new ArrayList<>();
 
-        if(automaton == PossibleAutomaton.GameOfLive || automaton == PossibleAutomaton.QuadLife)
-            directoryName += "gameoflive";
+        if(automaton == PossibleAutomaton.GameOfLife || automaton == PossibleAutomaton.QuadLife)
+            directoryName += "gameoflife";
         else if(automaton == PossibleAutomaton.Langton)
             directoryName += "langton";
         else if(automaton == PossibleAutomaton.WireWorld)

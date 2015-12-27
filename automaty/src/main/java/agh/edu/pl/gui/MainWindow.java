@@ -3,6 +3,7 @@ package agh.edu.pl.gui;
 
 import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.logic.AutomatonManager;
+import agh.edu.pl.gui.logic.AutomatonStatistics;
 import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 import agh.edu.pl.gui.structures.StructureInfo;
 
@@ -16,18 +17,17 @@ import java.util.Objects;
 
 public class MainWindow extends MainWindowDesign
 {
-    // TODO refactor neighborhood
-    // TODO make drawing 60fps
-
     private final Timer timerStatistics;
     private final int statisticUpdateEvery = 500; // ms
 
-    private AutomatonManager automaton;
+    private final AutomatonManager automaton;
+    private final AutomatonStatistics statistics;
 
     public MainWindow()
     {
         super();
         automaton = new AutomatonManager(automatonPanel);
+        statistics = automaton.getStatistics();
         automatonPanel.addMouseListener(this);
 
         timerStatistics = new Timer(statisticUpdateEvery, updateStatistics());
@@ -65,13 +65,13 @@ public class MainWindow extends MainWindowDesign
     {
         return e ->
         {
-            setSimulationTimeLabel(automaton.getLastSimulationTime());
-            setGenerationCountLabel(automaton.getGenerationCount());
-            setAliveCellsCountLabel(automaton.getAliveCellsCount());
-            setDeadCellsLabel(automaton.getDeadCellsCount());
-            setTotalCellsLabel(automaton.getTotalCellsCount());
-            setRenderTimeLabel(automaton.getRenderTime());
-            setOnePassTimeLabel(automaton.getOnePassTime());
+            setSimulationTimeLabel(statistics.getLastSimulationTime());
+            setGenerationCountLabel(statistics.getGenerationsCount());
+            setAliveCellsCountLabel(statistics.getAliveCellsCount());
+            setDeadCellsLabel(statistics.getDeadCellsCount());
+            setTotalCellsLabel(statistics.getTotalCellsCount());
+            setRenderTimeLabel(statistics.getRenderTime());
+            setOnePassTimeLabel(statistics.getOnePassTime());
         };
     }
 

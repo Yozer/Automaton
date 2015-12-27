@@ -9,12 +9,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 class DrawingThread implements Runnable
 {
     private final AutomatonManager manager;
+    private final AutomatonStatistics statistics;
     private final Object DRAWING_MONITOR;
     private final AtomicBoolean shouldStartDraw;
 
     public DrawingThread(AutomatonManager manager, Object DRAWING_MONITOR, AtomicBoolean shouldStartDraw)
     {
         this.manager = manager;
+        this.statistics = manager.getStatistics();
         this.DRAWING_MONITOR = DRAWING_MONITOR;
         this.shouldStartDraw = shouldStartDraw;
     }
@@ -31,9 +33,9 @@ class DrawingThread implements Runnable
             timer.start();
             manager.drawCurrentAutomaton();
             timer.stop();
-            manager.statistics.renderTime.set(timer.getElapsed());
+            statistics.setRenderTime(timer.getElapsed());
 
-            SwingUtilities.invokeLater(manager.automatonPanel::repaint);
+            SwingUtilities.invokeLater(manager::repaint);
 
             shouldStartDraw.set(false);
             synchronized (DRAWING_MONITOR)

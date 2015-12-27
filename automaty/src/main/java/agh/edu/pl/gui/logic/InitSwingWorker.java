@@ -89,31 +89,31 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void>
     @Override
     protected Void doInBackground() throws IOException
     {
-        if(manager.automaton == null)
+        if(manager.getAutomaton() == null)
             manager.init();
 
-        Coords2D atPoint = new Coords2D((int)(x / manager.settings.getCellSize()), (int)(y / manager.settings.getCellSize()));
-        if(atPoint.getX() + structureInfo.getWidth() > manager.settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > manager.settings.getHeight())
+        Coords2D atPoint = new Coords2D((int)(x / manager.getSettings().getCellSize()), (int)(y / manager.getSettings().getCellSize()));
+        if(atPoint.getX() + structureInfo.getWidth() > manager.getSettings().getWidth() || atPoint.getY() + manager.getSettings().getHeight() > manager.getSettings().getHeight())
             return null;
 
         List<Cell> structure = null;
-        if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
+        if(manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.WireWorld)
             structure = new WireWorldStructureLoader().getStructure(structureInfo, atPoint);
-        else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
+        else if(manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.GameOfLife)
             structure = new RLEFormatStructureLoader(BinaryState.ALIVE, BinaryState.DEAD).getStructure(structureInfo, atPoint);
-        else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.QuadLife)
+        else if(manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.QuadLife)
             structure = new RLEFormatStructureLoader(QuadState.BLUE, QuadState.DEAD).getStructure(structureInfo, atPoint);
-        else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
+        else if(manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
             structure = new OneDimStructureLoader().getStructure(structureInfo, atPoint);
 
-        boolean isRunning = manager.simulationThread.isRunning();
+        boolean isRunning = manager.isRunning();
         if(isRunning)
             manager.pause();
 
-        manager.automaton.insertStructure(structure);
-        manager.automaton1DimRow = 0;
+        manager.getAutomaton().insertStructure(structure);
+        manager.resetAutomatonOneDimRow();
         manager.drawCurrentAutomaton();
-        manager. automatonPanel.repaint();
+        manager.repaint();
 
         if(isRunning)
             manager.start();
@@ -142,59 +142,60 @@ class RandCellsWorker extends SwingWorker<Void, Void>
     protected Void doInBackground()
     {
         List<Cell> someRand = null;
-        if(manager.automaton instanceof Automaton2Dim)
-            someRand = new ArrayList<>(manager.settings.getHeight() * manager.settings.getWidth());
-        else if(manager.automaton instanceof Automaton1Dim)
-            someRand = new ArrayList<>(manager.settings.getWidth());
+        if(manager.getAutomaton() instanceof Automaton2Dim)
+            someRand = new ArrayList<>(manager.getSettings().getHeight() * manager.getSettings().getWidth());
+        else if(manager.getAutomaton() instanceof Automaton1Dim)
+            someRand = new ArrayList<>(manager.getSettings().getWidth());
 
         Random random = new Random();
 
         manager.init();
         List<CellState> values = null;
-        if (manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
-                manager.settings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
+        if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
+                manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
         {
             values = Arrays.stream(BinaryState.values()).collect(Collectors.toList());
             for (int i = 0; i < 3; i++)
                 values.add(BinaryState.DEAD);
 
-        } else if (manager.settings.getSelectedAutomaton() == PossibleAutomaton.QuadLife)
+        } else if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.QuadLife)
         {
             values = Arrays.stream(QuadState.values()).collect(Collectors.toList());
             for (int i = 0; i < 4; i++)
                 values.add(QuadState.DEAD);
 
-        } else if (manager.settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
+        } else if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.WireWorld)
         {
             values = Arrays.stream(WireElectronState.values()).collect(Collectors.toList());
             for (int i = 0; i < 20; i++)
                 values.add(WireElectronState.VOID);
         }
 
-        if(manager.automaton instanceof Automaton2Dim)
+        if(manager.getAutomaton() instanceof Automaton2Dim)
         {
-            for (int x = 0; x < manager.settings.getWidth(); x++)
+            for (int x = 0; x < manager.getSettings().getWidth(); x++)
             {
-                for (int y = 0; y < manager.settings.getHeight(); y++)
+                for (int y = 0; y < manager.getSettings().getHeight(); y++)
                 {
                     someRand.add(new Cell(values.get(random.nextInt(values.size())), new Coords2D(x, y)));
                 }
             }
         }
-        else if(manager.automaton instanceof Automaton1Dim)
+        else if(manager.getAutomaton() instanceof Automaton1Dim)
         {
-            for (int x = 0; x < manager.settings.getWidth(); x++)
+            for (int x = 0; x < manager.getSettings().getWidth(); x++)
             {
                 someRand.add(new Cell(values.get(random.nextInt(values.size())), new Coords1D(x)));
             }
         }
 
-        manager.automaton.insertStructure(someRand);
-        manager.statistics.aliveCellsCount.set(manager.automaton.getAliveCount());
-        manager.statistics.deadCellsCount.set(manager.statistics.totalCellsCount.get() - manager.statistics.aliveCellsCount.get());
-        manager.automaton1DimRow = 0;
+        AutomatonStatistics statistics = manager.getStatistics();
+        manager.getAutomaton().insertStructure(someRand);
+        statistics.setAliveCellsCount(manager.getAutomaton().getAliveCount());
+        statistics.setDeadCellsCount(statistics.getTotalCellsCount() - statistics.getAliveCellsCount());
+        manager.resetAutomatonOneDimRow();
         manager.drawCurrentAutomaton();
-        manager.automatonPanel.repaint();
+        manager.repaint();
         return null;
     }
 
