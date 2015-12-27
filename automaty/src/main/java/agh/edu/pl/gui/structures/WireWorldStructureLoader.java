@@ -21,7 +21,7 @@ import java.util.Objects;
 public class WireWorldStructureLoader extends StructureLoader
 {
     @Override
-    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint)
+    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException
     {
         InputStreamReader streamReader = new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
         List<Cell> result = new ArrayList<>(structureInfo.getWidth() * structureInfo.getHeight());
@@ -47,9 +47,6 @@ public class WireWorldStructureLoader extends StructureLoader
                 }
                 y++;
             }
-
-        } catch (IOException e)
-        {
 
         }
 

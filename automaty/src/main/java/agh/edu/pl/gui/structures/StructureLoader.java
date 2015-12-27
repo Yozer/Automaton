@@ -59,5 +59,5 @@ public abstract class StructureLoader
 
         return structureInfos;
     }
-    public abstract List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint);
+    public abstract List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException;
 }

@@ -6,6 +6,7 @@ import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.BinaryState;
+import agh.edu.pl.automaton.cells.states.CellState;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,11 +20,21 @@ import java.util.regex.Pattern;
 /**
  * Created by Dominik on 2015-12-20.
  */
-public class GameOfLiveStructureLoader extends StructureLoader
+public class RLEFormatStructureLoader extends StructureLoader
 {
     private static Pattern pattern = Pattern.compile("([0-9]*)([bo])");
+    private final CellState aliveCellState;
+    private final CellState deadCellState;
+
+    public RLEFormatStructureLoader(CellState aliveCellState, CellState deadCellState)
+    {
+
+        this.aliveCellState = aliveCellState;
+        this.deadCellState = deadCellState;
+    }
+
     @Override
-    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint)
+    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException
     {
         StringBuilder source = new StringBuilder();
         InputStreamReader streamReader = new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
@@ -33,9 +44,6 @@ public class GameOfLiveStructureLoader extends StructureLoader
             String line = null;
             while((line = reader.readLine()) != null && line.length() != 0)
                 source.append(line);
-
-        } catch (IOException e)
-        {
 
         }
 
@@ -66,21 +74,19 @@ public class GameOfLiveStructureLoader extends StructureLoader
                     }
 
                     char c =  matcher.group(2).charAt(0);
-                    BinaryState binaryState;
+                    CellState cellState;
                     if(c == 'b')
-                        binaryState = BinaryState.DEAD;
+                        cellState = deadCellState;
                     else
-                        binaryState = BinaryState.ALIVE;
+                        cellState = aliveCellState;
 
                     for(int j = 0; j < number; j++)
                     {
-                        result.add(new Cell(binaryState, new Coords2D(x, y)));
+                        result.add(new Cell(cellState, new Coords2D(x, y)));
                         x++;
                     }
-
                 }
             }
-
             y++;
         }
 

@@ -20,7 +20,7 @@ import java.util.List;
 public class OneDimStructureLoader extends StructureLoader
 {
     @Override
-    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint)
+    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException
     {
         InputStreamReader streamReader = new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
         List<Cell> result = new ArrayList<>(structureInfo.getWidth());
@@ -32,9 +32,6 @@ public class OneDimStructureLoader extends StructureLoader
                 result.add(new Cell(BinaryState.DEAD, new Coords1D(((Coords2D) startPoint).getX())));
             else
                 result.add(new Cell(BinaryState.ALIVE, new Coords1D(((Coords2D) startPoint).getX())));
-        } catch (IOException e)
-        {
-            System.out.println(e.getMessage());
         }
 
         return result;

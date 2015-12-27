@@ -59,8 +59,8 @@ class SimulationThread implements Runnable
             timerTotal.stop();
             manager.statistics.timeOfOnePass.set(timerTotal.getElapsed());
 
-            int currentDelay = manager.getDelayFromSettings() - timerTotal.getElapsed();
-            if(currentDelay > 10)
+            int currentDelay = manager.getDelayFromSettings() - 2*timerTotal.getElapsed();
+            if(currentDelay > 1)
             {
                 try
                 {

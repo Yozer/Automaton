@@ -7,12 +7,13 @@ import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
-import agh.edu.pl.gui.structures.GameOfLiveStructureLoader;
+import agh.edu.pl.gui.structures.RLEFormatStructureLoader;
 import agh.edu.pl.gui.structures.OneDimStructureLoader;
 import agh.edu.pl.gui.structures.StructureInfo;
 import agh.edu.pl.gui.structures.WireWorldStructureLoader;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,7 +57,7 @@ class PauseSwingWorker extends SwingWorker<Void, Void>
     }
 
     @Override
-    protected Void doInBackground() throws Exception
+    protected Void doInBackground()
     {
         automatonManager.pause();
         return null;
@@ -86,7 +87,7 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void>
 
 
     @Override
-    protected Void doInBackground() throws Exception
+    protected Void doInBackground() throws IOException
     {
         if(manager.automaton == null)
             manager.init();
@@ -99,7 +100,9 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void>
         if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.WireWorld)
             structure = new WireWorldStructureLoader().getStructure(structureInfo, atPoint);
         else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
-            structure = new GameOfLiveStructureLoader().getStructure(structureInfo, atPoint);
+            structure = new RLEFormatStructureLoader(BinaryState.ALIVE, BinaryState.DEAD).getStructure(structureInfo, atPoint);
+        else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.QuadLife)
+            structure = new RLEFormatStructureLoader(QuadState.BLUE, QuadState.DEAD).getStructure(structureInfo, atPoint);
         else if(manager.settings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
             structure = new OneDimStructureLoader().getStructure(structureInfo, atPoint);
 
