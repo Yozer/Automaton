@@ -3,7 +3,9 @@ package agh.edu.pl.gui;
 
 import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.logic.AutomatonManager;
+import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 import agh.edu.pl.gui.structures.StructureInfo;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -57,7 +59,6 @@ public class MainWindow extends MainWindowDesign
     }
     private void insertStructure(StructureInfo structureInfo, int x, int y)
     {
-        // TODO check if it has to be done in different thread
         if(automaton.getSettings().getSelectedAutomaton() == PossibleAutomaton.Langton)
             automaton.insertAnt(structureInfo, x, y, getColorFromChooser());
         else
@@ -139,7 +140,15 @@ public class MainWindow extends MainWindowDesign
         }
         else if(cmd.equals(Commands.CHANGE_TWO_DIM_RULES.toString()))
         {
-            automaton.setRulesTwoDim(getRulesString());
+            String rulesString = getRulesString();
+            try
+            {
+                automaton.setRulesTwoDim(rulesString);
+            }
+            catch (IllegalRulesFormatException ex)
+            {
+                JOptionPane.showMessageDialog(null, "Niepoprawny format! Przykład: 23/3!", "Ostrzeżenie", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }
 

@@ -10,7 +10,9 @@ import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.*;
 import agh.edu.pl.gui.*;
 import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 import agh.edu.pl.gui.structures.*;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 // TODO add resetting automaton after changing new options
 // TODO add controlling distribution of each cell type during rand
 // TODO disable random for langton and enable color picker when inserting structs (need to be refactored anyway)
-// TODO add error checking for rules parsing
 // TODO add better disabling/enabling controls
 public class AutomatonManager
 {
@@ -300,7 +301,7 @@ public class AutomatonManager
         settings.setWrap(wrap);
     }
 
-    public void setRulesTwoDim(String rulesTwoDim)
+    public void setRulesTwoDim(String rulesTwoDim) throws IllegalRulesFormatException
     {
         settings.setFormattedRules(rulesTwoDim);
     }

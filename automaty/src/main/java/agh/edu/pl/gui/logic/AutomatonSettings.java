@@ -1,6 +1,7 @@
 package agh.edu.pl.gui.logic;
 
 import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -120,8 +121,13 @@ public class AutomatonSettings
         return surviveFactors.stream().map(t -> Integer.toString(t)).collect(Collectors.joining()) + "/" +
                 comeAliveFactors.stream().map(t -> Integer.toString(t)).collect(Collectors.joining());
     }
-    void setFormattedRules(String str)
+    void setFormattedRules(String str) throws IllegalRulesFormatException
     {
+        if(str.equals("") ||
+                asList(str).stream().filter(t -> t == '/').count() != 1 ||
+                asList(str).stream().filter(t -> !Character.isDigit(t) && t != '/').findAny().isPresent())
+            throw new IllegalRulesFormatException("Invalid format!");
+
         String splited[] = str.split("/");
         surviveFactors = new HashSet<>(asList(splited[0]).stream().map(Character::getNumericValue).collect(Collectors.toList()));
         comeAliveFactors = new HashSet<>(asList(splited[1]).stream().map(Character::getNumericValue).collect(Collectors.toList()));
@@ -140,3 +146,4 @@ public class AutomatonSettings
         this.oneDimRule = oneDimRule;
     }
 }
+
