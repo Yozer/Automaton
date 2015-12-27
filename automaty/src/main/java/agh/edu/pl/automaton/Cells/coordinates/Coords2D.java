@@ -35,6 +35,8 @@ public class Coords2D implements CellCoordinates
     @Override
     public boolean equals(Object obj)
     {
+        if(obj == null || !(obj instanceof Coords2D))
+            return false;
         Coords2D c = ((Coords2D) obj);
         return x == c.getX() && y == c.getY();
     }

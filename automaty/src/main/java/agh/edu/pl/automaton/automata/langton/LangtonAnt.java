@@ -19,6 +19,7 @@ public class LangtonAnt extends Automaton2Dim
 {
     private List<Ant> currentAnts = new ArrayList<>();
     private List<Ant> nextStateAnts = new ArrayList<>();
+    private int idCounter = 0;
 
     public LangtonAnt(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood)
     {
@@ -32,11 +33,11 @@ public class LangtonAnt extends Automaton2Dim
             throw new IllegalArgumentException("Ant has to be inside plane");
         }
 
-        Ant ant = new Ant(antCoords, antRotation, antColor, getWidth(), getHeight());
+        Ant ant = new Ant(antCoords, antRotation, antColor, getWidth(), getHeight(), idCounter++);
         currentAnts.add(ant);
         insertStructure(Collections.singletonList(new Cell(new BinaryAntState(BinaryState.DEAD), antCoords)));
 
-        nextStateAnts.add(ant.clone());
+        nextStateAnts.add(ant.cloneAnt());
         return ant;
     }
     public List<Ant> getAnts()
@@ -68,7 +69,7 @@ public class LangtonAnt extends Automaton2Dim
                 {
                     if (currentAnt.getId() == nextStateAnts.get(i).getId())
                     {
-                        nextStateAnts.set(i, currentAnt.clone());
+                        nextStateAnts.set(i, currentAnt.cloneAnt());
                         nextStateAnt = nextStateAnts.get(i);
                         break;
                     }

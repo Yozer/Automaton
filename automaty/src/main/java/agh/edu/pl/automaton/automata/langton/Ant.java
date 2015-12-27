@@ -4,10 +4,8 @@ import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.awt.*;
 
-public class Ant implements Cloneable
+public class Ant
 {
-    private static int ID_COUNTER = 0;
-
     private int id;
     private Coords2D coordinates;
     private AntState antState;
@@ -15,11 +13,12 @@ public class Ant implements Cloneable
 
     private int automatonWidth, automatonHeight;
 
-    Ant(Coords2D coordinates, AntState antState, Color antColor, int automatonWidth, int automatonHeight)
+    Ant(Coords2D coordinates, AntState antState, Color antColor, int automatonWidth, int automatonHeight, int id)
     {
         this(antState, antColor, automatonWidth, automatonHeight);
         this.coordinates = coordinates;
-        id = ID_COUNTER++;
+        this.id = id;
+
     }
     private Ant(AntState antState, Color antColor, int automatonWidth, int automatonHeight)
     {
@@ -90,8 +89,8 @@ public class Ant implements Cloneable
     {
         return id;
     }
-    @Override
-    public Ant clone()
+
+    Ant cloneAnt()
     {
         Ant ant = new Ant(this.getAntState(), this.getAntColor(), this.automatonWidth, this.automatonHeight);
         ant.coordinates = this.getCoordinates();

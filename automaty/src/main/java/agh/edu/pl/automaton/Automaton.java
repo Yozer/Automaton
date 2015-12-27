@@ -312,6 +312,8 @@ public abstract class Automaton implements Iterable<Cell>
         @Override
         public Cell next()
         {
+            if(!hasNext())
+                throw new NoSuchElementException();
             return currentCells[currentChangeList[++i]];
         }
         @Override

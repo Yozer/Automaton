@@ -23,7 +23,7 @@ public class WireWorldStructureLoader extends StructureLoader
     @Override
     public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException
     {
-        InputStreamReader streamReader = new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
+        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
         List<Cell> result = new ArrayList<>(structureInfo.getWidth() * structureInfo.getHeight());
         int startY = ((Coords2D) startPoint).getY();
         int startX = ((Coords2D) startPoint).getX();

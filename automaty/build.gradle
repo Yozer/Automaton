@@ -1,8 +1,10 @@
 apply plugin: 'java'
-compileJava.options.encoding = 'UTF-8'
 apply plugin: 'application'
 apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: "jacoco"
 apply plugin: 'findbugs'
+compileJava.options.encoding = 'UTF-8'
 mainClassName = "agh.edu.pl.Main"
 
 repositories {
@@ -13,6 +15,14 @@ tasks.withType(FindBugs) {
     reports {
         xml.enabled = false
         html.enabled = true
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
     }
 }
 

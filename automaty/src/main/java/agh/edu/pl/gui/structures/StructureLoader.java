@@ -18,7 +18,7 @@ public abstract class StructureLoader
 {
     public static List<StructureInfo> getAvailableStructures(PossibleAutomaton automaton)
     {
-        String directoryName = "structures" + File.separator;
+        String directoryName = "/structures/";
         List<StructureInfo> structureInfos = new ArrayList<>();
 
         if(automaton == PossibleAutomaton.GameOfLife || automaton == PossibleAutomaton.QuadLife)
@@ -32,11 +32,9 @@ public abstract class StructureLoader
         else
             return structureInfos;
 
-
-        directoryName += File.separator;
-
+        directoryName += "/";
         try(BufferedReader reader = new BufferedReader(
-                new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(directoryName + "info.txt"), Charset.forName("UTF-8"))))
+                new InputStreamReader(Main.class.getResourceAsStream(directoryName + "info.txt"), Charset.forName("UTF-8"))))
         {
             String line = null;
             while((line = reader.readLine())!= null)

@@ -11,7 +11,7 @@ public class OneDimensionalNeighborhood implements CellNeighborhood
 {
     private boolean wrap;
     private int width = 2;
-    private final int r = 1;
+    private static final int r = 1;
 
     public OneDimensionalNeighborhood(boolean wrap, int width)
     {

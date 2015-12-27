@@ -8,13 +8,13 @@ import agh.edu.pl.automaton.cells.coordinates.*;
 import agh.edu.pl.automaton.cells.neighborhoods.*;
 import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.*;
-import agh.edu.pl.gui.*;
 import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 import agh.edu.pl.gui.structures.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Dominik on 2015-12-13.
  */
 // TODO add controlling distribution of each cell type during rand
-// TODO refactor neighborhood
 // TODO make drawing 60fps - check if it would be faster then drawing each generation
 
 public class AutomatonManager
@@ -52,7 +51,6 @@ public class AutomatonManager
     public void start(Runnable invokeAfter)
     {
         resetAutomatonIfSettingsHasChanged();
-
         simulationThread.resumeThread();
         invokeAfter.run();
     }
@@ -70,17 +68,27 @@ public class AutomatonManager
     }
     public void insertStructure(StructureInfo structureInfo, int x, int y)
     {
+        resetAutomatonIfSettingsHasChanged();
         SwingWorker swingWorker = new InsertStructureSwingWorker(this, structureInfo, x, y);
         swingWorker.execute();
     }
 
     public void insertAnt(StructureInfo structureInfo, int x, int y, Color antColor)
     {
+        resetAutomatonIfSettingsHasChanged();
         Coords2D atPoint = new Coords2D((int)(x / settings.getCellSize()), (int)(y / settings.getCellSize()));
         if(atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
             return;
 
-        LangtonAntStructureLoader.AntInfo ant = new LangtonAntStructureLoader().loadAnt(structureInfo, atPoint);
+        LangtonAntStructureLoader.AntInfo ant = null;
+        try
+        {
+            ant = new LangtonAntStructureLoader().loadAnt(structureInfo, atPoint);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+            return;
+        }
 
         boolean isRunning = simulationThread.isRunning();
         if(isRunning)
@@ -97,7 +105,6 @@ public class AutomatonManager
     public void randCells(Runnable invokeAfter)
     {
         resetAutomatonIfSettingsHasChanged();
-
         SwingWorker worker = new RandCellsWorker(this, invokeAfter);
         worker.execute();
     }

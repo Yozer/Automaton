@@ -63,9 +63,9 @@ class DrawingThread implements Runnable
 
     public void draw()
     {
-        shouldStartDraw.set(true);
         synchronized (this)
         {
+            shouldStartDraw.set(true);
             notify();
         }
     }

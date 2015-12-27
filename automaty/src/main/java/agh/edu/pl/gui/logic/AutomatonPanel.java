@@ -1,4 +1,4 @@
-package agh.edu.pl.gui;
+package agh.edu.pl.gui.logic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ public class AutomatonPanel extends JPanel
     private BufferedImage bufferedImageBorder;
     private float scale = 1.0f;
 
-    public static final Object LOCKER = new Object();
+    static final Object LOCKER = new Object();
 
     public AutomatonPanel()
     {
@@ -47,7 +47,7 @@ public class AutomatonPanel extends JPanel
         }
     }
 
-    public void setScale(float scale)
+    void setScale(float scale)
     {
         if(scale == this.scale)
             return;
@@ -86,15 +86,12 @@ public class AutomatonPanel extends JPanel
         }
     }
 
-    public int[] getPixelsForDrawing()
+    int[] getPixelsForDrawing()
     {
         return pixels;
     }
-    public void createBufferedImage(int width, int height)
+    void createBufferedImage(int width, int height)
     {
-//        if (bufferedImage != null && bufferedImage.getWidth() == width && bufferedImage.getHeight() == height)
-//            return;
-
         bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
     }

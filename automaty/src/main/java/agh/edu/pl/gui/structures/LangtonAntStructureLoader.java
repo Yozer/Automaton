@@ -15,34 +15,30 @@ import java.nio.charset.Charset;
  */
 public class LangtonAntStructureLoader
 {
-    public AntInfo loadAnt(StructureInfo structureInfo, Coords2D atPoint)
+    public AntInfo loadAnt(StructureInfo structureInfo, Coords2D atPoint) throws IOException
     {
-        InputStreamReader streamReader = new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
+        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
 
         try(BufferedReader reader = new BufferedReader(streamReader))
         {
             String line = reader.readLine();
+            if (line == null)
+                throw new IOException();
             AntState antState = null;
-            if(line.equals("L"))
+            if (line.equals("L"))
                 antState = AntState.WEST;
-            else if(line.equals("U"))
+            else if (line.equals("U"))
                 antState = AntState.NORTH;
-            else if(line.equals("D"))
+            else if (line.equals("D"))
                 antState = AntState.SOUTH;
-            else if(line.equals("R"))
+            else if (line.equals("R"))
                 antState = AntState.EAST;
 
             return new AntInfo(antState, atPoint);
-
-        } catch (IOException e)
-        {
-
         }
-
-        return null;
     }
 
-    public class AntInfo
+    public static class AntInfo
     {
         private final AntState antState;
         private final Coords2D antCoords;

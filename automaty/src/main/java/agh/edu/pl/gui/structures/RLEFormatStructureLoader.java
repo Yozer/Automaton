@@ -37,7 +37,7 @@ public class RLEFormatStructureLoader extends StructureLoader
     public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException
     {
         StringBuilder source = new StringBuilder();
-        InputStreamReader streamReader = new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
+        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
 
         try(BufferedReader reader = new BufferedReader(streamReader))
         {

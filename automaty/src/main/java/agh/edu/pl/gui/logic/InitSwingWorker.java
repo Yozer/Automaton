@@ -105,6 +105,8 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void>
             structure = new RLEFormatStructureLoader(QuadState.BLUE, QuadState.DEAD).getStructure(structureInfo, atPoint);
         else if(manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
             structure = new OneDimStructureLoader().getStructure(structureInfo, atPoint);
+        else
+            throw new IllegalArgumentException("Invalid automaton!");
 
         boolean isRunning = manager.isRunning();
         if(isRunning)
@@ -146,6 +148,8 @@ class RandCellsWorker extends SwingWorker<Void, Void>
             someRand = new ArrayList<>(manager.getSettings().getHeight() * manager.getSettings().getWidth());
         else if(manager.getAutomaton() instanceof Automaton1Dim)
             someRand = new ArrayList<>(manager.getSettings().getWidth());
+        else
+            throw new IllegalArgumentException("Invalid automaton!");
 
         Random random = new Random();
 
@@ -169,6 +173,10 @@ class RandCellsWorker extends SwingWorker<Void, Void>
             values = Arrays.stream(WireElectronState.values()).collect(Collectors.toList());
             for (int i = 0; i < 20; i++)
                 values.add(WireElectronState.VOID);
+        }
+        else
+        {
+            throw new IllegalArgumentException("Invalid automaton!");
         }
 
         if(manager.getAutomaton() instanceof Automaton2Dim)

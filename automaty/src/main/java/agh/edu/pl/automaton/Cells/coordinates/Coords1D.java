@@ -27,8 +27,7 @@ public class Coords1D implements CellCoordinates
     @Override
     public boolean equals(Object obj)
     {
-        Coords1D c = ((Coords1D) obj);
-        return c.getX() == x;
+        return obj != null && obj instanceof Coords1D && ((Coords1D) obj).getX() == x;
     }
 
     @Override

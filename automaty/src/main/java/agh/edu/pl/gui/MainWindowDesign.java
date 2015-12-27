@@ -1,6 +1,7 @@
 package agh.edu.pl.gui;
 
 import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.logic.AutomatonPanel;
 import agh.edu.pl.gui.logic.AutomatonSettings;
 import agh.edu.pl.gui.structures.StructureInfo;
 import agh.edu.pl.gui.structures.StructureLoader;

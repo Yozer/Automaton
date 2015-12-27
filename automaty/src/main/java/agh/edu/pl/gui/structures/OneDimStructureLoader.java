@@ -22,12 +22,14 @@ public class OneDimStructureLoader extends StructureLoader
     @Override
     public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException
     {
-        InputStreamReader streamReader = new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
+        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
         List<Cell> result = new ArrayList<>(structureInfo.getWidth());
 
         try(BufferedReader reader = new BufferedReader(streamReader))
         {
             String line = reader.readLine();
+            if(line == null)
+                throw new IOException();
             if(line.equals("b"))
                 result.add(new Cell(BinaryState.DEAD, new Coords1D(((Coords2D) startPoint).getX())));
             else

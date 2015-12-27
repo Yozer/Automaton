@@ -18,7 +18,7 @@ import java.util.Objects;
 public class MainWindow extends MainWindowDesign
 {
     private final Timer timerStatistics;
-    private final int statisticUpdateEvery = 500; // ms
+    private static final int statisticUpdateEvery = 500; // ms
 
     private final AutomatonManager automaton;
     private final AutomatonStatistics statistics;
