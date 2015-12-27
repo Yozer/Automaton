@@ -5,10 +5,7 @@ import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
-import agh.edu.pl.automaton.cells.states.BinaryState;
-import agh.edu.pl.automaton.cells.states.CellState;
-import agh.edu.pl.automaton.cells.states.QuadState;
-import agh.edu.pl.automaton.cells.states.WireElectronState;
+import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 import agh.edu.pl.gui.structures.GameOfLiveStructureLoader;
 import agh.edu.pl.gui.structures.OneDimStructureLoader;
@@ -26,13 +23,11 @@ class InitSwingWorker extends SwingWorker<Void, Void>
 {
     private final AutomatonManager automatonManager;
     private final Runnable invokeAfter;
-    private final boolean startImmediately;
 
-    public InitSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter, boolean startImmediately)
+    public InitSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter)
     {
         this.automatonManager = automatonManager;
         this.invokeAfter = invokeAfter;
-        this.startImmediately = startImmediately;
     }
 
     @Override
@@ -45,10 +40,6 @@ class InitSwingWorker extends SwingWorker<Void, Void>
     @Override
     protected void done()
     {
-        if(startImmediately)
-        {
-            automatonManager.start();
-        }
         invokeAfter.run();
     }
 }
@@ -60,7 +51,6 @@ class PauseSwingWorker extends SwingWorker<Void, Void>
 
     public PauseSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter)
     {
-
         this.automatonManager = automatonManager;
         this.invokeAfter = invokeAfter;
     }

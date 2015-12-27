@@ -29,9 +29,11 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private JCheckBox wrappingCheckBox;
 
     private JComboBox<StructureInfo> structuresList;
-    private JButton insertStructButton;
-    private JSpinner radiusSpinner;
+    private JButton insertStructButton, applyRulesButton;
+    private JSpinner radiusSpinnerOneDimRule, radiusSpinner;
     private TextField textFieldRules;
+    private JRadioButton radioButtonMoore, radioButtonVonNeumann, radioButtonOneDim;
+    private JRadioButton oneDimAutomatonRadioButton, langtonAutomatonRadioButton, gameOfLiveAutomatonRadioButton;
 
     private JButton colorPicker;
     private Color choosedColor = Color.RED;
@@ -79,6 +81,13 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         for (PossibleAutomaton automaton : PossibleAutomaton.values())
         {
             JRadioButton radio = new JRadioButton(automaton.toString());
+            if(automaton == PossibleAutomaton.Jednowymiarowy)
+                oneDimAutomatonRadioButton = radio;
+            else if(automaton == PossibleAutomaton.Langton)
+                langtonAutomatonRadioButton = radio;
+            else if(automaton == PossibleAutomaton.GameOfLive)
+                gameOfLiveAutomatonRadioButton = radio;
+
             disabledWhenRunning.add(radio);
             radio.setActionCommand(Commands.CHANGE_AUTOMATON.toString());
             group.add(radio);
@@ -116,13 +125,12 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         JPanel tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         tmpPanel.add(new Label("Zasada dla jednowymiarowego [0-255]:"));
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(automatonSettings.getOneDimRule(), 0, 255, 1);
-        radiusSpinner = new JSpinner(spinnerModel);
-        radiusSpinner.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy);
-        radiusSpinner.addChangeListener(this);
-        radiusSpinner.setName(Commands.CHANGE_ONE_DIM_RULES.toString());
-        tmpPanel.add(radiusSpinner);
+        radiusSpinnerOneDimRule = new JSpinner(spinnerModel);
+        radiusSpinnerOneDimRule.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy);
+        radiusSpinnerOneDimRule.addChangeListener(this);
+        radiusSpinnerOneDimRule.setName(Commands.CHANGE_ONE_DIM_RULES.toString());
+        tmpPanel.add(radiusSpinnerOneDimRule);
         panel.add(tmpPanel);
-        disabledWhenRunning.add(radiusSpinner);
 
         tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         tmpPanel.add(new Label("Zasada dla GameOfLive/QuadLive:"));
@@ -130,14 +138,12 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         textFieldRules.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
                         automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
         tmpPanel.add(textFieldRules);
-        disabledWhenRunning.add(textFieldRules);
-        JButton applyBtn = new JButton("Zastosuj zasadę");
-        applyBtn.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
+        applyRulesButton = new JButton("Zastosuj zasadę");
+        applyRulesButton.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive ||
                 automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
-        applyBtn.addActionListener(this);
-        applyBtn.setActionCommand(Commands.CHANGE_TWO_DIM_RULES.toString());
-        disabledWhenRunning.add(applyBtn);
-        tmpPanel.add(applyBtn);
+        applyRulesButton.addActionListener(this);
+        applyRulesButton.setActionCommand(Commands.CHANGE_TWO_DIM_RULES.toString());
+        tmpPanel.add(applyRulesButton);
         panel.add(tmpPanel);
 
         settingsPanel.add(panel);
@@ -149,29 +155,29 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
         tmpPanel = new JPanel(new GridLayout(1, 3));
 
-        JRadioButton radioButton = new JRadioButton("Moore");
-        radioButton.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
-        radioButton.addActionListener(this);
-        radioButton.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.Moore);
-        group.add(radioButton);
-        tmpPanel.add(radioButton);
-        disabledWhenRunning.add(radioButton);
+        radioButtonMoore = new JRadioButton("Moore");
+        radioButtonMoore.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
+        radioButtonMoore.addActionListener(this);
+        radioButtonMoore.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.Moore);
+        radioButtonMoore.setEnabled(automatonSettings.getNeighborHood() != CellNeighborhoodType.OneDim);
+        group.add(radioButtonMoore);
+        tmpPanel.add(radioButtonMoore);
 
-        radioButton = new JRadioButton("von Neumann");
-        radioButton.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
-        radioButton.addActionListener(this);
-        radioButton.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.VonNeumann);
-        group.add(radioButton);
-        tmpPanel.add(radioButton);
-        disabledWhenRunning.add(radioButton);
+        radioButtonVonNeumann = new JRadioButton("von Neumann");
+        radioButtonVonNeumann.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
+        radioButtonVonNeumann.addActionListener(this);
+        radioButtonVonNeumann.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.VonNeumann);
+        radioButtonVonNeumann.setEnabled(automatonSettings.getNeighborHood() != CellNeighborhoodType.OneDim);
+        group.add(radioButtonVonNeumann);
+        tmpPanel.add(radioButtonVonNeumann);
 
-        radioButton = new JRadioButton("Jednowymiarowe");
-        radioButton.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
-        radioButton.addActionListener(this);
-        radioButton.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.OneDim);
-        group.add(radioButton);
-        tmpPanel.add(radioButton);
-        disabledWhenRunning.add(radioButton);
+        radioButtonOneDim = new JRadioButton("Jednowymiarowe");
+        radioButtonOneDim.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
+        radioButtonOneDim.addActionListener(this);
+        radioButtonOneDim.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.OneDim);
+        radioButtonOneDim.setEnabled(automatonSettings.getNeighborHood() == CellNeighborhoodType.OneDim);
+        group.add(radioButtonOneDim);
+        tmpPanel.add(radioButtonOneDim);
 
         panel.add(tmpPanel);
         settingsPanel.add(panel);
@@ -184,6 +190,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         radiusSpinner.addChangeListener(this);
         radiusSpinner.setName(Commands.CHANGE_NEIGHBORHOOD_RADIUS.toString());
         radiusSpinner.setMaximumSize(new Dimension(25, 25));
+        radiusSpinner.setEnabled(automatonSettings.getSelectedAutomaton() != PossibleAutomaton.Jednowymiarowy);
         panel.add(radiusSpinner);
 
         wrappingCheckBox = new JCheckBox("Zawijać planszę?");
@@ -192,8 +199,6 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         wrappingCheckBox.setActionCommand(Commands.SET_WRAP.toString());
         panel.add(wrappingCheckBox);
 
-        disabledWhenRunning.add(radiusSpinner);
-        disabledWhenRunning.add(wrappingCheckBox);
         settingsPanel.add(panel);
         // ------------------------------------------------------------------------ \\
         panel = new JPanel(new GridLayout(2, 1));
@@ -281,6 +286,19 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         // ------------------------------------------------------------------------ \\
 
         add(mainPanel);
+    }
+
+    protected void selectOneDimNeighborhood()
+    {
+        radioButtonOneDim.setSelected(true);
+    }
+    protected void selectMooreNeighborhood()
+    {
+        radioButtonMoore.setSelected(true);
+    }
+    protected void setProperGuiSettings()
+    {
+        enableSettingsPanel();
     }
 
     protected String getRulesString()
@@ -391,18 +409,54 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     }
 
     private void disableSettingsPanel() { switchStatePanel(settingsPanel, false);}
-    private void enableSettingsPanel() { switchStatePanel(settingsPanel, true);}
+    private void enableSettingsPanel()
+    {
+        switchStatePanel(settingsPanel, true);
+
+        // just restore
+        if(oneDimAutomatonRadioButton.isSelected())
+        {
+            radioButtonVonNeumann.setEnabled(false);
+            radioButtonMoore.setEnabled(false);
+        }
+        else if(langtonAutomatonRadioButton.isSelected())
+        {
+            radioButtonVonNeumann.setEnabled(false);
+            radioButtonMoore.setEnabled(false);
+            radioButtonOneDim.setEnabled(false);
+            radiusSpinner.setEnabled(false);
+            radiusSpinnerOneDimRule.setEnabled(false);
+        }
+        else
+        {
+            radiusSpinnerOneDimRule.setEnabled(false);
+            radioButtonOneDim.setEnabled(false);
+            radiusSpinnerOneDimRule.setEnabled(false);
+        }
+
+        if(!gameOfLiveAutomatonRadioButton.isSelected())
+        {
+            textFieldRules.setEnabled(false);
+            applyRulesButton.setEnabled(false);
+        }
+
+        if(radioButtonOneDim.isSelected())
+            radiusSpinner.setEnabled(false);
+
+    }
     private void switchStatePanel(JPanel panel, boolean state)
     {
         panel.setEnabled(state);
 
         Component[] components = panel.getComponents();
 
-        for(int i = 0; i < components.length; i++) {
-            if(components[i].getClass().getName() == "javax.swing.JPanel") {
-                switchStatePanel((JPanel) components[i], state);
+        for (Component component : components)
+        {
+            if (Objects.equals(component.getClass().getName(), "javax.swing.JPanel"))
+            {
+                switchStatePanel((JPanel) component, state);
             }
-            components[i].setEnabled(state);
+            component.setEnabled(state);
         }
     }
 }

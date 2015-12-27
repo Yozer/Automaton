@@ -5,7 +5,6 @@ import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.logic.AutomatonManager;
 import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 import agh.edu.pl.gui.structures.StructureInfo;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -36,11 +35,9 @@ public class MainWindow extends MainWindowDesign
         timerStatistics.setCoalesce(true);
         timerStatistics.start();
     }
-
     private void initAutomaton()
     {
-        //setStateBusy();
-        automaton.init(this::setStatePaused, false);
+        automaton.init(this::setStatePaused);
     }
     private void randCells()
     {
@@ -92,9 +89,19 @@ public class MainWindow extends MainWindowDesign
                 showColorChooser();
             else
                 hideColorChooser();
+            if(selectedAutomaton == PossibleAutomaton.Jednowymiarowy)
+            {
+                selectOneDimNeighborhood();
+                automaton.setNeighborhoodType(CellNeighborhoodType.OneDim);
+            }
+            else if(automaton.getSettings().getNeighborHood() == CellNeighborhoodType.OneDim)
+            {
+                selectMooreNeighborhood();
+                automaton.setNeighborhoodType(CellNeighborhoodType.Moore);
+            }
 
+            setProperGuiSettings();
             setStructureList(selectedAutomaton);
-            initAutomaton();
         }
         else if(cmd.equals(Commands.START_AUTOMATON.toString()))
         {
@@ -131,8 +138,10 @@ public class MainWindow extends MainWindowDesign
         {
             String btnText = ((JRadioButton) e.getSource()).getText();
             automaton.setNeighborhoodType(btnText.equals("Moore") ? CellNeighborhoodType.Moore :
-                    btnText.equals("Von Neumann") ? CellNeighborhoodType.VonNeumann :
+                    btnText.equals("von Neumann") ? CellNeighborhoodType.VonNeumann :
                     btnText.equals("Jednowymiarowe") ? CellNeighborhoodType.OneDim : null);
+
+            setProperGuiSettings();
         }
         else if(cmd.equals(Commands.SET_WRAP.toString()))
         {
@@ -164,7 +173,6 @@ public class MainWindow extends MainWindowDesign
             if (name.equals(Commands.CHANGE_CELL_SIZE.toString()))
             {
                 automaton.setCellSize(slider.getValue());
-                initAutomaton();
             }
             else if(name.equals(Commands.CHANGE_SIMULATION_DELAY.toString()))
             {

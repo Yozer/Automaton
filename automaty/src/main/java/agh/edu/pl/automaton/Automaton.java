@@ -58,6 +58,26 @@ public abstract class Automaton implements Iterable<Cell>
         neighborhoodArrays = new NeighborhoodArray[processorsCount];
     }
 
+    public void setNeighborhood(CellNeighborhood neighborhood)
+    {
+        this.neighborhoodStrategy = neighborhood;
+
+        initIfNotInitiated();
+        for(int i = 0; i < neighborhoodArrays.length; ++i)
+            neighborhoodArrays[i] = neighborhood.createArray();
+        forceCheckAllCellsInNextGeneration();
+    }
+    protected void forceCheckAllCellsInNextGeneration()
+    {
+        initIfNotInitiated();
+        for(int i = 0; i < cellCount; ++i)
+        {
+            if(!currentSet[i].getAndSet(true))
+            {
+                currentChangeList[currentChangeListSize++] = i;
+            }
+        }
+    }
     public int getAliveCount()
     {
         return currentAliveCount.get();
@@ -65,11 +85,7 @@ public abstract class Automaton implements Iterable<Cell>
 
     public void beginCalculatingNextState()
     {
-        if(!isInitiated)
-        {
-            initAutomaton();
-            isInitiated = true;
-        }
+        initIfNotInitiated();
 
         int step = getStep(processorsCount, currentChangeListSize);
         nextGenerationAliveCount.set(currentAliveCount.get());
@@ -90,6 +106,16 @@ public abstract class Automaton implements Iterable<Cell>
 
         threadPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.SECONDS);
     }
+
+    private void initIfNotInitiated()
+    {
+        if(!isInitiated)
+        {
+            initAutomaton();
+            isInitiated = true;
+        }
+    }
+
     public void endCalculatingNextState()
     {
         swapBuffers();
@@ -97,20 +123,12 @@ public abstract class Automaton implements Iterable<Cell>
     @Override
     public Iterator<Cell> iterator()
     {
-        if(!isInitiated)
-        {
-            initAutomaton();
-            isInitiated = true;
-        }
+        initIfNotInitiated();
         return new CellIterator();
     }
     public Iterator<Cell> iteratorChangedOnly()
     {
-        if(!isInitiated)
-        {
-            initAutomaton();
-            isInitiated = true;
-        }
+        initIfNotInitiated();
         return new CellIteratorChangedOnly();
     }
 
@@ -119,52 +137,10 @@ public abstract class Automaton implements Iterable<Cell>
         beginCalculatingNextState();
         endCalculatingNextState();
     }
-    public void insertStructure(Map<? extends CellCoordinates, ? extends CellState> structure)
-    {
-        if (!isInitiated)
-        {
-            initAutomaton();
-            isInitiated = true;
-        }
-        NeighborhoodArray neighborhoodArray = neighborhoodArrays[0];
-
-        for (CellCoordinates coords : structure.keySet())
-        {
-            int index = getCoordsIndex(coords);
-            CellState newState = structure.get(coords);
-
-            if (currentCells[index].getState() != newState)
-            {
-                if(cellChangedToAlive(newState, currentCells[index].getState()))
-                    currentAliveCount.incrementAndGet();
-                else if(cellChangedToDead(newState, currentCells[index].getState()))
-                    currentAliveCount.decrementAndGet();
-            }
-            currentCells[index].setState(newState);
-
-            if (!currentSet[index].getAndSet(true))
-            {
-                currentChangeList[currentChangeListSize++] = index;
-            }
-            neighborhoodStrategy.cellNeighbors(coords, neighborhoodArray);
-            for (int i = 0; i < neighborhoodArray.getLength(); ++i)
-            {
-                int indexN = neighborhoodArray.get(i);
-                if (!currentSet[indexN].getAndSet(true))
-                {
-                    currentChangeList[currentChangeListSize++] = indexN;
-                }
-            }
-        }
-    }
 
     public void insertStructure(List<Cell> structure)
     {
-        if (!isInitiated)
-        {
-            initAutomaton();
-            isInitiated = true;
-        }
+        initIfNotInitiated();
 
         NeighborhoodArray neighborhoodArray = neighborhoodArrays[0];
         for (Cell cell : structure)
@@ -319,10 +295,6 @@ public abstract class Automaton implements Iterable<Cell>
     protected abstract boolean cellChangedToAlive(CellState newState, CellState oldState);
     protected abstract boolean cellChangedToDead(CellState newState, CellState oldState);
 
-    protected CellState getCellStateByCoordinates(CellCoordinates coordinates)
-    {
-        return currentCells[getCoordsIndex(coordinates)].getState();
-    }
     protected CellState getCellStateByIndex(int i)
     {
         return currentCells[i].getState();

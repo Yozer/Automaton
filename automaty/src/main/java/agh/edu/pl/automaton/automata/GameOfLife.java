@@ -8,8 +8,6 @@ import agh.edu.pl.automaton.cells.states.*;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class GameOfLife extends Automaton2Dim
@@ -68,9 +66,10 @@ public class GameOfLife extends Automaton2Dim
         return surviveFactors;
     }
 
-    public void setSurviveFactors(List<Integer> surviveFactors)
+    public void setSurviveFactors(Set<Integer> surviveFactors)
     {
-        this.surviveFactors = new HashSet<>(surviveFactors);
+        this.surviveFactors = surviveFactors;
+        forceCheckAllCellsInNextGeneration();
     }
 
     public Set<Integer> getComeAliveFactors()
@@ -78,9 +77,10 @@ public class GameOfLife extends Automaton2Dim
         return comeAliveFactors;
     }
 
-    public void setComeAliveFactors(List<Integer> comeAliveFactors)
+    public void setComeAliveFactors(Set<Integer> comeAliveFactors)
     {
-        this.comeAliveFactors = new HashSet<>(comeAliveFactors);
+        this.comeAliveFactors = comeAliveFactors;
+        forceCheckAllCellsInNextGeneration();
     }
 }
 

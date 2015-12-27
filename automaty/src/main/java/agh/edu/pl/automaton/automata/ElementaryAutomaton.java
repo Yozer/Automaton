@@ -101,7 +101,7 @@ public class ElementaryAutomaton extends Automaton1Dim
         {
             ruleMapper.set(neighborList.get(i), getBit(rule, 7 - i) == 1 ? BinaryState.ALIVE : BinaryState.DEAD);
         }
-
+        forceCheckAllCellsInNextGeneration();
     }
 
     private int getHashStates(BinaryState[] states)

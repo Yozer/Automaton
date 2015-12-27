@@ -12,7 +12,6 @@ import agh.edu.pl.gui.*;
 import agh.edu.pl.gui.enums.*;
 import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 import agh.edu.pl.gui.structures.*;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,10 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-// TODO add resetting automaton after changing new options
 // TODO add controlling distribution of each cell type during rand
 // TODO disable random for langton and enable color picker when inserting structs (need to be refactored anyway)
-// TODO add better disabling/enabling controls
 public class AutomatonManager
 {
     Automaton automaton;
@@ -50,7 +47,6 @@ public class AutomatonManager
 
     public void start(Runnable invokeAfter)
     {
-        // automaton was not initiated (user didn't change any settings)
         if(automaton == null)
             init();
 
@@ -58,9 +54,9 @@ public class AutomatonManager
         invokeAfter.run();
     }
 
-    public void init(Runnable invokeAfter, boolean startImmediately)
+    public void init(Runnable invokeAfter)
     {
-        SwingWorker swingWorker = new InitSwingWorker(this, invokeAfter, startImmediately);
+        SwingWorker swingWorker = new InitSwingWorker(this, invokeAfter);
         swingWorker.execute();
     }
 
@@ -124,7 +120,6 @@ public class AutomatonManager
         simulationThread.resumeThread();
     }
 
-
     void drawCurrentAutomaton()
     {
         synchronized (automatonPanel.LOCKER)
@@ -172,9 +167,41 @@ public class AutomatonManager
         }
     }
 
+    private void executeActionWhenRunning(Runnable runnable)
+    {
+        if(automaton != null)
+        {
+            boolean isRunning = simulationThread.isRunning();
+            if (isRunning)
+                pause();
+            runnable.run();
+            if (isRunning)
+                start();
+        }
+    }
+    private void setNeighborhoodFromSettings()
+    {
+        executeActionWhenRunning(() -> automaton.setNeighborhood(getCellNeighborhoodFromSettings()));
+    }
+    private void setRulesFromSettings()
+    {
+        executeActionWhenRunning(() ->
+        {
+            if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
+            {
+                ((GameOfLife) automaton).setComeAliveFactors(settings.getComeAliveFactors());
+                ((GameOfLife) automaton).setSurviveFactors(settings.getSurviveFactors());
+            }
+            else if(settings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
+            {
+                ((ElementaryAutomaton) automaton).setRule(settings.getOneDimRule());
+            }
+        });
+    }
+
     private Automaton getAutomatonFromSettings()
     {
-        CellNeighborhood neighborhood = getCellNeighborhoodFromSettings(settings.getNeighborHood());
+        CellNeighborhood neighborhood = getCellNeighborhoodFromSettings();
         if(settings.getSelectedAutomaton() == PossibleAutomaton.GameOfLive)
         {
             UniformStateFactory stateFactory = new UniformStateFactory(BinaryState.DEAD);
@@ -204,8 +231,9 @@ public class AutomatonManager
         return null;
     }
 
-    private CellNeighborhood getCellNeighborhoodFromSettings(CellNeighborhoodType neighborhoodType)
+    private CellNeighborhood getCellNeighborhoodFromSettings()
     {
+        CellNeighborhoodType neighborhoodType = settings.getNeighborHood();
         if(neighborhoodType == CellNeighborhoodType.Moore)
             return new MoorNeighborhood(settings.getNeighborhoodRadius(), settings.getWrap(), settings.getWidth(), settings.getHeight());
         else if(neighborhoodType == CellNeighborhoodType.VonNeumann)
@@ -217,28 +245,8 @@ public class AutomatonManager
 
     public void randCells(Runnable invokeAfter)
     {
-        // doesn't make sense for this automaton
-        if(settings.getSelectedAutomaton() == PossibleAutomaton.Langton)
-            return;
-
         SwingWorker worker = new RandCellsWorker(this, invokeAfter);
         worker.execute();
-    }
-
-    public void setSelectedAutomaton(PossibleAutomaton selectedAutomaton)
-    {
-        settings.setSelectedAutomaton(selectedAutomaton);
-    }
-
-    public void setCellSize(int cellSize)
-    {
-        settings.setCellSize(cellSize);
-    }
-
-    public void setSimulationDelay(int simulationDelay)
-    {
-        this.simulationDelay.set(simulationDelay);
-        this.settings.setSimulationDelay(simulationDelay);
     }
 
     public int getLastSimulationTime()
@@ -285,30 +293,52 @@ public class AutomatonManager
     {
         return settings;
     }
+    public void setSelectedAutomaton(PossibleAutomaton selectedAutomaton)
+    {
+        settings.setSelectedAutomaton(selectedAutomaton);
+        init();
+    }
+
+    public void setCellSize(int cellSize)
+    {
+        settings.setCellSize(cellSize);
+        init();
+    }
+
+    public void setSimulationDelay(int simulationDelay)
+    {
+        this.simulationDelay.set(simulationDelay);
+        this.settings.setSimulationDelay(simulationDelay);
+    }
 
     public void setNeighborhoodType(CellNeighborhoodType neighborhoodType)
     {
         settings.setNeighborhood(neighborhoodType);
+        setNeighborhoodFromSettings();
     }
 
     public void setNeighborhoodRadius(int neighborhoodRadius)
     {
         settings.setNeighborhoodRadius(neighborhoodRadius);
+        setNeighborhoodFromSettings();
     }
 
     public void setWrap(boolean wrap)
     {
         settings.setWrap(wrap);
+        setNeighborhoodFromSettings();
     }
 
     public void setRulesTwoDim(String rulesTwoDim) throws IllegalRulesFormatException
     {
         settings.setFormattedRules(rulesTwoDim);
+        setRulesFromSettings();
     }
 
     public void setRuleOneDim(Integer ruleOneDim)
     {
         settings.setOneDimRule(ruleOneDim);
+        setRulesFromSettings();
     }
 
 
