@@ -1,6 +1,7 @@
 package agh.edu.pl.gui.logic;
 
-import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.enums.CellNeighborhoodType;
+import agh.edu.pl.gui.enums.PossibleAutomaton;
 import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 
 import java.util.*;
@@ -11,8 +12,8 @@ public class AutomatonSettings
     private float cellSize = 5;
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLife;
     private int simulationDelay = 0;
-    private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2,3));
-    private Set<Integer> comeAliveFactors= new HashSet<>(Arrays.asList(3));
+    private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2, 3));
+    private Set<Integer> comeAliveFactors = new HashSet<>(Arrays.asList(3));
     private CellNeighborhoodType neighborhoodType = CellNeighborhoodType.Moore;
     private int oneDimRule = 30;
     private int neighborhoodRadius = 1;
@@ -45,6 +46,7 @@ public class AutomatonSettings
     {
         return simulationDelay;
     }
+
     void setSimulationDelay(int delay)
     {
         this.simulationDelay = delay;
@@ -60,7 +62,6 @@ public class AutomatonSettings
         return comeAliveFactors;
     }
 
-
     public CellNeighborhoodType getNeighborHood()
     {
         return neighborhoodType;
@@ -71,14 +72,29 @@ public class AutomatonSettings
         return oneDimRule;
     }
 
+    public void setOneDimRule(Integer oneDimRule)
+    {
+        this.oneDimRule = oneDimRule;
+    }
+
     public int getNeighborhoodRadius()
     {
         return neighborhoodRadius;
     }
 
+    void setNeighborhoodRadius(int neighborhoodRadius)
+    {
+        this.neighborhoodRadius = neighborhoodRadius;
+    }
+
     public boolean getWrap()
     {
         return wrap;
+    }
+
+    void setWrap(boolean wrap)
+    {
+        this.wrap = wrap;
     }
 
     public int getHeight()
@@ -106,24 +122,15 @@ public class AutomatonSettings
         this.neighborhoodType = neighborhood;
     }
 
-    void setNeighborhoodRadius(int neighborhoodRadius)
-    {
-        this.neighborhoodRadius = neighborhoodRadius;
-    }
-
-    void setWrap(boolean wrap)
-    {
-        this.wrap = wrap;
-    }
-
     public String getFormattedRules()
     {
         return surviveFactors.stream().map(t -> Integer.toString(t)).collect(Collectors.joining()) + "/" +
                 comeAliveFactors.stream().map(t -> Integer.toString(t)).collect(Collectors.joining());
     }
+
     void setFormattedRules(String str) throws IllegalRulesFormatException
     {
-        if(str.equals("") ||
+        if (str.equals("") ||
                 asList(str).stream().filter(t -> t == '/').count() != 1 ||
                 asList(str).stream().filter(t -> !Character.isDigit(t) && t != '/').findAny().isPresent())
             throw new IllegalRulesFormatException("Invalid format!");
@@ -132,18 +139,21 @@ public class AutomatonSettings
         surviveFactors = new HashSet<>(asList(splited[0]).stream().map(Character::getNumericValue).collect(Collectors.toList()));
         comeAliveFactors = new HashSet<>(asList(splited[1]).stream().map(Character::getNumericValue).collect(Collectors.toList()));
     }
+
     private List<Character> asList(final String string)
     {
         return new AbstractList<Character>()
         {
-            public int size() { return string.length(); }
-            public Character get(int index) { return string.charAt(index); }
-        };
-    }
+            public int size()
+            {
+                return string.length();
+            }
 
-    public void setOneDimRule(Integer oneDimRule)
-    {
-        this.oneDimRule = oneDimRule;
+            public Character get(int index)
+            {
+                return string.charAt(index);
+            }
+        };
     }
 }
 
