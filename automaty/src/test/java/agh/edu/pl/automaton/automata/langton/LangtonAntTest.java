@@ -50,59 +50,227 @@ public class LangtonAntTest
     }
 
     @Test
-    public void testNextCellState() throws Exception
+    public void testNextCellState_startWest() throws Exception
     {
         Ant ant = automaton.addAnt(new Coords2D(1, 1), Color.red, AntState.WEST);
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 0), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 0), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(2, 0), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(2, 0), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(2, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(2, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 2), ant.getCoordinates());
+    }
+    @Test
+    public void testNextCellState_startNorth() throws Exception
+    {
+        Ant ant = automaton.addAnt(new Coords2D(1, 1), Color.red, AntState.NORTH);
         assertEquals(ant.getCoordinates(), new Coords2D(1, 1));
 
         automaton.beginCalculatingNextState();
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.WEST);
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(2, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(2, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(2, 2), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(2, 2), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(1, 2), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(1, 2), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(0, 1), ant.getCoordinates());
+    }
+    @Test
+    public void testNextCellState_startEast() throws Exception
+    {
+        Ant ant = automaton.addAnt(new Coords2D(1, 1), Color.red, AntState.EAST);
         assertEquals(ant.getCoordinates(), new Coords2D(1, 1));
-        automaton.endCalculatingNextState();
-
-        ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.NORTH);
-        assertEquals(ant.getCoordinates(), new Coords2D(1, 0));
 
         automaton.beginCalculatingNextState();
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.NORTH);
-        assertEquals(ant.getCoordinates(), new Coords2D(1, 0));
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
         automaton.endCalculatingNextState();
 
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.EAST);
-        assertEquals(ant.getCoordinates(), new Coords2D(2, 0));
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 2), ant.getCoordinates());
 
         automaton.beginCalculatingNextState();
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.EAST);
-        assertEquals(ant.getCoordinates(), new Coords2D(2, 0));
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 2), ant.getCoordinates());
         automaton.endCalculatingNextState();
 
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.SOUTH);
-        assertEquals(ant.getCoordinates(), new Coords2D(2, 1));
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(0, 2), ant.getCoordinates());
 
         automaton.beginCalculatingNextState();
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.SOUTH);
-        assertEquals(ant.getCoordinates(), new Coords2D(2, 1));
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(0, 2), ant.getCoordinates());
         automaton.endCalculatingNextState();
 
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.WEST);
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(0, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(0, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 0), ant.getCoordinates());
+    }
+    @Test
+    public void testNextCellState_startSouth() throws Exception
+    {
+        Ant ant = automaton.addAnt(new Coords2D(1, 1), Color.red, AntState.SOUTH);
         assertEquals(ant.getCoordinates(), new Coords2D(1, 1));
 
         automaton.beginCalculatingNextState();
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.WEST);
-        assertEquals(ant.getCoordinates(), new Coords2D(1, 1));
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
         automaton.endCalculatingNextState();
 
         ant = automaton.getAnts().stream().findAny().get();
-        assertEquals(ant.getAntState(), AntState.SOUTH);
-        assertEquals(ant.getCoordinates(), new Coords2D(1, 2));
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(0, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.WEST, ant.getAntState());
+        assertEquals(new Coords2D(0, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(0, 0), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.NORTH, ant.getAntState());
+        assertEquals(new Coords2D(0, 0), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(1, 0), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(1, 0), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+
+        automaton.beginCalculatingNextState();
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.SOUTH, ant.getAntState());
+        assertEquals(new Coords2D(1, 1), ant.getCoordinates());
+        automaton.endCalculatingNextState();
+
+        ant = automaton.getAnts().stream().findAny().get();
+        assertEquals(AntState.EAST, ant.getAntState());
+        assertEquals(new Coords2D(2, 1), ant.getCoordinates());
     }
 }
