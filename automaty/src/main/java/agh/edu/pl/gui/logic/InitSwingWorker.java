@@ -109,8 +109,8 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
             manager.pause();
 
         manager.getAutomaton().insertStructure(structure);
-        manager.drawCurrentAutomaton();
         manager.decrementAutomatonOneDimRow();
+        manager.drawCurrentAutomaton();
         manager.repaint();
 
         if (isRunning)
