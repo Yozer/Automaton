@@ -144,6 +144,9 @@ public class AutomatonManager {
     void resetAutomatonOneDimRow() {
         automaton1DimCurrentRow = 0;
     }
+    void decrementAutomatonOneDimRow() {
+        automaton1DimCurrentRow--;
+    }
 
     void drawCurrentAutomaton() {
         synchronized (AutomatonPanel.LOCKER) {
@@ -186,6 +189,9 @@ public class AutomatonManager {
     }
 
     private void clearAutomatonPanel() {
+        settings.setWidth((int) (automatonPanel.getWidth() / settings.getCellSize()));
+        settings.setHeight((int) (automatonPanel.getHeight() / settings.getCellSize()));
+        automatonPanel.setScale(settings.getCellSize());
         automatonPanel.createBufferedImage(settings.getWidth(), settings.getHeight());
         automatonPanel.repaint();
     }
