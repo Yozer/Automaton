@@ -1,5 +1,6 @@
 package agh.edu.pl.gui.logic;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -8,13 +9,15 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.io.IOException;
 
 public class AutomatonPanel extends JPanel {
     static final Object LOCKER = new Object();
+    static final AlphaComposite compositeGrid = AlphaComposite.getInstance(AlphaComposite.DST_OUT);
 
-    private BufferedImage bufferedImage;
+    private BufferedImage bufferedImage, bufferedImageBorder, bufferedImageGrid;
     private int[] pixels;
-    BufferedImage bufferedImageBorder;
 
     private final AffineTransform transformCells = new AffineTransform();
     private AffineTransform transformBorder = new AffineTransform();
@@ -26,7 +29,6 @@ public class AutomatonPanel extends JPanel {
 
     private final int borderWidth = 1;
     private final Color borderColor = Color.GRAY;
-//    private BufferedImage bufferedImageBorder;
 
     public AutomatonPanel() {
         setDoubleBuffered(true);
@@ -82,65 +84,69 @@ public class AutomatonPanel extends JPanel {
                     g2d.drawImage(bufferedImageBorder, transformBorder, null);
                     g2d.drawImage(bufferedImage, transformCells, null);
                 }
+                if(transformCells.getScaleX() >= 2)
+                {
+                    g2d.setComposite(compositeGrid);
+                    AffineTransform tmp = (AffineTransform) transformCells.clone();
+                    tmp.scale(0.5, 0.5);
+                    g2d.drawImage(bufferedImageGrid, tmp, null);
+                }
             }
-//            if (bufferedImageBorder != null) {
-//                AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.DST_OUT);
-//                g2d.setComposite(ac);
-//                //g2d.scale(1 / scale, 1 / scale);
-//
-//                g2d.drawImage(bufferedImageBorder, 0, 0, null);
-//            }
         }
     }
-
-//    void initGrid() {
-//        bufferedImageBorder = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-//        Graphics2D graphics2D = bufferedImageBorder.createGraphics();
-//        graphics2D.setColor(new Color(0, true));
-//        graphics2D.fillRect(0, 0, getWidth(), getHeight());
-//
-//        graphics2D.setPaint(Color.BLACK);
-//        graphics2D.setStroke(new BasicStroke(1));
-//
-//        int width = bufferedImageBorder.getWidth();
-//        int height = bufferedImageBorder.getHeight();
-//
-//        for (int x = 1; x < width; x++) {
-//            graphics2D.drawLine(x, 0, x, getHeight());
-//        }
-//        for (int y = 1; y < height; y++) {
-//            graphics2D.drawLine(0, y, getWidth(), y);
-//        }
-//
-//        graphics2D.dispose();
-//    }
 
     int[] getPixelsForDrawing() {
         return pixels;
     }
 
+    private BufferedImage createGrid(int width, int height) {
+        width *= 2;
+        height *= 2;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = image.createGraphics();
+        graphics2D.setColor(new Color(0, true));
+        graphics2D.fillRect(0, 0, width, height);
+
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.setStroke(new BasicStroke(1));
+
+        for (int x = 0; x < width; x += 2) {
+            graphics2D.drawLine(x, 0, x, getHeight());
+        }
+        for (int y = 0; y < height; y += 2) {
+            graphics2D.drawLine(0, y, getWidth(), y);
+        }
+
+        graphics2D.dispose();
+        return image;
+
+    }
+
     void createBufferedImage(int cellCount) {
         double ratio = ((double) getWidth())/getHeight();
-        double height = Math.sqrt(cellCount/ratio);
-        double width = ratio*height;
+        double heightD = Math.sqrt(cellCount/ratio);
+        double widthD = ratio*heightD;
 
-        bufferedImage = new BufferedImage((int)(width + 0.5), (int)(height + 0.5), BufferedImage.TYPE_INT_RGB);
+        int width = (int)(widthD + 0.5);
+        int height = (int)(heightD + 0.5);
+
+        bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
 
-        bufferedImageBorder = createBorder(height, width);
+        bufferedImageBorder = createBorder(width, height);
+        bufferedImageGrid = createGrid(width, height);
 
         synchronized (transformCells) {
             transformCells.setToIdentity();
-            transformCells.setToScale(getWidth() / width, getWidth() / width);
+            transformCells.setToScale(getWidth() / (double)width, getWidth() / (double)width);
             transformBorder = (AffineTransform) transformCells.clone();
             transformBorder.translate(-borderWidth, -borderWidth);
         }
-
-//        initGrid();
     }
 
-    private BufferedImage createBorder(double height, double width) {
-        BufferedImage image = new BufferedImage((int) (width + 0.5) + 2 * borderWidth, (int) (height + 0.5) + 2 * borderWidth, BufferedImage.TYPE_INT_RGB);
+    private BufferedImage createBorder(int width, int height) {
+        BufferedImage image = new BufferedImage(width + 2 * borderWidth, height + 2 * borderWidth, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setStroke(new BasicStroke(borderWidth));
         graphics2D.setColor(borderColor);
