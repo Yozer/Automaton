@@ -11,15 +11,21 @@ import java.awt.image.DataBufferInt;
 
 public class AutomatonPanel extends JPanel {
     static final Object LOCKER = new Object();
+
     private BufferedImage bufferedImage;
     private int[] pixels;
+    BufferedImage bufferedImageBorder;
 
-    private final AffineTransform tx = new AffineTransform();
+    private final AffineTransform transformCells = new AffineTransform();
+    private AffineTransform transformBorder = new AffineTransform();
 
     private double previousX;
     private double previousY;
     private double zoomCenterX;
     private double zoomCenterY;
+
+    private final int borderWidth = 1;
+    private final Color borderColor = Color.GRAY;
 //    private BufferedImage bufferedImageBorder;
 
     public AutomatonPanel() {
@@ -45,8 +51,10 @@ public class AutomatonPanel extends JPanel {
                 previousX = e.getX();
                 previousY = e.getY();
 
-                synchronized (tx) {
-                    tx.translate(newX, newY);
+                synchronized (transformCells) {
+                    transformCells.translate(newX, newY);
+                    transformBorder = (AffineTransform) transformCells.clone();
+                    transformBorder.translate(-borderWidth, -borderWidth);
                 }
 
                 repaint();
@@ -69,11 +77,10 @@ public class AutomatonPanel extends JPanel {
         synchronized (LOCKER) {
             Graphics2D g2d = ((Graphics2D) g);
 
-            synchronized (tx) {
+            synchronized (transformCells) {
                 if (bufferedImage != null) {
-
-                        g2d.drawImage(bufferedImage, tx, null);
-
+                    g2d.drawImage(bufferedImageBorder, transformBorder, null);
+                    g2d.drawImage(bufferedImage, transformCells, null);
                 }
             }
 //            if (bufferedImageBorder != null) {
@@ -117,15 +124,33 @@ public class AutomatonPanel extends JPanel {
         double height = Math.sqrt(cellCount/ratio);
         double width = ratio*height;
 
-        synchronized (tx) {
-            tx.setToIdentity();
-        }
-
         bufferedImage = new BufferedImage((int)(width + 0.5), (int)(height + 0.5), BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
-        tx.setToScale(getWidth()/width, getWidth()/width);
+
+        bufferedImageBorder = createBorder(height, width);
+
+        synchronized (transformCells) {
+            transformCells.setToIdentity();
+            transformCells.setToScale(getWidth() / width, getWidth() / width);
+            transformBorder = (AffineTransform) transformCells.clone();
+            transformBorder.translate(-borderWidth, -borderWidth);
+        }
 
 //        initGrid();
+    }
+
+    private BufferedImage createBorder(double height, double width) {
+        BufferedImage image = new BufferedImage((int) (width + 0.5) + 2 * borderWidth, (int) (height + 0.5) + 2 * borderWidth, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = image.createGraphics();
+        graphics2D.setStroke(new BasicStroke(borderWidth));
+        graphics2D.setColor(borderColor);
+
+        graphics2D.drawLine(0, 0, image.getWidth() - 1, 0);
+        graphics2D.drawLine(0, 0, 0, image.getHeight() - 1);
+        graphics2D.drawLine(0, image.getHeight() - 1, image.getWidth() - 1, image.getHeight() - 1);
+        graphics2D.drawLine(image.getWidth() - 1, 0, image.getWidth() - 1, image.getHeight() - 1);
+        graphics2D.dispose();
+        return image;
     }
 
     public int getAutomatonWidth() {
@@ -135,24 +160,27 @@ public class AutomatonPanel extends JPanel {
     public int getAutomatonHeight() {
         return bufferedImage.getHeight();
     }
-    private Point2D getTranslatedPoint(double panelX, double panelY) {
+    public Point2D getTranslatedPoint(double panelX, double panelY) {
 
         Point2D point2d = new Point2D.Double(panelX, panelY);
         try {
-            return tx.inverseTransform(point2d, null);
+            return transformCells.inverseTransform(point2d, null);
         } catch (NoninvertibleTransformException ex) {
             ex.printStackTrace();
-            return null;
+            return point2d;
         }
     }
-    public void handleZoom(double zoom) {
+    private void handleZoom(double zoom) {
         zoom = 0.25 * -zoom;
         zoom += 1;
 
-        synchronized (tx) {
-            tx.translate(zoomCenterX, zoomCenterY);
-            tx.scale(zoom, zoom);
-            tx.translate(-zoomCenterX, -zoomCenterY);
+        synchronized (transformCells) {
+            transformCells.translate(zoomCenterX, zoomCenterY);
+            transformCells.scale(zoom, zoom);
+            transformCells.translate(-zoomCenterX, -zoomCenterY);
+
+            transformBorder = (AffineTransform) transformCells.clone();
+            transformBorder.translate(-borderWidth, -borderWidth);
         }
 
         repaint();
