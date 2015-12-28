@@ -1,27 +1,24 @@
 package agh.edu.pl.automaton.cells.neighborhoods;
 
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Dominik on 2015-12-08.
  */
-public class VonNeumanNeighborhoodTest
-{
+public class VonNeumannNeighborhoodTest {
 
     @Test
-    public void testCellNeighbors_r_equal_0()
-    {
-        CellNeighborhood neighborhood = new VonNeumanNeighborhood(0, false, 500, 500);
+    public void testCellNeighbors_r_equal_0() {
+        CellNeighborhood neighborhood = new VonNeumannNeighborhood(0, false, 500, 500);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(4, 4), neighborhoodArray);
 
@@ -29,9 +26,8 @@ public class VonNeumanNeighborhoodTest
     }
 
     @Test
-    public void testCellNeighbors_r_equal_1()
-    {
-        VonNeumanNeighborhood neighborhood = new VonNeumanNeighborhood(1, false, 500, 500);
+    public void testCellNeighbors_r_equal_1() {
+        VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(1, false, 500, 500);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodArray);
 
@@ -44,13 +40,13 @@ public class VonNeumanNeighborhoodTest
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
         assertEquals(4, neighborhoodArray.getLength());
-        for(int i = 0; i < neighborhoodArray.getLength(); i++)
+        for (int i = 0; i < neighborhoodArray.getLength(); i++)
             assertTrue(expected.contains(neighborhoodArray.get(i)));
     }
+
     @Test
-    public void testCellNeighbors_r_equal_2()
-    {
-        VonNeumanNeighborhood neighborhood = new VonNeumanNeighborhood(2, false, 500, 500);
+    public void testCellNeighbors_r_equal_2() {
+        VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(2, false, 500, 500);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodArray);
 
@@ -71,14 +67,13 @@ public class VonNeumanNeighborhoodTest
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
         assertEquals(12, neighborhoodArray.getLength());
-        for(int i = 0; i < neighborhoodArray.getLength(); i++)
+        for (int i = 0; i < neighborhoodArray.getLength(); i++)
             assertTrue(expected.contains(neighborhoodArray.get(i)));
     }
 
     @Test
-    public void testCellNeighbors_r_equal_2_outOfPlane_wrap()
-    {
-        VonNeumanNeighborhood neighborhood = new VonNeumanNeighborhood(2, true, 100, 100);
+    public void testCellNeighbors_r_equal_2_outOfPlane_wrap() {
+        VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(2, true, 100, 100);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(1, 1), neighborhoodArray);
 
@@ -99,14 +94,13 @@ public class VonNeumanNeighborhoodTest
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
         assertEquals(12, neighborhoodArray.getLength());
-        for(int i = 0; i < neighborhoodArray.getLength(); i++)
+        for (int i = 0; i < neighborhoodArray.getLength(); i++)
             assertTrue(expected.contains(neighborhoodArray.get(i)));
     }
 
     @Test
-    public void testCellNeighbors_r_equal_2_outOfPlane()
-    {
-        VonNeumanNeighborhood neighborhood = new VonNeumanNeighborhood(2, false, 100, 100);
+    public void testCellNeighbors_r_equal_2_outOfPlane() {
+        VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(2, false, 100, 100);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(1, 1), neighborhoodArray);
 
@@ -125,7 +119,7 @@ public class VonNeumanNeighborhoodTest
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
         assertEquals(10, neighborhoodArray.getLength());
-        for(int i = 0; i < neighborhoodArray.getLength(); i++)
+        for (int i = 0; i < neighborhoodArray.getLength(); i++)
             assertTrue(expected.contains(neighborhoodArray.get(i)));
     }
 }

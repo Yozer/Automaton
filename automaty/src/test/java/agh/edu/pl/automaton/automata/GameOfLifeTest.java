@@ -3,23 +3,24 @@ package agh.edu.pl.automaton.automata;
 import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
-import agh.edu.pl.automaton.cells.neighborhoods.*;
-import agh.edu.pl.automaton.cells.states.*;
-import agh.edu.pl.automaton.satefactory.*;
+import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
+import agh.edu.pl.automaton.cells.neighborhoods.MoorNeighborhood;
+import agh.edu.pl.automaton.cells.states.BinaryState;
+import agh.edu.pl.automaton.satefactory.CellStateFactory;
+import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
-public class GameOfLifeTest
-{
+public class GameOfLifeTest {
     Automaton gameOfLifeStandard;
+
     @Before
-    public void init()
-    {
+    public void init() {
         int width = 2;
         int height = 3;
         CellStateFactory stateFactory = new UniformStateFactory(BinaryState.DEAD);
@@ -27,16 +28,16 @@ public class GameOfLifeTest
 
         gameOfLifeStandard = new GameOfLife(new HashSet<>(Arrays.asList(2, 3)), new HashSet<>(Collections.singletonList(3)), width, height, stateFactory, neighborhood);
     }
+
     @Test
-    public void testNextCellState_cellIsDead_allNeighborsAreDead_remainDead()
-    {
+    public void testNextCellState_cellIsDead_allNeighborsAreDead_remainDead() {
         gameOfLifeStandard.calculateNextState();
-        for(Cell cell : gameOfLifeStandard)
-          assertEquals(BinaryState.DEAD, cell.getState());
+        for (Cell cell : gameOfLifeStandard)
+            assertEquals(BinaryState.DEAD, cell.getState());
     }
+
     @Test
-    public void testNextState_threeAlive()
-    {
+    public void testNextState_threeAlive() {
         List<Cell> neighborsStates = new ArrayList<>(3);
 
         neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(0, 1)));
@@ -50,7 +51,7 @@ public class GameOfLifeTest
         assertEquals(2, gameOfLifeStandard.getAliveCount());
 
         List<Cell> result = new ArrayList<>();
-        for(Cell cell : gameOfLifeStandard)
+        for (Cell cell : gameOfLifeStandard)
             result.add(cell);
 
         assertEquals(result.get(0).getState(), BinaryState.DEAD);
@@ -60,13 +61,13 @@ public class GameOfLifeTest
         assertEquals(result.get(4).getState(), BinaryState.DEAD);
         assertEquals(result.get(5).getState(), BinaryState.DEAD);
     }
+
     @Test
-    public void testNextState_allAlive()
-    {
+    public void testNextState_allAlive() {
         List<Cell> neighborsStates = new ArrayList<>(6);
 
-        for(int i = 0; i < 2; i++)
-            for(int j = 0; j < 3; j++)
+        for (int i = 0; i < 2; i++)
+            for (int j = 0; j < 3; j++)
                 neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(i, j)));
 
         assertEquals(0, gameOfLifeStandard.getAliveCount());
@@ -78,7 +79,7 @@ public class GameOfLifeTest
         assertEquals(4, gameOfLifeStandard.getAliveCount());
 
         List<Cell> result = new ArrayList<>();
-        for(Cell cell : gameOfLifeStandard)
+        for (Cell cell : gameOfLifeStandard)
             result.add(cell);
 
         assertEquals(result.get(0).getState(), BinaryState.ALIVE);
@@ -90,8 +91,7 @@ public class GameOfLifeTest
     }
 
     @Test
-    public void testNextState_fourAlive()
-    {
+    public void testNextState_fourAlive() {
         List<Cell> neighborsStates = new ArrayList<>(6);
 
         neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(0, 0)));
@@ -108,7 +108,7 @@ public class GameOfLifeTest
         assertEquals(4, gameOfLifeStandard.getAliveCount());
 
         List<Cell> result = new ArrayList<>();
-        for(Cell cell : gameOfLifeStandard)
+        for (Cell cell : gameOfLifeStandard)
             result.add(cell);
 
         assertEquals(result.get(0).getState(), BinaryState.ALIVE);

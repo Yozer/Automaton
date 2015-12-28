@@ -1,24 +1,21 @@
 package agh.edu.pl.automaton.cells.neighborhoods;
 
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
-public class MoorNeighborhoodTest
-{
+public class MoorNeighborhoodTest {
 
     @Test
-    public void testCellNeighbors_r_equal_0()
-    {
+    public void testCellNeighbors_r_equal_0() {
         CellNeighborhood neighborhood = new MoorNeighborhood(0, false, 500, 500);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodArray);
@@ -27,8 +24,7 @@ public class MoorNeighborhoodTest
     }
 
     @Test
-    public void testCellNeighbors_r_equal_1()
-    {
+    public void testCellNeighbors_r_equal_1() {
         MoorNeighborhood neighborhood = new MoorNeighborhood(1, false, 500, 500);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodArray);
@@ -46,13 +42,12 @@ public class MoorNeighborhoodTest
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
         assertEquals(8, neighborhoodArray.getLength());
-        for(int i = 0; i < neighborhoodArray.getLength(); i++)
+        for (int i = 0; i < neighborhoodArray.getLength(); i++)
             assertTrue(expected.contains(neighborhoodArray.get(i)));
     }
 
     @Test
-    public void testCellNeighbors_r_equal_2_outOfPlane()
-    {
+    public void testCellNeighbors_r_equal_2_outOfPlane() {
         MoorNeighborhood neighborhood = new MoorNeighborhood(2, false, 500, 500);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(0, 0), neighborhoodArray);
@@ -70,13 +65,12 @@ public class MoorNeighborhoodTest
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
         assertEquals(8, neighborhoodArray.getLength());
-        for(int i = 0; i < neighborhoodArray.getLength(); i++)
+        for (int i = 0; i < neighborhoodArray.getLength(); i++)
             assertTrue(expected.contains(neighborhoodArray.get(i)));
     }
 
     @Test
-    public void testCellNeighbors_r_equal_2_outOfPlane_wrap()
-    {
+    public void testCellNeighbors_r_equal_2_outOfPlane_wrap() {
         MoorNeighborhood neighborhood = new MoorNeighborhood(1, true, 5, 5);
         NeighborhoodArray neighborhoodArray = neighborhood.createArray();
         neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(0, 0), neighborhoodArray);
@@ -91,10 +85,10 @@ public class MoorNeighborhoodTest
                         new Coords2D(4, 4),
                         new Coords2D(4, 0),
                         new Coords2D(4, 1)
-                )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());;
+                )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
         assertEquals(8, neighborhoodArray.getLength());
-        for(int i = 0; i < neighborhoodArray.getLength(); i++)
+        for (int i = 0; i < neighborhoodArray.getLength(); i++)
             assertTrue(expected.contains(neighborhoodArray.get(i)));
     }
 }

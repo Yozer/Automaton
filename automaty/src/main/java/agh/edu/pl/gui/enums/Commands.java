@@ -3,8 +3,7 @@ package agh.edu.pl.gui.enums;
 /**
  * Created by Dominik on 2015-12-19.
  */
-public enum Commands
-{
+public enum Commands {
     CHANGE_AUTOMATON("CHANGE_AUTOMATON"),
     CHANGE_CELL_SIZE("CHANGE_CELL_SIZE"),
     START_AUTOMATON("START_AUTOMATON"),

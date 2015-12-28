@@ -9,25 +9,25 @@ import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Dominik on 2015-12-09.
  */
-public class ElementaryAutomatonTest
-{
+public class ElementaryAutomatonTest {
     CellStateFactory cellStateFactory;
+
     @Before
-    public void init()
-    {
+    public void init() {
         cellStateFactory = new UniformStateFactory(BinaryState.DEAD);
     }
 
     @Test
-    public void testNextCellState_rule30_cellAlive_neighborsAlive() throws Exception
-    {
+    public void testNextCellState_rule30_cellAlive_neighborsAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 30, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.ALIVE, new Coords1D(0)));
@@ -46,8 +46,7 @@ public class ElementaryAutomatonTest
     }
 
     @Test
-    public void testNextCellState_rule30_cellDead_neighborsAlive() throws Exception
-    {
+    public void testNextCellState_rule30_cellDead_neighborsAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 30, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.ALIVE, new Coords1D(0)));
@@ -66,8 +65,7 @@ public class ElementaryAutomatonTest
     }
 
     @Test
-    public void testNextCellState_rule30_cellAlive_leftAlive() throws Exception
-    {
+    public void testNextCellState_rule30_cellAlive_leftAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 30, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.ALIVE, new Coords1D(0)));
@@ -84,9 +82,9 @@ public class ElementaryAutomatonTest
         assertEquals(BinaryState.ALIVE, cellIterator.next().getState());
         assertEquals(2, automaton.getAliveCount());
     }
+
     @Test
-    public void testNextCellState_rule30_cellAlive_neighborsDead() throws Exception
-    {
+    public void testNextCellState_rule30_cellAlive_neighborsDead() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 30, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.DEAD, new Coords1D(0)));
@@ -103,9 +101,9 @@ public class ElementaryAutomatonTest
         assertEquals(BinaryState.ALIVE, cellIterator.next().getState());
         assertEquals(3, automaton.getAliveCount());
     }
+
     @Test
-    public void testNextCellState_rule30_cellAlive_rightAlive() throws Exception
-    {
+    public void testNextCellState_rule30_cellAlive_rightAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 30, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.DEAD, new Coords1D(0)));
@@ -122,9 +120,9 @@ public class ElementaryAutomatonTest
         assertEquals(BinaryState.DEAD, cellIterator.next().getState());
         assertEquals(2, automaton.getAliveCount());
     }
+
     @Test
-    public void testNextCellState_rule0_cellAlive_neighborsAlive() throws Exception
-    {
+    public void testNextCellState_rule0_cellAlive_neighborsAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 0, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.ALIVE, new Coords1D(0)));
@@ -142,9 +140,9 @@ public class ElementaryAutomatonTest
         assertEquals(BinaryState.DEAD, cellIterator.next().getState());
         assertEquals(0, automaton.getAliveCount());
     }
+
     @Test
-    public void testNextCellState_rule1_cellAlive_neighborsAlive() throws Exception
-    {
+    public void testNextCellState_rule1_cellAlive_neighborsAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 1, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.ALIVE, new Coords1D(0)));
@@ -161,9 +159,9 @@ public class ElementaryAutomatonTest
         assertEquals(BinaryState.DEAD, cellIterator.next().getState());
         assertEquals(0, automaton.getAliveCount());
     }
+
     @Test
-    public void testNextCellState_rule1_cellDead_neighborsDead() throws Exception
-    {
+    public void testNextCellState_rule1_cellDead_neighborsDead() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 1, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.DEAD, new Coords1D(0)));
@@ -182,8 +180,7 @@ public class ElementaryAutomatonTest
     }
 
     @Test
-    public void testNextCellState_rule1_cellDead_leftAlive() throws Exception
-    {
+    public void testNextCellState_rule1_cellDead_leftAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 1, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.ALIVE, new Coords1D(0)));
@@ -200,9 +197,9 @@ public class ElementaryAutomatonTest
         assertEquals(BinaryState.ALIVE, cellIterator.next().getState());
         assertEquals(1, automaton.getAliveCount());
     }
+
     @Test
-    public void testNextCellState_rule254_cellDead_neighborsAlive() throws Exception
-    {
+    public void testNextCellState_rule254_cellDead_neighborsAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 254, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.ALIVE, new Coords1D(0)));
@@ -219,9 +216,9 @@ public class ElementaryAutomatonTest
         assertEquals(BinaryState.ALIVE, cellIterator.next().getState());
         assertEquals(3, automaton.getAliveCount());
     }
+
     @Test
-    public void testNextCellState_rule254_cellDead_neighborsDead() throws Exception
-    {
+    public void testNextCellState_rule254_cellDead_neighborsDead() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 254, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.DEAD, new Coords1D(0)));
@@ -238,9 +235,9 @@ public class ElementaryAutomatonTest
         assertEquals(BinaryState.DEAD, cellIterator.next().getState());
         assertEquals(0, automaton.getAliveCount());
     }
+
     @Test
-    public void testNextCellState_rule114_cellAlive_rightAlive() throws Exception
-    {
+    public void testNextCellState_rule114_cellAlive_rightAlive() throws Exception {
         Automaton automaton = new ElementaryAutomaton(3, 114, cellStateFactory);
         List<Cell> cells = new ArrayList<>(3);
         cells.add(new Cell(BinaryState.DEAD, new Coords1D(0)));

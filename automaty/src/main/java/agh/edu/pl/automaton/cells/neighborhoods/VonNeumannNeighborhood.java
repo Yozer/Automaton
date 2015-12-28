@@ -1,16 +1,15 @@
 package agh.edu.pl.automaton.cells.neighborhoods;
 
-
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
-public class MoorNeighborhood implements CellNeighborhood {
+public class VonNeumannNeighborhood implements CellNeighborhood {
     private final int radius;
     private final boolean wrap;
     private final int width;
     private final int height;
 
-    public MoorNeighborhood(int radius, boolean wrap, int width, int height) {
+    public VonNeumannNeighborhood(int radius, boolean wrap, int width, int height) {
         this.radius = radius;
         this.wrap = wrap;
         this.width = width;
@@ -19,10 +18,10 @@ public class MoorNeighborhood implements CellNeighborhood {
 
     @Override
     public NeighborhoodArray createArray() {
-        return new NeighborhoodArray((2 * radius + 1) * (2 * radius + 1) - 1);
+        return new NeighborhoodArray(2 * radius * (radius + 1));
     }
 
-    @SuppressWarnings({"SuspiciousNameCombination", "Duplicates"})
+    @SuppressWarnings({"Duplicates", "SuspiciousNameCombination"})
     @Override
     public NeighborhoodArray cellNeighbors(CellCoordinates cell, NeighborhoodArray result) {
         result.clear();
@@ -37,7 +36,7 @@ public class MoorNeighborhood implements CellNeighborhood {
 
         for (int x = xOriginal - radius; x < limitX; x++) {
             for (int y = yOriginal - radius; y < limitY; y++) {
-                if (x != xOriginal || y != yOriginal) {
+                if (Math.abs(x - xOriginal) + Math.abs(y - yOriginal) <= radius && (x != xOriginal || y != yOriginal)) {
                     if (wrap) {
                         xN = x;
                         yN = y;
@@ -71,5 +70,5 @@ public class MoorNeighborhood implements CellNeighborhood {
     public int getRadius() {
         return radius;
     }
-}
 
+}

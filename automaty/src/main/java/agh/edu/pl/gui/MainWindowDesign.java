@@ -1,6 +1,9 @@
 package agh.edu.pl.gui;
 
-import agh.edu.pl.gui.enums.*;
+import agh.edu.pl.gui.enums.AutomatonState;
+import agh.edu.pl.gui.enums.CellNeighborhoodType;
+import agh.edu.pl.gui.enums.Commands;
+import agh.edu.pl.gui.enums.PossibleAutomaton;
 import agh.edu.pl.gui.logic.AutomatonPanel;
 import agh.edu.pl.gui.logic.AutomatonSettings;
 import agh.edu.pl.gui.structures.StructureInfo;
@@ -15,51 +18,44 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Created by Dominik on 2015-12-10.
  */
-abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener, MouseListener
-{
-    protected AutomatonPanel automatonPanel;
-
+@SuppressWarnings("SpellCheckingInspection")
+abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener, MouseListener {
+    // helps get default settings
+    private final AutomatonSettings automatonSettings = new AutomatonSettings();
+    private final ArrayList<Component> disabledWhenRunning = new ArrayList<>();
+    private final ArrayList<Component> disabledWhenNotRunning = new ArrayList<>();
+    AutomatonPanel automatonPanel;
     private Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel, deadCellsLabel, totalCellsLabel, onePassTimeLabel;
     private Label renderTimeLabel;
     private JPanel settingsPanel;
     private JCheckBox wrappingCheckBox;
-
     private JComboBox<StructureInfo> structuresList;
     private JButton insertStructButton, applyRulesButton;
     private JSpinner radiusSpinnerOneDimRule, radiusSpinner;
     private TextField textFieldRules;
     private JRadioButton radioButtonMoore, radioButtonVonNeumann, radioButtonOneDim;
     private JRadioButton oneDimAutomatonRadioButton, langtonAutomatonRadioButton, gameOfLifeAutomatonRadioButton;
-
     private JButton colorPicker;
     private Color choosedColor = Color.RED;
-
-    private ArrayList<Component> disabledWhenRunning = new ArrayList<>();
-    private ArrayList<Component> disabledWhenNotRunning= new ArrayList<>();
-
     private AutomatonState automatonState;
     private AutomatonState rememberState;
 
-    // helps get default settings
-    private final AutomatonSettings automatonSettings = new AutomatonSettings();
-
-    protected MainWindowDesign()
-    {
+    MainWindowDesign() {
         initUI();
         setStatePaused();
     }
 
-    private void initUI()
-    {
+    private void initUI() {
         setTitle("Automat komórkowy");
         setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         JPanel mainPanel = new JPanel();
@@ -79,14 +75,13 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         panel.add(new BoldLabel("Typ automatu"));
         ButtonGroup group = new ButtonGroup();
         JPanel panelRadio = new JPanel();
-        for (PossibleAutomaton automaton : PossibleAutomaton.values())
-        {
+        for (PossibleAutomaton automaton : PossibleAutomaton.values()) {
             JRadioButton radio = new JRadioButton(automaton.toString());
-            if(automaton == PossibleAutomaton.Jednowymiarowy)
+            if (automaton == PossibleAutomaton.Jednowymiarowy)
                 oneDimAutomatonRadioButton = radio;
-            else if(automaton == PossibleAutomaton.Langton)
+            else if (automaton == PossibleAutomaton.Langton)
                 langtonAutomatonRadioButton = radio;
-            else if(automaton == PossibleAutomaton.GameOfLife)
+            else if (automaton == PossibleAutomaton.GameOfLife)
                 gameOfLifeAutomatonRadioButton = radio;
 
             disabledWhenRunning.add(radio);
@@ -94,8 +89,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
             group.add(radio);
             radio.addActionListener(this);
 
-            if(automaton == automatonSettings.getSelectedAutomaton())
-            {
+            if (automaton == automatonSettings.getSelectedAutomaton()) {
                 radio.setSelected(true);
             }
 
@@ -137,7 +131,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         tmpPanel.add(new Label("Zasada dla GameOfLife:"));
         textFieldRules = new TextField(automatonSettings.getFormattedRules());
         textFieldRules.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
-                        automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
+                automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
         tmpPanel.add(textFieldRules);
         applyRulesButton = new JButton("Zastosuj zasadę");
         applyRulesButton.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
@@ -262,14 +256,14 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         colorPicker.addActionListener(e ->
         {
             Color c = JColorChooser.showDialog(null, "Wybierz kolor", Color.RED);
-            if(c != null)
+            if (c != null)
                 choosedColor = c;
         });
         navigationButtonsPanel.add(colorPicker);
 
 
         // ------------------------------------------------------------------------ \\
-        JPanel statisticsPanel = new JPanel(new GridLayout(4,2));
+        JPanel statisticsPanel = new JPanel(new GridLayout(4, 2));
         statisticsPanel.setName("statisticPanel");
         generationCountLabel = new Label("Liczba generacji: 0");
         simulationTimeLabel = new Label("Czas symulacji jednej: 0");
@@ -292,85 +286,86 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         add(mainPanel);
     }
 
-    protected void selectOneDimNeighborhood()
-    {
+    void selectOneDimNeighborhood() {
         radioButtonOneDim.setSelected(true);
     }
-    protected void selectMooreNeighborhood()
-    {
+
+    void selectMooreNeighborhood() {
         radioButtonMoore.setSelected(true);
     }
-    protected void setProperGuiSettings()
-    {
+
+    void setProperGuiSettings() {
         enableSettingsPanel();
     }
 
-    protected String getRulesString()
-    {
+    String getRulesString() {
         return textFieldRules.getText();
     }
-    protected void setStructureList(PossibleAutomaton selectedAutomaton)
-    {
+
+    void setStructureList(PossibleAutomaton selectedAutomaton) {
         structuresList.removeAllItems();
-        for(StructureInfo structureInfo : StructureLoader.getAvailableStructures(selectedAutomaton))
+        for (StructureInfo structureInfo : StructureLoader.getAvailableStructures(selectedAutomaton))
             structuresList.addItem(structureInfo);
     }
-    protected StructureInfo getSelectedStructure()
-    {
+
+    StructureInfo getSelectedStructure() {
         return (StructureInfo) structuresList.getSelectedItem();
     }
 
-    protected void setGenerationCountLabel(int count)
-    {
+    void setGenerationCountLabel(int count) {
         generationCountLabel.setText("Liczba generacji: " + count);
     }
-    protected void setSimulationTimeLabel(int time) { simulationTimeLabel.setText("Czas symulacji jednej generacji: " + time); }
-    protected void setAliveCellsCountLabel(int count) { aliveCellsCountLabel.setText("Liczba żywych komórek: " + count); }
-    protected void setTotalCellsLabel(int count)
-    {
+
+    void setSimulationTimeLabel(int time) {
+        simulationTimeLabel.setText("Czas symulacji jednej generacji: " + time);
+    }
+
+    void setAliveCellsCountLabel(int count) {
+        aliveCellsCountLabel.setText("Liczba żywych komórek: " + count);
+    }
+
+    void setTotalCellsLabel(int count) {
         totalCellsLabel.setText("Wszystkich komórek: " + count);
     }
-    protected void setDeadCellsLabel(int count)
-    {
+
+    void setDeadCellsLabel(int count) {
         deadCellsLabel.setText("Martwych komórek: " + count);
     }
-    protected void setRenderTimeLabel(int time)
-    {
+
+    void setRenderTimeLabel(int time) {
         renderTimeLabel.setText("Czas renderowania: " + time);
     }
-    protected void setOnePassTimeLabel(int time)
-    {
+
+    void setOnePassTimeLabel(int time) {
         onePassTimeLabel.setText("Czas jednego przejścia: " + time);
     }
 
-    protected boolean isWrappingSelected()
-    {
+    boolean isWrappingSelected() {
         return wrappingCheckBox.isSelected();
     }
-    protected AutomatonState getCurrentState()
-    {
+
+    AutomatonState getCurrentState() {
         return automatonState;
     }
 
-    protected void setStatePaused()
-    {
+    void setStatePaused() {
         automatonState = AutomatonState.PAUSED;
         enableSettingsPanel();
         disableListOfComponents(disabledWhenNotRunning);
     }
-    protected void setStateRunning()
-    {
+
+    void setStateRunning() {
         automatonState = AutomatonState.RUNNING;
         enableSettingsPanel();
         disableListOfComponents(disabledWhenRunning);
     }
-    protected void setStateBusy()
-    {
+
+    void setStateBusy() {
         automatonState = AutomatonState.BUSY;
         disableSettingsPanel();
     }
-    protected void setStateSelectingStruct()
-    {
+
+    void setStateSelectingStruct() {
         rememberState = automatonState;
         automatonState = AutomatonState.INSERTING_STRUCT;
         disableSettingsPanel();
@@ -380,84 +375,79 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         insertStructButton.setText("Anuluj wstawianie");
         insertStructButton.setActionCommand(Commands.CANCEL_INSERTING_STRUCT.toString());
     }
-    protected void setStateCancelSelectingStruct()
-    {
+
+    void setStateCancelSelectingStruct() {
         insertStructButton.setText("Wstaw strukturę");
         colorPicker.setEnabled(false);
         insertStructButton.setActionCommand(Commands.INSERT_STRUCT.toString());
-        if(rememberState == AutomatonState.PAUSED)
+        if (rememberState == AutomatonState.PAUSED)
             setStatePaused();
-        else if(rememberState == AutomatonState.RUNNING)
+        else if (rememberState == AutomatonState.RUNNING)
             setStateRunning();
     }
-    protected void showColorChooser()
-    {
+
+    void showColorChooser() {
         colorPicker.setVisible(true);
     }
-    protected void hideColorChooser()
-    {
+
+    void hideColorChooser() {
         colorPicker.setVisible(false);
     }
-    protected Color getColorFromChooser()
-    {
+
+    Color getColorFromChooser() {
         return choosedColor;
     }
 
 
-    private void enableListOfComponents(ArrayList<Component> componentList) { switchState(componentList, true);}
-    private void disableListOfComponents(ArrayList<Component> componentList) { switchState(componentList, false);}
-    private void switchState(ArrayList<Component> componentList, boolean state)
-    {
-        for(Component component : componentList)
+    private void disableListOfComponents(ArrayList<Component> componentList) {
+        switchState(componentList, false);
+    }
+
+    private void switchState(ArrayList<Component> componentList, boolean state) {
+        for (Component component : componentList)
             component.setEnabled(state);
     }
 
-    private void disableSettingsPanel() { switchStatePanel(settingsPanel, false);}
-    private void enableSettingsPanel()
-    {
+    private void disableSettingsPanel() {
+        switchStatePanel(settingsPanel, false);
+    }
+
+    private void enableSettingsPanel() {
         switchStatePanel(settingsPanel, true);
 
         // just restore
-        if(oneDimAutomatonRadioButton.isSelected())
-        {
+        if (oneDimAutomatonRadioButton.isSelected()) {
             radioButtonVonNeumann.setEnabled(false);
             radioButtonMoore.setEnabled(false);
-        }
-        else if(langtonAutomatonRadioButton.isSelected())
-        {
+        } else if (langtonAutomatonRadioButton.isSelected()) {
             radioButtonVonNeumann.setEnabled(false);
             radioButtonMoore.setEnabled(false);
             radioButtonOneDim.setEnabled(false);
             radiusSpinner.setEnabled(false);
             radiusSpinnerOneDimRule.setEnabled(false);
-        }
-        else
-        {
+        } else {
             radiusSpinnerOneDimRule.setEnabled(false);
             radioButtonOneDim.setEnabled(false);
             radiusSpinnerOneDimRule.setEnabled(false);
         }
 
-        if(!gameOfLifeAutomatonRadioButton.isSelected())
-        {
+        if (!gameOfLifeAutomatonRadioButton.isSelected()) {
             textFieldRules.setEnabled(false);
             applyRulesButton.setEnabled(false);
         }
 
-        if(radioButtonOneDim.isSelected())
+        if (radioButtonOneDim.isSelected())
             radiusSpinner.setEnabled(false);
 
     }
-    private void switchStatePanel(JPanel panel, boolean state)
-    {
+
+    private void switchStatePanel(JPanel panel, boolean state) {
         panel.setEnabled(state);
 
         Component[] components = panel.getComponents();
 
-        for (Component component : components)
-        {
-            if (Objects.equals(component.getClass().getName(), "javax.swing.JPanel"))
-            {
+        for (Component component : components) {
+            if (Objects.equals(component.getClass().getName(), "javax.swing.JPanel")) {
                 switchStatePanel((JPanel) component, state);
             }
             component.setEnabled(state);
@@ -465,37 +455,30 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     }
 }
 
-class BoldLabel extends Label
-{
-    public BoldLabel(String text)
-    {
+class BoldLabel extends Label {
+    public BoldLabel(String text) {
         super(text);
         final BoldLabel boldLabel = this;
-        super.addComponentListener(new ComponentListener()
-        {
+        super.addComponentListener(new ComponentListener() {
             @Override
-            public void componentResized(ComponentEvent e)
-            {
+            public void componentResized(ComponentEvent e) {
                 Font font = boldLabel.getFont();
                 font = new Font(font.getName(), Font.BOLD, font.getSize());
                 boldLabel.setFont(font);
             }
 
             @Override
-            public void componentMoved(ComponentEvent e)
-            {
+            public void componentMoved(ComponentEvent e) {
 
             }
 
             @Override
-            public void componentShown(ComponentEvent e)
-            {
+            public void componentShown(ComponentEvent e) {
 
             }
 
             @Override
-            public void componentHidden(ComponentEvent e)
-            {
+            public void componentHidden(ComponentEvent e) {
 
             }
         });

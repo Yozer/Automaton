@@ -7,24 +7,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by Dominik on 2015-12-18.
  */
-class SimulationThread implements Runnable
-{
+class SimulationThread implements Runnable {
     private final Object PAUSE_MONITOR = new Object();
     private final Object IS_PAUSED_MONITOR = new Object();
     private final Object DRAWING_MONITOR = new Object();
     private final AutomatonManager manager;
     private final AutomatonStatistics statistics;
-
-    private AtomicBoolean isDrawing = new AtomicBoolean();
+    private final DrawingThread drawingThread;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final Thread drawingThreadObject;
+    private final AtomicBoolean isDrawing = new AtomicBoolean();
     private volatile boolean pauseThreadFlag = true;
     private volatile boolean isPausedFlag = true;
 
-
-    private final DrawingThread drawingThread;
-    private final Thread drawingThreadObject;
-
-    public SimulationThread(AutomatonManager manager)
-    {
+    public SimulationThread(AutomatonManager manager) {
         this.manager = manager;
         this.statistics = manager.getStatistics();
         this.drawingThread = new DrawingThread(manager, DRAWING_MONITOR, isDrawing);
@@ -34,13 +30,12 @@ class SimulationThread implements Runnable
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         Timer timerTotal = new Timer();
         Timer timerSimulation = new Timer();
 
-        while (true)
-        {
+        //noinspection InfiniteLoopStatement
+        while (true) {
             timerTotal.start();
 
             drawingThread.draw();
@@ -56,100 +51,78 @@ class SimulationThread implements Runnable
             manager.getAutomaton().endCalculatingNextState();
             statistics.incrementGenerationsCount();
             statistics.setAliveCellsCount(manager.getAutomaton().getAliveCount());
-            statistics.setDeadCellsCount(statistics.getTotalCellsCount()- statistics.getAliveCellsCount());
+            statistics.setDeadCellsCount(statistics.getTotalCellsCount() - statistics.getAliveCellsCount());
 
             timerTotal.stop();
             statistics.setTimeOfOnePass(timerTotal.getElapsed());
 
-            int currentDelay = manager.getSimulationDelay() - 2*timerTotal.getElapsed();
-            if(currentDelay > 1)
-            {
-                try
-                {
+            int currentDelay = manager.getSimulationDelay() - 2 * timerTotal.getElapsed();
+            if (currentDelay > 1) {
+                try {
                     Thread.sleep(currentDelay);
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException ignored) {
                 }
             }
         }
     }
-    private void waitForDrawing()
-    {
-        synchronized (DRAWING_MONITOR)
-        {
-            while (isDrawing.get())
-            {
-                try
-                {
+
+    private void waitForDrawing() {
+        synchronized (DRAWING_MONITOR) {
+            while (isDrawing.get()) {
+                try {
                     DRAWING_MONITOR.wait();
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException ignored) {
 
                 }
             }
         }
     }
 
-    private void checkForPausedAndWait()
-    {
-        synchronized (PAUSE_MONITOR)
-        {
+    private void checkForPausedAndWait() {
+        synchronized (PAUSE_MONITOR) {
             boolean wasNotified = false;
-            while(pauseThreadFlag)
-            {
-                if(!wasNotified)
-                {
+            while (pauseThreadFlag) {
+                if (!wasNotified) {
                     isPausedFlag = true;
-                    synchronized (IS_PAUSED_MONITOR)
-                    {
+                    synchronized (IS_PAUSED_MONITOR) {
                         IS_PAUSED_MONITOR.notify();
                     }
                     wasNotified = true;
                 }
 
-                try
-                {
+                try {
                     PAUSE_MONITOR.wait();
-                } catch (InterruptedException ignored)
-                {
+                } catch (InterruptedException ignored) {
                 }
             }
         }
     }
 
-    public void pauseThread()
-    {
-        if(pauseThreadFlag)
+    public void pauseThread() {
+        if (pauseThreadFlag)
             return;
 
         pauseThreadFlag = true;
         isPausedFlag = false;
-        synchronized (IS_PAUSED_MONITOR)
-        {
-            while (!isPausedFlag)
-            {
-                try
-                {
+        synchronized (IS_PAUSED_MONITOR) {
+            while (!isPausedFlag) {
+                try {
                     IS_PAUSED_MONITOR.wait();
-                } catch (InterruptedException ignored)
-                {
+                } catch (InterruptedException ignored) {
 
                 }
             }
         }
     }
 
-    public void resumeThread()
-    {
-        synchronized(PAUSE_MONITOR)
-        {
+    public void resumeThread() {
+        synchronized (PAUSE_MONITOR) {
             pauseThreadFlag = false;
             PAUSE_MONITOR.notify();
         }
     }
 
-    public boolean isRunning()
-    {
+    public boolean isRunning() {
         return !pauseThreadFlag;
     }
 }

@@ -2,27 +2,26 @@ package agh.edu.pl.automaton.automata;
 
 import agh.edu.pl.automaton.Automaton1Dim;
 import agh.edu.pl.automaton.cells.Cell;
-import agh.edu.pl.automaton.cells.coordinates.*;
+import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
 import agh.edu.pl.automaton.cells.neighborhoods.OneDimensionalNeighborhood;
-import agh.edu.pl.automaton.cells.states.*;
+import agh.edu.pl.automaton.cells.states.BinaryState;
+import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ElementaryAutomaton extends Automaton1Dim
-{
+public class ElementaryAutomaton extends Automaton1Dim {
+    private final List<BinaryState> ruleMapper;
     private int rule;
     private List<Integer> neighborList;
-    private List<BinaryState> ruleMapper;
 
-    public ElementaryAutomaton(int size, int rule, CellStateFactory stateFactory)
-    {
+    public ElementaryAutomaton(int size, int rule, CellStateFactory stateFactory) {
         super(size, new OneDimensionalNeighborhood(false, size), stateFactory);
         this.generateNeighborList();
         ruleMapper = new ArrayList<>();
-        for(int i = 0; i < this.neighborList.size(); i++)
-        {
+        for (int i = 0; i < this.neighborList.size(); i++) {
             ruleMapper.add(BinaryState.DEAD);
         }
 
@@ -30,35 +29,25 @@ public class ElementaryAutomaton extends Automaton1Dim
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates)
-    {
+    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates) {
         BinaryState[] neighborStates = new BinaryState[3];
         neighborStates[1] = (BinaryState) cell.getState();
 
         int x = neighborsStates.get(0);
-        if(neighborsStates.getLength() == 1)
-        {
-            if(x < ((Coords1D) cell.getCoords()).getX())
-            {
+        if (neighborsStates.getLength() == 1) {
+            if (x < ((Coords1D) cell.getCoords()).getX()) {
                 neighborStates[0] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
                 neighborStates[2] = BinaryState.DEAD;
-            }
-            else
-            {
+            } else {
                 neighborStates[0] = BinaryState.DEAD;
                 neighborStates[2] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
             }
-        }
-        else
-        {
+        } else {
             int x2 = neighborsStates.get(1);
-            if(x > x2)
-            {
+            if (x > x2) {
                 neighborStates[0] = (BinaryState) getCellStateByIndex(neighborsStates.get(1));
                 neighborStates[2] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
-            }
-            else
-            {
+            } else {
                 neighborStates[2] = (BinaryState) getCellStateByIndex(neighborsStates.get(1));
                 neighborStates[0] = (BinaryState) getCellStateByIndex(neighborsStates.get(0));
             }
@@ -68,45 +57,38 @@ public class ElementaryAutomaton extends Automaton1Dim
     }
 
     @Override
-    protected boolean cellIsAlive(CellState state)
-    {
+    protected boolean cellIsAlive(CellState state) {
         return state == BinaryState.ALIVE;
     }
 
     @Override
-    protected boolean cellChangedToAlive(CellState newState, CellState oldState)
-    {
+    protected boolean cellChangedToAlive(CellState newState, CellState oldState) {
         return newState == BinaryState.ALIVE;
     }
 
     @Override
-    protected boolean cellChangedToDead(CellState newState, CellState oldState)
-    {
+    protected boolean cellChangedToDead(CellState newState, CellState oldState) {
         return newState == BinaryState.DEAD;
     }
 
-    public int getRule()
-    {
+    public int getRule() {
         return rule;
     }
 
-    public void setRule(int rule)
-    {
-        if(rule < 0 || rule > 255)
-            throw new IllegalArgumentException("Rule shoud be in range [0;255]");
+    public void setRule(int rule) {
+        if (rule < 0 || rule > 255)
+            throw new IllegalArgumentException("Rule should be in range [0;255]");
 
         this.rule = rule;
 
-        for(int i = 0; i < 8; i++)
-        {
+        for (int i = 0; i < 8; i++) {
             ruleMapper.set(neighborList.get(i), getBit(rule, 7 - i) == 1 ? BinaryState.ALIVE : BinaryState.DEAD);
         }
         forceCheckAllCellsInNextGeneration();
     }
 
-    private int getHashStates(BinaryState[] states)
-    {
-        if(states.length != 3)
+    private int getHashStates(BinaryState[] states) {
+        if (states.length != 3)
             throw new IllegalArgumentException("states has have size 3");
 
         return (states[0] == BinaryState.ALIVE ? 1 : 0) +
@@ -114,8 +96,7 @@ public class ElementaryAutomaton extends Automaton1Dim
                 (states[2] == BinaryState.ALIVE ? 1 : 0) * 4;
     }
 
-    private void generateNeighborList()
-    {
+    private void generateNeighborList() {
         neighborList = new ArrayList<>(8);
         neighborList.add(getHashStates(new BinaryState[]{BinaryState.ALIVE, BinaryState.ALIVE, BinaryState.ALIVE})); //7
         neighborList.add(getHashStates(new BinaryState[]{BinaryState.ALIVE, BinaryState.ALIVE, BinaryState.DEAD})); //3
@@ -126,8 +107,8 @@ public class ElementaryAutomaton extends Automaton1Dim
         neighborList.add(getHashStates(new BinaryState[]{BinaryState.DEAD, BinaryState.DEAD, BinaryState.ALIVE})); //4
         neighborList.add(getHashStates(new BinaryState[]{BinaryState.DEAD, BinaryState.DEAD, BinaryState.DEAD})); //0
     }
-    private int getBit(int n, int k)
-    {
+
+    private int getBit(int n, int k) {
         return (n >> k) & 1;
     }
 }

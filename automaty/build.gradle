@@ -5,6 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: "jacoco"
 apply plugin: 'findbugs'
 apply plugin: 'checkstyle'
+apply plugin: 'pmd'
 compileJava.options.encoding = 'UTF-8'
 mainClassName = "agh.edu.pl.Main"
 
@@ -19,10 +20,18 @@ tasks.withType(FindBugs) {
     }
 }
 
+checkstyleMain {
+    ignoreFailures = true
+}
+
+checkstyleTest {
+    ignoreFailures = true
+}
+
 task checkstyleHtml << {
     ant.xslt(in: checkstyleMain.reports.xml.destination,
              style: file('/config/checkstyle/checkstyle-noframes-sorted.xsl'),
-             out: new File(checkstyleMain.reports.xml.destination.parent, 'main.html'))
+             out: new File(checkscleartyleMain.reports.xml.destination.parent, 'main.html'))
 }
 
 jacocoTestReport {
@@ -43,5 +52,6 @@ task fatJar(type: Jar) {
 
 dependencies {
 	compile 'org.apache.commons:commons-lang3:3.1'
+	compile 'org.hudsonci.plugins:findbugs-library:2.0.1'
 	testCompile 'junit:junit:4.12'
 }

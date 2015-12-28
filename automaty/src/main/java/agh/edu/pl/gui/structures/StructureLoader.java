@@ -5,7 +5,9 @@ import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,48 +16,41 @@ import java.util.Objects;
 /**
  * Created by Dominik on 2015-12-20.
  */
-public abstract class StructureLoader
-{
-    public static List<StructureInfo> getAvailableStructures(PossibleAutomaton automaton)
-    {
+public abstract class StructureLoader {
+    public static List<StructureInfo> getAvailableStructures(PossibleAutomaton automaton) {
         String directoryName = "/structures/";
-        List<StructureInfo> structureInfos = new ArrayList<>();
+        List<StructureInfo> structuresInfo = new ArrayList<>();
 
-        if(automaton == PossibleAutomaton.GameOfLife || automaton == PossibleAutomaton.QuadLife)
+        if (automaton == PossibleAutomaton.GameOfLife || automaton == PossibleAutomaton.QuadLife)
             directoryName += "gameoflife";
-        else if(automaton == PossibleAutomaton.Langton)
+        else if (automaton == PossibleAutomaton.Langton)
             directoryName += "langton";
-        else if(automaton == PossibleAutomaton.WireWorld)
+        else if (automaton == PossibleAutomaton.WireWorld)
             directoryName += "wireworld";
-        else if(automaton == PossibleAutomaton.Jednowymiarowy)
+        else if (automaton == PossibleAutomaton.Jednowymiarowy)
             directoryName += "onedim";
         else
-            return structureInfos;
+            return structuresInfo;
 
         directoryName += "/";
-        try(BufferedReader reader = new BufferedReader(
-                new InputStreamReader(Main.class.getResourceAsStream(directoryName + "info.txt"), Charset.forName("UTF-8"))))
-        {
-            String line = null;
-            while((line = reader.readLine())!= null)
-            {
-                if(Objects.equals(line, ""))
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(Main.class.getResourceAsStream(directoryName + "info.txt"), Charset.forName("UTF-8")))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (Objects.equals(line, ""))
                     continue;
                 String[] splited = line.split(":");
                 StructureInfo structureInfo = new StructureInfo(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]),
                         directoryName + splited[3]);
-                structureInfos.add(structureInfo);
+                structuresInfo.add(structureInfo);
             }
 
-        } catch (FileNotFoundException e)
-        {
-
-        } catch (IOException e)
-        {
-
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return structureInfos;
+        return structuresInfo;
     }
+
     public abstract List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException;
 }
