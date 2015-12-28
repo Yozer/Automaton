@@ -14,10 +14,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -102,13 +99,12 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         panel = new JPanel(new GridLayout(2, 1));
         panel.add(new BoldLabel("Rozmiar komórki"));
 
-        JSlider slider = new JSlider(1, 20, 5);
+        JSlider slider = new JSlider((int) 1, (int) 5, (int) (automatonSettings.getCellCount()/1e5));
         slider.setMinorTickSpacing(1);
         slider.setMajorTickSpacing(1);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
-        slider.setName(Commands.CHANGE_CELL_SIZE.toString());
-        slider.setValue((int) automatonSettings.getCellSize());
+        slider.setName(Commands.CHANGE_CELL_COUNT.toString());
         slider.addChangeListener(this);
         panel.add(slider);
         disabledWhenRunning.add(slider);

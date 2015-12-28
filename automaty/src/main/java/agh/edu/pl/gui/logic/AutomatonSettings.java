@@ -8,7 +8,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AutomatonSettings {
-    private float cellSize = 5;
+    //private float cellSize = 5;
+    private int cellCount = (int) 1e5;
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLife;
     private int simulationDelay = 0;
     private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2, 3));
@@ -29,12 +30,12 @@ public class AutomatonSettings {
         this.selectedAutomaton = selectedAutomaton;
     }
 
-    public float getCellSize() {
-        return cellSize;
+    public int getCellCount() {
+        return cellCount;
     }
 
-    void setCellSize(int cellSize) {
-        this.cellSize = cellSize;
+    void setCellCount(int cellCount) {
+        this.cellCount = cellCount;
     }
 
     public int getSimulationDelay() {

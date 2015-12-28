@@ -85,7 +85,7 @@ public class AutomatonManager {
 
     public void insertAnt(StructureInfo structureInfo, int x, int y, Color antColor) {
         resetAutomatonIfSettingsHasChanged();
-        Coords2D atPoint = new Coords2D((int) (x / settings.getCellSize()), (int) (y / settings.getCellSize()));
+        Coords2D atPoint = new Coords2D((int) (x / settings.getCellCount()), (int) (y / settings.getCellCount()));
         if (atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
             return;
 
@@ -118,17 +118,13 @@ public class AutomatonManager {
     void init() {
         pause();
         statistics.resetStatistics();
+        initAutomatonPanelAndUpdateDimensions();
+        statistics.setTotalCellsCount(settings.getWidth() * settings.getHeight());
 
-        settings.setWidth((int) (automatonPanel.getWidth() / settings.getCellSize()));
-        settings.setHeight((int) (automatonPanel.getHeight() / settings.getCellSize()));
-        automatonPanel.setScale(settings.getCellSize());
         // get automaton from settings
         automaton = getAutomatonFromSettings();
         if (automaton instanceof Automaton1Dim)
             automaton1DimCurrentRow = 0;
-
-        clearAutomatonPanel();
-        statistics.setTotalCellsCount(settings.getWidth() * settings.getHeight());
     }
 
     void pause() {
@@ -191,11 +187,10 @@ public class AutomatonManager {
         automatonPanel.repaint();
     }
 
-    private void clearAutomatonPanel() {
-        settings.setWidth((int) (automatonPanel.getWidth() / settings.getCellSize()));
-        settings.setHeight((int) (automatonPanel.getHeight() / settings.getCellSize()));
-        automatonPanel.setScale(settings.getCellSize());
-        automatonPanel.createBufferedImage(settings.getWidth(), settings.getHeight());
+    private void initAutomatonPanelAndUpdateDimensions() {
+        automatonPanel.createBufferedImage(settings.getCellCount());
+        settings.setWidth(automatonPanel.getAutomatonWidth());
+        settings.setHeight(automatonPanel.getAutomatonHeight());
         automatonPanel.repaint();
     }
 
@@ -282,15 +277,13 @@ public class AutomatonManager {
     public void setSelectedAutomaton(PossibleAutomaton selectedAutomaton) {
         settings.setSelectedAutomaton(selectedAutomaton);
         settingsHasChanged = true;
-        clearAutomatonPanel();
+        initAutomatonPanelAndUpdateDimensions();
     }
 
-    public void setCellSize(int cellSize) {
-        settings.setCellSize(cellSize);
-        automatonPanel.setScale(settings.getCellSize());
-        automatonPanel.setScale(settings.getCellSize());
+    public void setCellCount(int cellCount) {
+        settings.setCellCount(cellCount);
         settingsHasChanged = true;
-        clearAutomatonPanel();
+        initAutomatonPanelAndUpdateDimensions();
     }
 
     public void setNeighborhoodType(CellNeighborhoodType neighborhoodType) {

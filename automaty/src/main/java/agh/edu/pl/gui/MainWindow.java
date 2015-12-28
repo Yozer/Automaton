@@ -15,6 +15,7 @@ import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -141,8 +142,8 @@ public class MainWindow extends MainWindowDesign {
         if (source instanceof JSlider) {
             JSlider slider = (JSlider) source;
             String name = slider.getName();
-            if (name.equals(Commands.CHANGE_CELL_SIZE.toString())) {
-                automaton.setCellSize(slider.getValue());
+            if (name.equals(Commands.CHANGE_CELL_COUNT.toString())) {
+                automaton.setCellCount((int) (slider.getValue()*1e5));
             } else if (name.equals(Commands.CHANGE_SIMULATION_DELAY.toString())) {
                 automaton.setSimulationDelay(slider.getValue());
             }

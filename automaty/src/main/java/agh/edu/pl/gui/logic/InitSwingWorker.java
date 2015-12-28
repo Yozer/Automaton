@@ -87,7 +87,7 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
         if (manager.getAutomaton() == null)
             manager.init();
 
-        Coords2D atPoint = new Coords2D((int) (x / manager.getSettings().getCellSize()), (int) (y / manager.getSettings().getCellSize()));
+        Coords2D atPoint = new Coords2D((int) (x / manager.getSettings().getCellCount()), (int) (y / manager.getSettings().getCellCount()));
         if (atPoint.getX() + structureInfo.getWidth() > manager.getSettings().getWidth()
                 || atPoint.getY() + structureInfo.getHeight() > manager.getSettings().getHeight())
             return null;
