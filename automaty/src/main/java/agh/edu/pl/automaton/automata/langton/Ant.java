@@ -1,10 +1,11 @@
 package agh.edu.pl.automaton.automata.langton;
 
+import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.awt.*;
 
-public class Ant {
+public class Ant extends Cell {
     private final Color antColor;
     private final int automatonWidth;
     private final int automatonHeight;
@@ -20,6 +21,7 @@ public class Ant {
     }
 
     private Ant(AntState antState, Color antColor, int automatonWidth, int automatonHeight) {
+        super(null, null);
         this.antState = antState;
         this.antColor = antColor;
         this.automatonWidth = automatonWidth;

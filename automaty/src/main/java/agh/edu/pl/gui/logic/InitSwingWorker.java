@@ -92,23 +92,13 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
                 || atPoint.getY() + structureInfo.getHeight() > manager.getSettings().getHeight())
             return null;
 
-        List<Cell> structure;
-        if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.WireWorld)
-            structure = new WireWorldStructureLoader().getStructure(structureInfo, atPoint);
-        else if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.GameOfLife)
-            structure = new RLEFormatStructureLoader(BinaryState.ALIVE, BinaryState.DEAD).getStructure(structureInfo, atPoint);
-        else if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.QuadLife)
-            structure = new RLEFormatStructureLoader(QuadState.BLUE, QuadState.DEAD).getStructure(structureInfo, atPoint);
-        else if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy)
-            structure = new OneDimStructureLoader().getStructure(structureInfo, atPoint);
-        else
-            throw new IllegalArgumentException("Invalid automaton!");
+        List<Cell> cells = structureInfo.getCells(x, y);
 
         boolean isRunning = manager.isRunning();
         if (isRunning)
             manager.pause();
 
-        manager.getAutomaton().insertStructure(structure);
+        manager.getAutomaton().insertStructure(cells);
         manager.decrementAutomatonOneDimRow();
         manager.drawCurrentAutomaton();
         manager.repaint();

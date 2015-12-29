@@ -19,18 +19,18 @@ import java.util.List;
  */
 public class OneDimStructureLoader extends StructureLoader {
     @Override
-    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException {
-        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
-        List<Cell> result = new ArrayList<>(structureInfo.getWidth());
+    protected List<Cell> getStructure(int size, String path) throws IOException {
+        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(path), Charset.forName("UTF-8"));
+        List<Cell> result = new ArrayList<>(size);
 
         try (BufferedReader reader = new BufferedReader(streamReader)) {
             String line = reader.readLine();
             if (line == null)
                 throw new IOException();
             if (line.equals("b"))
-                result.add(new Cell(BinaryState.DEAD, new Coords1D(((Coords2D) startPoint).getX())));
+                result.add(new Cell(BinaryState.DEAD, new Coords1D(0)));
             else
-                result.add(new Cell(BinaryState.ALIVE, new Coords1D(((Coords2D) startPoint).getX())));
+                result.add(new Cell(BinaryState.ALIVE, new Coords1D(0)));
         }
 
         return result;

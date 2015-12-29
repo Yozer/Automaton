@@ -1,13 +1,14 @@
 package agh.edu.pl.gui;
 
+import agh.edu.pl.automaton.cells.states.BinaryState;
+import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.gui.enums.AutomatonState;
 import agh.edu.pl.gui.enums.CellNeighborhoodType;
 import agh.edu.pl.gui.enums.Commands;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 import agh.edu.pl.gui.logic.AutomatonPanel;
 import agh.edu.pl.gui.logic.AutomatonSettings;
-import agh.edu.pl.gui.structures.StructureInfo;
-import agh.edu.pl.gui.structures.StructureLoader;
+import agh.edu.pl.gui.structures.*;
 import com.horstmann.corejava.GBC;
 
 import javax.swing.*;
@@ -303,7 +304,21 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
     void setStructureList(PossibleAutomaton selectedAutomaton) {
         structuresList.removeAllItems();
-        for (StructureInfo structureInfo : StructureLoader.getAvailableStructures(selectedAutomaton))
+        StructureLoader structureLoader = null;
+        if(selectedAutomaton == PossibleAutomaton.GameOfLife) {
+            structureLoader = new RLEFormatStructureLoader(BinaryState.ALIVE, BinaryState.DEAD);
+        } else if(selectedAutomaton == PossibleAutomaton.QuadLife) {
+            structureLoader = new RLEFormatStructureLoader(QuadState.BLUE, QuadState.DEAD);
+        } else if(selectedAutomaton == PossibleAutomaton.WireWorld) {
+            structureLoader = new WireWorldStructureLoader();
+        } else if(selectedAutomaton == PossibleAutomaton.Jednowymiarowy) {
+            structureLoader = new OneDimStructureLoader();
+        } else if(selectedAutomaton == PossibleAutomaton.Langton) {
+            return;
+        } else {
+            throw new IllegalArgumentException("Invalid automaton type");
+        }
+        for (StructureInfo structureInfo : structureLoader.getAvailableStructures(selectedAutomaton))
             structuresList.addItem(structureInfo);
     }
 

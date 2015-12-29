@@ -30,9 +30,9 @@ public class RLEFormatStructureLoader extends StructureLoader {
     }
 
     @Override
-    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException {
+    protected List<Cell> getStructure(int size, String path) throws IOException {
         StringBuilder source = new StringBuilder();
-        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
+        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(path), Charset.forName("UTF-8"));
 
         try (BufferedReader reader = new BufferedReader(streamReader)) {
             String line;
@@ -41,11 +41,11 @@ public class RLEFormatStructureLoader extends StructureLoader {
 
         }
 
-        List<Cell> result = new ArrayList<>(structureInfo.getWidth() * structureInfo.getHeight());
+        List<Cell> result = new ArrayList<>(size);
 
         String[] splitedLines = source.toString().split("\\$");
-        int y = ((Coords2D) startPoint).getY();
-        int startX = ((Coords2D) startPoint).getX();
+        int y = 0;
+        int startX = 0;
         for (String splitedLine : splitedLines) {
             if (!splitedLine.equals("")) {
                 int x = startX;

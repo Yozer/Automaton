@@ -12,6 +12,8 @@ import java.awt.image.DataBufferInt;
 public class AutomatonPanel extends JPanel {
     static final Object LOCKER = new Object();
     private static final AlphaComposite compositeGrid = AlphaComposite.getInstance(AlphaComposite.DST_OUT);
+    private static final AlphaComposite compositeStructPreview = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+
     private static final int MAX_SCALE = 500;
     private static final double MIN_SCALE = 0.95;
 
@@ -111,23 +113,23 @@ public class AutomatonPanel extends JPanel {
             g2d.setColor(Color.BLACK);
             g2d.fillRect(0, 0, getWidth(), getHeight());
 
-            synchronized (transformCells) {
-                if (bufferedImage != null) {
-
-                    g2d.drawImage(bufferedImageBorder, transformBorder, null);
-                    g2d.drawImage(bufferedImage, transformCells, null);
-                }
-                if(transformCells.getScaleX() > 2)
-                {
-                    g2d.setComposite(compositeGrid);
-                    g2d.drawImage(bufferedImageGrid, transformGrid, null);
-                }
-
-                if(structurePreview != null) {
-                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.5f));
-                    g2d.drawImage(structurePreview, previewTransform, null);
-                }
+            if (bufferedImage != null) {
+                g2d.drawImage(bufferedImage, transformCells, null);
             }
+            if(transformCells.getScaleX() > 2)
+            {
+                Composite composite = g2d.getComposite();
+                g2d.setComposite(compositeGrid);
+                g2d.drawImage(bufferedImageGrid, transformGrid, null);
+                g2d.setComposite(composite);
+            }
+            if(structurePreview != null) {
+                Composite composite = g2d.getComposite();
+                g2d.setComposite(compositeStructPreview);
+                g2d.drawImage(structurePreview, previewTransform, null);
+                g2d.setComposite(composite);
+            }
+            g2d.drawImage(bufferedImageBorder, transformBorder, null);
         }
     }
 
@@ -187,8 +189,11 @@ public class AutomatonPanel extends JPanel {
     }
 
     private BufferedImage createBorder(int width, int height) {
-        BufferedImage image = new BufferedImage(width + 2 * borderWidth, height + 2 * borderWidth, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width + 2 * borderWidth, height + 2 * borderWidth, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
+        graphics2D.setColor(new Color(0, true));
+        graphics2D.fillRect(0, 0, image.getWidth(), image.getHeight());
+
         graphics2D.setStroke(new BasicStroke(borderWidth));
         graphics2D.setColor(borderColor);
 

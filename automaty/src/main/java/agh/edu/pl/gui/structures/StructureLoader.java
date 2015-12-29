@@ -17,7 +17,7 @@ import java.util.Objects;
  * Created by Dominik on 2015-12-20.
  */
 public abstract class StructureLoader {
-    public static List<StructureInfo> getAvailableStructures(PossibleAutomaton automaton) {
+    public List<StructureInfo> getAvailableStructures(PossibleAutomaton automaton) {
         String directoryName = "/structures/";
         List<StructureInfo> structuresInfo = new ArrayList<>();
 
@@ -40,8 +40,13 @@ public abstract class StructureLoader {
                 if (Objects.equals(line, ""))
                     continue;
                 String[] splited = line.split(":");
-                StructureInfo structureInfo = new StructureInfo(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]),
-                        directoryName + splited[3], null);
+                String name = splited[0];
+                int width = Integer.parseInt(splited[1]);
+                int height = Integer.parseInt(splited[2]);
+                String path = directoryName + splited[3];
+                List<Cell> cells = getStructure(width * height, path);
+
+                StructureInfo structureInfo = new StructureInfo(name, width, height, path, cells);
                 structuresInfo.add(structureInfo);
             }
 
@@ -52,5 +57,5 @@ public abstract class StructureLoader {
         return structuresInfo;
     }
 
-    public abstract List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException;
+    protected abstract List<Cell> getStructure(int size, String path) throws IOException;
 }

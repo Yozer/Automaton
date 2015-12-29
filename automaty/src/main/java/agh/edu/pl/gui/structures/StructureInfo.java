@@ -1,9 +1,13 @@
 package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.Coords1D;
+import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,13 +21,13 @@ public class StructureInfo {
     private final List<Cell> cells;
     private BufferedImage previewImage = null;
 
-    public StructureInfo(String name, int width, int height, String path, List<Cell> cells) {
+     StructureInfo(String name, int width, int height, String path, List<Cell> cells) {
         this.name = name;
         this.width = width;
         this.height = height;
         this.path = path;
-        this.cells = cells;
-    }
+         this.cells = cells;
+     }
 
 
     public int getWidth() {
@@ -51,10 +55,51 @@ public class StructureInfo {
     }
 
     private void createImage() {
-        previewImage = new BufferedImage(70, 70, BufferedImage.TYPE_INT_RGB);
+        previewImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = previewImage.createGraphics();
-        g2d.setColor(Color.RED);
+        g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, 70, 70);
         g2d.dispose();
+
+        int[] array = ((DataBufferInt) previewImage.getRaster().getDataBuffer()).getData();
+        if(cells.get(0).getCoords() instanceof Coords2D) {
+            Coords2D coords2D;
+
+            for(Cell cell : cells) {
+                coords2D = (Coords2D) cell.getCoords();
+                array[coords2D.getY() * width + coords2D.getX()] = cell.getState().toColor().getRGB();
+            }
+        } else if(cells.get(0).getCoords() instanceof Coords1D) {
+            Coords1D coords1D;
+
+            for(Cell cell : cells) {
+                coords1D = (Coords1D) cell.getCoords();
+                array[coords1D.getX()] = cell.getState().toColor().getRGB();
+            }
+        }
+
+    }
+
+    public List<Cell> getCells(int x, int y) {
+        List<Cell> result = new ArrayList<>(cells.size());
+
+        if(cells.get(0).getCoords() instanceof Coords2D) {
+            Coords2D coords2D;
+
+            for(Cell cell : cells) {
+                coords2D = (Coords2D) cell.getCoords();
+                coords2D = new Coords2D(coords2D.getX() + x, coords2D.getY() + y);
+                result.add(new Cell(cell.getState(), coords2D));
+            }
+        } else if(cells.get(0).getCoords() instanceof Coords1D) {
+            Coords1D coords1D;
+
+            for(Cell cell : cells) {
+                coords1D = (Coords1D) cell.getCoords();
+                coords1D = new Coords1D(coords1D.getX() + x);
+                result.add(new Cell(cell.getState(), coords1D));
+            }
+        }
+        return result;
     }
 }

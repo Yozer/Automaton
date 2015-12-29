@@ -36,7 +36,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-// TODO add grid
+// TODO check adding monster
+// TODO fix adding struct for ant
+// TODO fix drawing at beginning
+// TODO handle window resize
+// TODO change selector for cell count
+// TODO fix alpha for new struct preview (border maybe)?
+// TODO add "jumping" for inserting new structs
 // TODO add preview and rotation for inserting structs
 // TODO add controlling distribution of each cell type during rand
 // TODO make drawing 60fps - check if it would be faster then drawing each generation
@@ -84,29 +90,29 @@ public class AutomatonManager {
     }
 
     public void insertAnt(StructureInfo structureInfo, int x, int y, Color antColor) {
-        resetAutomatonIfSettingsHasChanged();
-        Coords2D atPoint = new Coords2D((int) (x / settings.getCellCount()), (int) (y / settings.getCellCount()));
-        if (atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
-            return;
-
-        LangtonAntStructureLoader.AntInfo ant;
-        try {
-            ant = new LangtonAntStructureLoader().loadAnt(structureInfo, atPoint);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        boolean isRunning = simulationThread.isRunning();
-        if (isRunning)
-            pause();
-
-        ((LangtonAnt) automaton).addAnt(ant.getAntCoords(), antColor, ant.getAntState());
-        drawCurrentAutomaton();
-        automatonPanel.repaint();
-
-        if (isRunning)
-            start();
+//        resetAutomatonIfSettingsHasChanged();
+//        Coords2D atPoint = new Coords2D((int) (x / settings.getCellCount()), (int) (y / settings.getCellCount()));
+//        if (atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
+//            return;
+//
+//        LangtonAntStructureLoader.AntInfo ant;
+//        try {
+//            ant = new LangtonAntStructureLoader().loadAnt(structureInfo, atPoint);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//
+//        boolean isRunning = simulationThread.isRunning();
+//        if (isRunning)
+//            pause();
+//
+//        ((LangtonAnt) automaton).addAnt(ant.getAntCoords(), antColor, ant.getAntState());
+//        drawCurrentAutomaton();
+//        automatonPanel.repaint();
+//
+//        if (isRunning)
+//            start();
     }
 
     public void randCells(Runnable invokeAfter) {

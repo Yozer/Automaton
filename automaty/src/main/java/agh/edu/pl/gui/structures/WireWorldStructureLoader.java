@@ -18,11 +18,11 @@ import java.util.List;
  */
 public class WireWorldStructureLoader extends StructureLoader {
     @Override
-    public List<Cell> getStructure(StructureInfo structureInfo, CellCoordinates startPoint) throws IOException {
-        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(structureInfo.getPath()), Charset.forName("UTF-8"));
-        List<Cell> result = new ArrayList<>(structureInfo.getWidth() * structureInfo.getHeight());
-        int startY = ((Coords2D) startPoint).getY();
-        int startX = ((Coords2D) startPoint).getX();
+    public List<Cell> getStructure(int size, String path) throws IOException {
+        InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(path), Charset.forName("UTF-8"));
+        List<Cell> result = new ArrayList<>(size);
+        int startY = 0;
+        int startX = 0;
 
         try (BufferedReader reader = new BufferedReader(streamReader)) {
             String line;
