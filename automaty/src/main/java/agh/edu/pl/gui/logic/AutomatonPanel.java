@@ -42,12 +42,18 @@ public class AutomatonPanel extends JPanel {
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                previousX = e.getX();
-                previousY = e.getY();
+                if(SwingUtilities.isLeftMouseButton(e)) {
+                    previousX = e.getX();
+                    previousY = e.getY();
+                }
             }
         });
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
+                if(!SwingUtilities.isLeftMouseButton(e)) {
+                    return;
+                }
+
                 transformGrid.translate(e.getX() - previousX, e.getY() - previousY);
 
                 Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);

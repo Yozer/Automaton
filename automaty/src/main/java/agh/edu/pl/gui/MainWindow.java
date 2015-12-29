@@ -176,7 +176,7 @@ public class MainWindow extends MainWindowDesign {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (getCurrentState() == AutomatonState.INSERTING_STRUCT) {
+        if (SwingUtilities.isRightMouseButton(e) && getCurrentState() == AutomatonState.INSERTING_STRUCT) {
             Point2D point2D = automatonPanel.getTranslatedPoint(e.getPoint().getX(), e.getPoint().getY());
             insertStructure(structureInfo, (int)(point2D.getX() + 0.5), (int)(point2D.getY() + 0.5));
         }
