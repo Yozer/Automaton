@@ -41,7 +41,7 @@ public abstract class StructureLoader {
                     continue;
                 String[] splited = line.split(":");
                 StructureInfo structureInfo = new StructureInfo(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]),
-                        directoryName + splited[3]);
+                        directoryName + splited[3], null);
                 structuresInfo.add(structureInfo);
             }
 

@@ -15,6 +15,7 @@ import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.Objects;
@@ -24,6 +25,8 @@ public class MainWindow extends MainWindowDesign {
     private final Timer timerStatistics;
     private final AutomatonManager automaton;
     private final AutomatonStatistics statistics;
+
+    private StructureInfo structureInfo = null;
 
     public MainWindow() {
         super();
@@ -114,8 +117,11 @@ public class MainWindow extends MainWindowDesign {
             initAutomaton();
         } else if (cmd.equals(Commands.INSERT_STRUCT.toString())) {
             setStateSelectingStruct();
+            structureInfo = getSelectedStructure();
         } else if (cmd.equals(Commands.CANCEL_INSERTING_STRUCT.toString())) {
             setStateCancelSelectingStruct();
+            structureInfo = null;
+            automatonPanel.disableStructurePreview();
         } else if (cmd.equals(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString())) {
             String btnText = ((JRadioButton) e.getSource()).getText();
             automaton.setNeighborhoodType(btnText.equals("Moore") ? CellNeighborhoodType.Moore :
@@ -131,6 +137,10 @@ public class MainWindow extends MainWindowDesign {
                 automaton.setRulesTwoDim(rulesString);
             } catch (IllegalRulesFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Niepoprawny format! Przykład: 23/3!", "Ostrzeżenie", JOptionPane.WARNING_MESSAGE);
+            }
+        } else if (cmd.equals(Commands.CHANGE_STRUCTURE.toString())) {
+            if(structureInfo != null) {
+                structureInfo = getSelectedStructure();
             }
         }
     }
@@ -167,7 +177,6 @@ public class MainWindow extends MainWindowDesign {
     @Override
     public void mousePressed(MouseEvent e) {
         if (getCurrentState() == AutomatonState.INSERTING_STRUCT) {
-            StructureInfo structureInfo = getSelectedStructure();
             Point2D point2D = automatonPanel.getTranslatedPoint(e.getPoint().getX(), e.getPoint().getY());
             insertStructure(structureInfo, (int)(point2D.getX() + 0.5), (int)(point2D.getY() + 0.5));
         }
@@ -188,5 +197,16 @@ public class MainWindow extends MainWindowDesign {
 
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        mouseMoved(e);
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        if (getCurrentState() == AutomatonState.INSERTING_STRUCT && structureInfo != null) {
+            automatonPanel.setStructurePreview(structureInfo.getPreviewImage(), e.getPoint());
+        }
+    }
 }
 

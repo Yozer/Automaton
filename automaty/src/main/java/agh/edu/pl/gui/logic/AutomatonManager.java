@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-// TODO add zooming and moving map
+// TODO add grid
 // TODO add preview and rotation for inserting structs
 // TODO add controlling distribution of each cell type during rand
 // TODO make drawing 60fps - check if it would be faster then drawing each generation

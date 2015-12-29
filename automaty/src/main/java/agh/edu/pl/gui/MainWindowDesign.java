@@ -22,7 +22,7 @@ import java.util.Objects;
  * Created by Dominik on 2015-12-10.
  */
 @SuppressWarnings("SpellCheckingInspection")
-abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener, MouseListener {
+abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener, MouseListener, MouseMotionListener {
     // helps get default settings
     private final AutomatonSettings automatonSettings = new AutomatonSettings();
     private final ArrayList<Component> disabledWhenRunning = new ArrayList<>();
@@ -60,6 +60,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
         // automata window
         automatonPanel = new AutomatonPanel();
+        automatonPanel.addMouseMotionListener(this);
         mainPanel.add(automatonPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
 
         settingsPanel = new JPanel();
@@ -238,6 +239,8 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
         structuresList = new JComboBox<>();
         setStructureList(automatonSettings.getSelectedAutomaton());
+        structuresList.setActionCommand(Commands.CHANGE_STRUCTURE.toString());
+        structuresList.addActionListener(this);
         navigationButtonsPanel.add(structuresList);
 
         insertStructButton = new JButton("Wstaw strukturę");
