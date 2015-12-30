@@ -66,7 +66,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         mainPanel.add(automatonPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
 
         settingsPanel = new JPanel();
-        settingsPanel.setLayout(new GridLayout(8, 1));
+        settingsPanel.setLayout(new GridLayout(12, 1));
         settingsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         mainPanel.add(settingsPanel, new GBC(1, 0).setFill(GridBagConstraints.BOTH).setWeight(0.01, 1));
 

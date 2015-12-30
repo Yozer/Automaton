@@ -36,12 +36,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
+// TODO fix GUI grid
 // TODO check adding monster
 // TODO fix adding struct for ant
 // TODO fix alpha for new struct preview (border maybe)?
 // TODO add "jumping" for inserting new structs
 // TODO add rotation for inserting structs
-// TODO add painting
 // TODO add controlling distribution of each cell type during rand
 // TODO make drawing 60fps - check if it would be faster then drawing each generation
 
