@@ -39,8 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 // TODO fix GUI grid
 // TODO check adding monster
-// TODO fix adding struct for ant
-// TODO fix alpha for new struct preview (border maybe)?
 // TODO add "jumping" for inserting new structs
 // TODO add rotation for inserting structs
 // TODO add controlling distribution of each cell type during rand

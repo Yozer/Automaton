@@ -156,6 +156,19 @@ public class AutomatonPanel extends JPanel {
             if (structurePreview != null) {
                 Composite composite = g2d.getComposite();
                 g2d.setComposite(compositeStructPreview);
+
+                // draw border
+                if(previewTransform.getScaleX() >= 2)
+                {
+                    double x = previewTransform.getTranslateX();
+                    double y = previewTransform.getTranslateY();
+
+                    g2d.setColor(Color.RED);
+                    g2d.drawRect((int)(x - 1 + 0.5), (int)(y - 1 + 0.5),
+                            (int) (structurePreview.getWidth() * previewTransform.getScaleX() + 2.5),
+                            (int) (structurePreview.getHeight() * previewTransform.getScaleY() + 2.5));
+                }
+
                 g2d.drawImage(structurePreview, previewTransform, null);
                 g2d.setComposite(composite);
             }
