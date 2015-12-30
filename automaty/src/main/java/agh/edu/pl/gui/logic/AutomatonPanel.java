@@ -15,9 +15,10 @@ public class AutomatonPanel extends JPanel {
     private static final AlphaComposite compositeStructPreview = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
 
     private static final int MAX_SCALE = 500;
-    private static final double MIN_SCALE = 0.95;
-    private final int borderWidth = 1;
-    private final Color borderColor = Color.GRAY;
+    private static final double MIN_SCALE = 0.01;
+    private static final double SHOW_GRID_MIN_SCALE = 2;
+    private static final int BORDER_WIDTH = 1;
+    private static final Color BORDER_COLOR = Color.GRAY;
     private final AffineTransform transformCells = new AffineTransform();
     private final AffineTransform transformGrid = new AffineTransform();
     private BufferedImage bufferedImage, bufferedImageBorder, bufferedImageGrid;
@@ -53,28 +54,25 @@ public class AutomatonPanel extends JPanel {
         });
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
-                if (!SwingUtilities.isLeftMouseButton(e)) {
-                    return;
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    transformGrid.translate(e.getX() - previousX, e.getY() - previousY);
+
+                    Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
+                    Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
+
+                    double newX = adjNewPoint.getX() - adjPreviousPoint.getX();
+                    double newY = adjNewPoint.getY() - adjPreviousPoint.getY();
+
+                    previousX = e.getX();
+                    previousY = e.getY();
+
+                    transformCells.translate(newX, newY);
+                    calculateBorderTransform();
+
+                    calculateGridTranslation();
+
+                    repaint();
                 }
-
-                transformGrid.translate(e.getX() - previousX, e.getY() - previousY);
-
-                Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
-                Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
-
-                double newX = adjNewPoint.getX() - adjPreviousPoint.getX();
-                double newY = adjNewPoint.getY() - adjPreviousPoint.getY();
-
-                previousX = e.getX();
-                previousY = e.getY();
-
-                transformCells.translate(newX, newY);
-                transformBorder = (AffineTransform) transformCells.clone();
-                transformBorder.translate(-borderWidth, -borderWidth);
-
-                calculateGridTranslation();
-
-                repaint();
             }
         });
         addMouseWheelListener(e -> {
@@ -116,7 +114,14 @@ public class AutomatonPanel extends JPanel {
             }
         });
     }
-
+    private void calculateBorderTransform() {
+        transformBorder = (AffineTransform) transformCells.clone();
+        // hide border if scale is too low
+        if(transformBorder.getScaleX() < BORDER_WIDTH - 0.05) {
+            transformBorder.setToScale(0, 0);
+        }
+        transformBorder.translate(-BORDER_WIDTH, -BORDER_WIDTH);
+    }
     private void calculateGridTranslation() {
         double modX = Math.floorMod((int) (transformCells.getTranslateX() + 0.5), cellWidth);
         double modY = Math.floorMod((int) (transformCells.getTranslateY() + 0.5), cellHeight);
@@ -182,7 +187,7 @@ public class AutomatonPanel extends JPanel {
                 g2d.setComposite(compositeStructPreview);
 
                 // draw border
-                if(previewTransform.getScaleX() >= 2)
+                if(previewTransform.getScaleX() >= SHOW_GRID_MIN_SCALE)
                 {
                     double x = previewTransform.getTranslateX();
                     double y = previewTransform.getTranslateY();
@@ -205,6 +210,10 @@ public class AutomatonPanel extends JPanel {
     }
 
     private BufferedImage createGrid() {
+        if(transformCells.getScaleY() < SHOW_GRID_MIN_SCALE) {
+            return null;
+        }
+
         Point2D cellSize = getCellSizeAfterScale();
         cellWidth = (int) (cellSize.getX() + 0.5);
         cellHeight = (int) (cellSize.getY() + 0.5);
@@ -260,8 +269,7 @@ public class AutomatonPanel extends JPanel {
             transformCells.translate(0, (int) ((getHeight() - height) / 2f + 0.5));
 
         transformGrid.setToIdentity();
-        transformBorder = (AffineTransform) transformCells.clone();
-        transformBorder.translate(-borderWidth, -borderWidth);
+        calculateBorderTransform();
 
         bufferedImageBorder = createBorder(width, height);
         bufferedImageGrid = createGrid();
@@ -275,13 +283,13 @@ public class AutomatonPanel extends JPanel {
     }
 
     private BufferedImage createBorder(int width, int height) {
-        BufferedImage image = new BufferedImage(width + 2 * borderWidth, height + 2 * borderWidth, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(width + 2 * BORDER_WIDTH, height + 2 * BORDER_WIDTH, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setColor(new Color(0, true));
         graphics2D.fillRect(0, 0, image.getWidth(), image.getHeight());
 
-        graphics2D.setStroke(new BasicStroke(borderWidth));
-        graphics2D.setColor(borderColor);
+        graphics2D.setStroke(new BasicStroke(BORDER_WIDTH));
+        graphics2D.setColor(BORDER_COLOR);
 
         graphics2D.drawLine(0, 0, image.getWidth() - 1, 0);
         graphics2D.drawLine(0, 0, 0, image.getHeight() - 1);
@@ -323,10 +331,21 @@ public class AutomatonPanel extends JPanel {
         double newScale = transformCells.getScaleX();
 
         int acceleration = (int) (newScale * 0.05 + 0.5);
-        if (zoom > 1)
-            newScale = (newScale + 1 + acceleration) / newScale;
-        else if (zoom < 1)
-            newScale = (newScale - 1 - acceleration) / newScale;
+        if (zoom > 1) {
+            if(transformCells.getScaleX() > 0.95) {
+                newScale = (newScale + 1 + acceleration) / newScale;
+            } else {
+                newScale = 1/0.8;
+            }
+        }
+        else if (zoom < 1) {
+            if(transformCells.getScaleX() > 1.5) {
+                newScale = (newScale - 1 - acceleration) / newScale;
+            }
+            else {
+                newScale = 0.8;
+            }
+        }
 
         if (transformCells.getScaleX() * newScale >= MIN_SCALE && transformCells.getScaleX() * newScale <= MAX_SCALE)
             transformCells.scale(newScale, newScale);
@@ -336,8 +355,7 @@ public class AutomatonPanel extends JPanel {
             calculatePreviewTranslation();
         }
 
-        transformBorder = (AffineTransform) transformCells.clone();
-        transformBorder.translate(-borderWidth, -borderWidth);
+        calculateBorderTransform();
         bufferedImageGrid = createGrid();
 
         repaint();
