@@ -2,7 +2,7 @@
 Martwa komórka:1:1:dead
 Blinker:3:3:blinker
 Glider:3:3:glider
-Gosper glider gun:32:9:gosper_glider_gun
+Gosper glider gun:36:9:gosper_glider_gun
 Diagonal Twin Tubeater c/5:55:60:diagonal_twin_tubeater
 Small spaceship:5:4:small_spaceship
 Weekender + tagalong:37:24:weekender_tagalong

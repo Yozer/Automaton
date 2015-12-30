@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ import java.util.Objects;
  * Created by Dominik on 2015-12-10.
  */
 @SuppressWarnings("SpellCheckingInspection")
-abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener, MouseListener, MouseMotionListener {
+abstract class MainWindowDesign extends JFrame implements ActionListener, ChangeListener, MouseListener, MouseMotionListener, KeyListener {
     // helps get default settings
     private final AutomatonSettings automatonSettings = new AutomatonSettings();
     private final ArrayList<Component> disabledWhenRunning = new ArrayList<>();
@@ -44,9 +45,15 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private AutomatonState automatonState;
     private AutomatonState rememberState;
 
+    private BufferedImage cursorImg;
+    private Cursor blankCursor;
+
     MainWindowDesign() {
         initUI();
         setStatePaused();
+
+        cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
     }
 
     private void initUI() {
@@ -62,7 +69,6 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
         // automata window
         automatonPanel = new AutomatonPanel();
-        automatonPanel.addMouseMotionListener(this);
         mainPanel.add(automatonPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
 
         settingsPanel = new JPanel();
@@ -389,6 +395,8 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         colorPicker.setEnabled(true);
         insertStructButton.setText("Anuluj wstawianie");
         insertStructButton.setActionCommand(Commands.CANCEL_INSERTING_STRUCT.toString());
+
+        automatonPanel.setCursor(blankCursor);
     }
 
     void setStateCancelSelectingStruct() {
@@ -399,6 +407,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
             setStatePaused();
         else if (rememberState == AutomatonState.RUNNING)
             setStateRunning();
+        automatonPanel.setCursor(Cursor.getDefaultCursor());
     }
 
     void showColorChooser() {

@@ -13,10 +13,7 @@ import agh.edu.pl.gui.structures.StructureInfo;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.Objects;
@@ -33,12 +30,16 @@ public class MainWindow extends MainWindowDesign {
         super();
         automaton = new AutomatonManager(automatonPanel);
         statistics = automaton.getStatistics();
-        automatonPanel.addMouseListener(this);
 
         timerStatistics = new Timer(statisticUpdateEvery, updateStatistics());
         timerStatistics.setRepeats(true);
         timerStatistics.setCoalesce(true);
         timerStatistics.start();
+
+        automatonPanel.addMouseListener(this);
+        automatonPanel.addMouseMotionListener(this);
+        this.setFocusable(true);
+        this.addKeyListener(this);
     }
 
     private void initAutomaton() {
@@ -60,11 +61,11 @@ public class MainWindow extends MainWindowDesign {
         automaton.start(this::setStateRunning);
     }
 
-    private void insertStructure(StructureInfo structureInfo, int x, int y) {
+    private void insertStructure(StructureInfo structureInfo, int x, int y, double structRotation) {
         if (automaton.getSettings().getSelectedAutomaton() == PossibleAutomaton.Langton)
             automaton.insertAnt(((AntStructureInfo) structureInfo), x, y, getColorFromChooser());
         else
-            automaton.insertStructure(structureInfo, x, y);
+            automaton.insertStructure(structureInfo, x, y, structRotation);
     }
 
     private ActionListener updateStatistics() {
@@ -143,6 +144,7 @@ public class MainWindow extends MainWindowDesign {
             if(structureInfo != null) {
                 structureInfo = getSelectedStructure();
             }
+            this.requestFocus();
         }
     }
 
@@ -178,8 +180,8 @@ public class MainWindow extends MainWindowDesign {
     @Override
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e) && getCurrentState() == AutomatonState.INSERTING_STRUCT) {
-            Point2D point2D = automatonPanel.getTranslatedPoint(e.getPoint().getX(), e.getPoint().getY());
-            insertStructure(structureInfo, (int)(point2D.getX() + 0.5), (int)(point2D.getY() + 0.5));
+            Point2D point2D = automatonPanel.getStructInsertionPoint(e.getPoint());
+            insertStructure(structureInfo, (int)(point2D.getX() + 0.5), (int)(point2D.getY() + 0.5), automatonPanel.getStructRotation());
         }
     }
 
@@ -208,6 +210,26 @@ public class MainWindow extends MainWindowDesign {
         if (getCurrentState() == AutomatonState.INSERTING_STRUCT && structureInfo != null) {
             automatonPanel.setStructurePreview(structureInfo.getPreviewImage(), e.getPoint());
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if(getCurrentState() == AutomatonState.INSERTING_STRUCT && structureInfo != null) {
+            if (e.getKeyCode() == KeyEvent.VK_KP_LEFT || e.getKeyCode() == KeyEvent.VK_LEFT) {
+                automatonPanel.rotateStructPreviewLeft();
+            } else if(e.getKeyCode() == KeyEvent.VK_KP_RIGHT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                automatonPanel.rotateStructPreviewRight();
+            }
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }
 

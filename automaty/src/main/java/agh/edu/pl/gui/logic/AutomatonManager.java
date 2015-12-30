@@ -25,12 +25,10 @@ import agh.edu.pl.gui.enums.CellNeighborhoodType;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 import agh.edu.pl.gui.structures.AntStructureInfo;
-import agh.edu.pl.gui.structures.LangtonAntStructureLoader;
 import agh.edu.pl.gui.structures.StructureInfo;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,8 +37,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 // TODO add painting
 // TODO fix GUI grid
-// TODO check adding monster
-// TODO add rotation for inserting structs
 // TODO add controlling distribution of each cell type during rand
 // TODO make drawing 60fps - check if it would be faster then drawing each generation
 
@@ -80,9 +76,8 @@ public class AutomatonManager {
         swingWorker.execute();
     }
 
-    public void insertStructure(StructureInfo structureInfo, int x, int y) {
-        resetAutomatonIfSettingsHasChanged();
-        SwingWorker swingWorker = new InsertStructureSwingWorker(this, structureInfo, x, y);
+    public void insertStructure(StructureInfo structureInfo, int x, int y, double structRotation) {
+        SwingWorker swingWorker = new InsertStructureSwingWorker(this, structureInfo, x, y, structRotation);
         swingWorker.execute();
     }
 
@@ -249,7 +244,7 @@ public class AutomatonManager {
         return null;
     }
 
-    private void resetAutomatonIfSettingsHasChanged() {
+    void resetAutomatonIfSettingsHasChanged() {
         if (settingsHasChanged) {
             init();
             settingsHasChanged = false;

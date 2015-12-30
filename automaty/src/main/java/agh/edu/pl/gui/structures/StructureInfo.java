@@ -5,6 +5,8 @@ import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
@@ -74,15 +76,38 @@ public class StructureInfo {
 
     }
 
-    public List<Cell> getCells(int x, int y) {
+    public List<Cell> getCells(int x, int y, double rotation) {
         List<Cell> result = new ArrayList<>(cells.size());
+
 
         if(cells.get(0).getCoords() instanceof Coords2D) {
             Coords2D coords2D;
 
+            double degreeRotation = Math.toDegrees(rotation) % 360d;
+            AffineTransform rotationMatrix = new AffineTransform();
+            rotationMatrix.translate(x, y);
+            if(Math.abs(degreeRotation - 90) < 0.001 || Math.abs(degreeRotation - 270) < 0.001) {
+                rotationMatrix.translate(-(int)(Math.abs(getWidth() - getHeight()) / 2f + 0.5),
+                        (int)(Math.abs(getWidth() - getHeight()) / 2f + 0.5));
+            }
+            rotationMatrix.rotate(rotation, (int)(getWidth()/2f + 0.5),  (int)(getHeight()/2f + 0.5));
+
             for(Cell cell : cells) {
                 coords2D = (Coords2D) cell.getCoords();
-                coords2D = new Coords2D(coords2D.getX() + x, coords2D.getY() + y);
+                Point2D coords = new Point2D.Double(coords2D.getX(), coords2D.getY());
+                Point2D rotatedPoint = new Point2D.Double();
+                rotationMatrix.transform(coords, rotatedPoint);
+
+                if(Math.abs(degreeRotation - 90) < 0.001) {
+                    rotatedPoint.setLocation(rotatedPoint.getX() - 1, rotatedPoint.getY());
+                } else if(Math.abs(degreeRotation - 180) < 0.001) {
+                    rotatedPoint.setLocation(rotatedPoint.getX() - 1, rotatedPoint.getY() - 1);
+                } else if(Math.abs(degreeRotation - 270) < 0.001) {
+                    rotatedPoint.setLocation(rotatedPoint.getX(), rotatedPoint.getY() - 1);
+                }
+                //Point2D resultPoint = new Point.Double(coords2D.getX(), coords2D.getY());
+
+                coords2D = new Coords2D((int)(rotatedPoint.getX() + 0.5), (int)(rotatedPoint.getY() + 0.5));
                 result.add(new Cell(cell.getState(), coords2D));
             }
         } else if(cells.get(0).getCoords() instanceof Coords1D) {

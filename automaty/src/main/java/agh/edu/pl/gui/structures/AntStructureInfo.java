@@ -19,7 +19,7 @@ public class AntStructureInfo extends StructureInfo {
     }
 
     @Override
-    public List<Cell> getCells(int x, int y) {
+    public List<Cell> getCells(int x, int y, double rotation) {
         throw new UnsupportedOperationException("Cannot get cells list for single ant");
     }
     @Override

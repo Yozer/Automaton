@@ -70,12 +70,14 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
     private final StructureInfo structureInfo;
     private final int x;
     private final int y;
+    private final double structRotation;
 
-    public InsertStructureSwingWorker(AutomatonManager manager, StructureInfo structureInfo, int x, int y) {
+    public InsertStructureSwingWorker(AutomatonManager manager, StructureInfo structureInfo, int x, int y, double structRotation) {
         this.manager = manager;
         this.structureInfo = structureInfo;
         this.x = x;
         this.y = y;
+        this.structRotation = structRotation;
     }
 
     @Override
@@ -83,12 +85,13 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
         if (manager.getAutomaton() == null)
             manager.init();
 
+        manager.resetAutomatonIfSettingsHasChanged();
         Coords2D atPoint = new Coords2D(x, y);
         if (atPoint.getX() + structureInfo.getWidth() > manager.getSettings().getWidth()
                 || atPoint.getY() + structureInfo.getHeight() > manager.getSettings().getHeight())
             return null;
 
-        List<Cell> cells = structureInfo.getCells(x, y);
+        List<Cell> cells = structureInfo.getCells(x, y, structRotation);
 
         boolean isRunning = manager.isRunning();
         if (isRunning)
