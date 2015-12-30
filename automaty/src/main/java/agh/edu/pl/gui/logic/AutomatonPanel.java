@@ -122,6 +122,30 @@ public class AutomatonPanel extends JPanel {
         double modY = Math.floorMod((int) (transformCells.getTranslateY() + 0.5), cellHeight);
         transformGrid.setToTranslation(-cellWidth + modX - 1, -cellHeight + modY - 1);
     }
+    private void calculatePreviewTranslation() {
+        Point2D translatedPoint = getTranslatedPoint(previewPoint.getX(), previewPoint.getY());
+
+        // jumping
+        double x = translatedPoint.getX() % 1;
+        double y = translatedPoint.getY() % 1;
+        if(x > 1/2d) {
+            x = 1 - x;
+        }
+        else {
+            x = -x;
+        }
+        if(y > 1/2d) {
+            y = 1 - y;
+        }
+        else {
+            y = -y;
+        }
+        x += translatedPoint.getX();
+        y += translatedPoint.getY();
+
+        previewTransform = (AffineTransform) transformCells.clone();
+        previewTransform.translate(x, y);
+    }
 
     @Override
     public void paintComponent(Graphics g) {
@@ -181,7 +205,7 @@ public class AutomatonPanel extends JPanel {
     }
 
     private BufferedImage createGrid() {
-        Point2D cellSize = getPixelSizeAfterScale();
+        Point2D cellSize = getCellSizeAfterScale();
         cellWidth = (int) (cellSize.getX() + 0.5);
         cellHeight = (int) (cellSize.getY() + 0.5);
 
@@ -206,7 +230,7 @@ public class AutomatonPanel extends JPanel {
         return image;
     }
 
-    private Point2D getPixelSizeAfterScale() {
+    private Point2D getCellSizeAfterScale() {
         return new Point2D.Double((int) (transformCells.getScaleX() + 0.5), (int) (transformCells.getScaleY() + 0.5));
 
     }
@@ -309,9 +333,7 @@ public class AutomatonPanel extends JPanel {
         transformCells.translate(-zoomCenterX, -zoomCenterY);
 
         if (previewTransform != null) {
-            previewTransform = (AffineTransform) transformCells.clone();
-            Point2D translatedPoint = getTranslatedPoint(previewPoint.getX(), previewPoint.getY());
-            previewTransform.translate(translatedPoint.getX(), translatedPoint.getY());
+            calculatePreviewTranslation();
         }
 
         transformBorder = (AffineTransform) transformCells.clone();
@@ -322,11 +344,9 @@ public class AutomatonPanel extends JPanel {
     }
 
     public void setStructurePreview(BufferedImage structurePreview, Point point) {
-        previewTransform = (AffineTransform) transformCells.clone();
         previewPoint = point;
+        calculatePreviewTranslation();
 
-        Point2D translatedPoint = getTranslatedPoint(point.getX(), point.getY());
-        previewTransform.translate(translatedPoint.getX(), translatedPoint.getY());
         this.structurePreview = structurePreview;
         repaint();
     }
