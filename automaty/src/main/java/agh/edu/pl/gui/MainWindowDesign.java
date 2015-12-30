@@ -52,6 +52,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private void initUI() {
         setTitle("Automat komórkowy");
         setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
+        setSize(Toolkit.getDefaultToolkit().getScreenSize());
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -65,7 +66,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         mainPanel.add(automatonPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
 
         settingsPanel = new JPanel();
-        settingsPanel.setLayout(new GridLayout(12, 1));
+        settingsPanel.setLayout(new GridLayout(8, 1));
         settingsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         mainPanel.add(settingsPanel, new GBC(1, 0).setFill(GridBagConstraints.BOTH).setWeight(0.01, 1));
 
@@ -127,7 +128,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
         tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         tmpPanel.add(new Label("Zasada dla GameOfLife:"));
-        textFieldRules = new TextField(automatonSettings.getFormattedRules());
+        textFieldRules = new TextField(automatonSettings.getFormattedRules(), 25);
         textFieldRules.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
                 automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
         tmpPanel.add(textFieldRules);
