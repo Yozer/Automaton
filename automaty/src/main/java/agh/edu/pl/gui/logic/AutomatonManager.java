@@ -38,8 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 // TODO check adding monster
 // TODO fix adding struct for ant
-// TODO fix drawing at beginning
-// TODO handle window resize
 // TODO change selector for cell count
 // TODO fix alpha for new struct preview (border maybe)?
 // TODO add "jumping" for inserting new structs
