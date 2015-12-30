@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class WireWorldStructureLoader extends StructureLoader {
     @Override
-    public List<Cell> getStructure(int size, String path) throws IOException {
+    public List<Cell> loadStructureCells(int size, String path) throws IOException {
         InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(path), Charset.forName("UTF-8"));
         List<Cell> result = new ArrayList<>(size);
         int startY = 0;

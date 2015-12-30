@@ -2,7 +2,6 @@ package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.Main;
 import agh.edu.pl.automaton.cells.Cell;
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.CellState;
 
@@ -30,7 +29,7 @@ public class RLEFormatStructureLoader extends StructureLoader {
     }
 
     @Override
-    protected List<Cell> getStructure(int size, String path) throws IOException {
+    protected List<Cell> loadStructureCells(int size, String path) throws IOException {
         StringBuilder source = new StringBuilder();
         InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(path), Charset.forName("UTF-8"));
 

@@ -10,10 +10,7 @@ import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
-import agh.edu.pl.gui.structures.OneDimStructureLoader;
-import agh.edu.pl.gui.structures.RLEFormatStructureLoader;
 import agh.edu.pl.gui.structures.StructureInfo;
-import agh.edu.pl.gui.structures.WireWorldStructureLoader;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -80,7 +77,6 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
         this.x = x;
         this.y = y;
     }
-
 
     @Override
     protected Void doInBackground() throws IOException {

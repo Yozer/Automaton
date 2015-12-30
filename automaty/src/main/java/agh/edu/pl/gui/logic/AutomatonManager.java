@@ -24,6 +24,7 @@ import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import agh.edu.pl.gui.enums.CellNeighborhoodType;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
+import agh.edu.pl.gui.structures.AntStructureInfo;
 import agh.edu.pl.gui.structures.LangtonAntStructureLoader;
 import agh.edu.pl.gui.structures.StructureInfo;
 
@@ -87,30 +88,22 @@ public class AutomatonManager {
         swingWorker.execute();
     }
 
-    public void insertAnt(StructureInfo structureInfo, int x, int y, Color antColor) {
-//        resetAutomatonIfSettingsHasChanged();
-//        Coords2D atPoint = new Coords2D((int) (x / settings.getCellCount()), (int) (y / settings.getCellCount()));
-//        if (atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
-//            return;
-//
-//        LangtonAntStructureLoader.AntInfo ant;
-//        try {
-//            ant = new LangtonAntStructureLoader().loadAnt(structureInfo, atPoint);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return;
-//        }
-//
-//        boolean isRunning = simulationThread.isRunning();
-//        if (isRunning)
-//            pause();
-//
-//        ((LangtonAnt) automaton).addAnt(ant.getAntCoords(), antColor, ant.getAntState());
-//        drawCurrentAutomaton();
-//        automatonPanel.repaint();
-//
-//        if (isRunning)
-//            start();
+    public void insertAnt(AntStructureInfo structureInfo, int x, int y, Color antColor) {
+        resetAutomatonIfSettingsHasChanged();
+        Coords2D atPoint = new Coords2D(x, y);
+        if (atPoint.getX() + structureInfo.getWidth() > settings.getWidth() || atPoint.getY() + structureInfo.getHeight() > settings.getHeight())
+            return;
+
+        boolean isRunning = simulationThread.isRunning();
+        if (isRunning)
+            pause();
+
+        ((LangtonAnt) automaton).addAnt(atPoint, antColor, structureInfo.getState());
+        drawCurrentAutomaton();
+        automatonPanel.repaint();
+
+        if (isRunning)
+            start();
     }
 
     public void randCells(Runnable invokeAfter) {

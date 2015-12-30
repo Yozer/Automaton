@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class OneDimStructureLoader extends StructureLoader {
     @Override
-    protected List<Cell> getStructure(int size, String path) throws IOException {
+    protected List<Cell> loadStructureCells(int size, String path) throws IOException {
         InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(path), Charset.forName("UTF-8"));
         List<Cell> result = new ArrayList<>(size);
 

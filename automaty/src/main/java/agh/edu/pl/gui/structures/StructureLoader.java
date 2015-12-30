@@ -1,8 +1,8 @@
 package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.Main;
+import agh.edu.pl.automaton.automata.langton.Ant;
 import agh.edu.pl.automaton.cells.Cell;
-import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 
 import java.io.BufferedReader;
@@ -44,9 +44,16 @@ public abstract class StructureLoader {
                 int width = Integer.parseInt(splited[1]);
                 int height = Integer.parseInt(splited[2]);
                 String path = directoryName + splited[3];
-                List<Cell> cells = getStructure(width * height, path);
+                List<Cell> cells = loadStructureCells(width * height, path);
 
-                StructureInfo structureInfo = new StructureInfo(name, width, height, path, cells);
+                StructureInfo structureInfo = null;
+                if(automaton == PossibleAutomaton.Langton) {
+                    Ant ant = ((Ant) cells.get(0));
+                    structureInfo = new AntStructureInfo(name, ant.getAntState());
+                }
+                else {
+                    structureInfo = new StructureInfo(name, width, height, cells);
+                }
                 structuresInfo.add(structureInfo);
             }
 
@@ -57,5 +64,5 @@ public abstract class StructureLoader {
         return structuresInfo;
     }
 
-    protected abstract List<Cell> getStructure(int size, String path) throws IOException;
+    protected abstract List<Cell> loadStructureCells(int size, String path) throws IOException;
 }

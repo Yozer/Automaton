@@ -315,7 +315,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         } else if(selectedAutomaton == PossibleAutomaton.Jednowymiarowy) {
             structureLoader = new OneDimStructureLoader();
         } else if(selectedAutomaton == PossibleAutomaton.Langton) {
-            return;
+            structureLoader = new LangtonAntStructureLoader();
         } else {
             throw new IllegalArgumentException("Invalid automaton type");
         }

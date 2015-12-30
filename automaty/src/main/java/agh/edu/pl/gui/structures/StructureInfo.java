@@ -17,15 +17,13 @@ public class StructureInfo {
     private final String name;
     private final int width;
     private final int height;
-    private final String path;
     private final List<Cell> cells;
-    private BufferedImage previewImage = null;
+    protected BufferedImage previewImage = null;
 
-     StructureInfo(String name, int width, int height, String path, List<Cell> cells) {
-        this.name = name;
-        this.width = width;
-        this.height = height;
-        this.path = path;
+     StructureInfo(String name, int width, int height, List<Cell> cells) {
+         this.name = name;
+         this.width = width;
+         this.height = height;
          this.cells = cells;
      }
 
@@ -36,10 +34,6 @@ public class StructureInfo {
 
     public int getHeight() {
         return height;
-    }
-
-    String getPath() {
-        return path;
     }
 
     @Override
@@ -54,11 +48,11 @@ public class StructureInfo {
         return previewImage;
     }
 
-    private void createImage() {
+    protected void createImage() {
         previewImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = previewImage.createGraphics();
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, 70, 70);
+        g2d.fillRect(0, 0, width, height);
         g2d.dispose();
 
         int[] array = ((DataBufferInt) previewImage.getRaster().getDataBuffer()).getData();

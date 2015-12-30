@@ -9,26 +9,20 @@ public class Ant extends Cell {
     private final Color antColor;
     private final int automatonWidth;
     private final int automatonHeight;
-    private int id;
     private Coords2D coordinates;
-    private AntState antState;
+    private int id;
 
-    Ant(Coords2D coordinates, AntState antState, Color antColor, int automatonWidth, int automatonHeight, int id) {
-        this(antState, antColor, automatonWidth, automatonHeight);
-        this.coordinates = coordinates;
-        this.id = id;
-
-    }
-
-    private Ant(AntState antState, Color antColor, int automatonWidth, int automatonHeight) {
-        super(null, null);
-        this.antState = antState;
+    public Ant(Coords2D coordinates, AntState antState, Color antColor, int automatonWidth, int automatonHeight, int id) {
+        super(antState, coordinates);
         this.antColor = antColor;
         this.automatonWidth = automatonWidth;
         this.automatonHeight = automatonHeight;
+        this.coordinates = coordinates;
+        this.id = id;
     }
 
     void rotateLeft() {
+        AntState antState = (AntState) getState();
         if (antState == AntState.NORTH)
             antState = AntState.WEST;
         else if (antState == AntState.WEST)
@@ -37,9 +31,11 @@ public class Ant extends Cell {
             antState = AntState.EAST;
         else if (antState == AntState.EAST)
             antState = AntState.NORTH;
+        setState(antState);
     }
 
     void rotateRight() {
+        AntState antState = (AntState) getState();
         if (antState == AntState.NORTH)
             antState = AntState.EAST;
         else if (antState == AntState.WEST)
@@ -48,12 +44,15 @@ public class Ant extends Cell {
             antState = AntState.WEST;
         else if (antState == AntState.EAST)
             antState = AntState.SOUTH;
+        setState(antState);
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
     void move() {
         int x = coordinates.getX();
         int y = coordinates.getY();
+
+        AntState antState = (AntState) getState();
 
         if (antState == AntState.NORTH)
             y--;
@@ -77,7 +76,7 @@ public class Ant extends Cell {
     }
 
     public AntState getAntState() {
-        return antState;
+        return (AntState) getState();
     }
 
     public Coords2D getCoordinates() {
@@ -89,9 +88,7 @@ public class Ant extends Cell {
     }
 
     Ant cloneAnt() {
-        Ant ant = new Ant(this.getAntState(), this.getAntColor(), this.automatonWidth, this.automatonHeight);
-        ant.coordinates = this.getCoordinates();
-        ant.id = this.getId();
-        return ant;
+        Coords2D coords2D = new Coords2D(coordinates.getX(), coordinates.getY());
+        return new Ant(coords2D, getAntState(), getAntColor(), this.automatonWidth, this.automatonHeight, this.id);
     }
 }

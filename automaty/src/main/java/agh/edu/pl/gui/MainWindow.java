@@ -8,6 +8,7 @@ import agh.edu.pl.gui.enums.PossibleAutomaton;
 import agh.edu.pl.gui.logic.AutomatonManager;
 import agh.edu.pl.gui.logic.AutomatonStatistics;
 import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
+import agh.edu.pl.gui.structures.AntStructureInfo;
 import agh.edu.pl.gui.structures.StructureInfo;
 
 import javax.swing.*;
@@ -61,7 +62,7 @@ public class MainWindow extends MainWindowDesign {
 
     private void insertStructure(StructureInfo structureInfo, int x, int y) {
         if (automaton.getSettings().getSelectedAutomaton() == PossibleAutomaton.Langton)
-            automaton.insertAnt(structureInfo, x, y, getColorFromChooser());
+            automaton.insertAnt(((AntStructureInfo) structureInfo), x, y, getColorFromChooser());
         else
             automaton.insertStructure(structureInfo, x, y);
     }
