@@ -93,6 +93,11 @@ public class AutomatonPanel extends JPanel {
                     bufferedImageGrid = createGrid();
                     repaint();
                 }
+                else {
+                    // init plane with default settings
+                    createBufferedImage(new AutomatonSettings().getCellCount());
+                    repaint();
+                }
             }
 
             @Override

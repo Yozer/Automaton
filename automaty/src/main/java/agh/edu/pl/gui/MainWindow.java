@@ -152,9 +152,7 @@ public class MainWindow extends MainWindowDesign {
         if (source instanceof JSlider) {
             JSlider slider = (JSlider) source;
             String name = slider.getName();
-            if (name.equals(Commands.CHANGE_CELL_COUNT.toString())) {
-                automaton.setCellCount((int) (slider.getValue()*1e5));
-            } else if (name.equals(Commands.CHANGE_SIMULATION_DELAY.toString())) {
+            if (name.equals(Commands.CHANGE_SIMULATION_DELAY.toString())) {
                 automaton.setSimulationDelay(slider.getValue());
             }
         } else if (source instanceof JSpinner) {
@@ -164,6 +162,8 @@ public class MainWindow extends MainWindowDesign {
                 automaton.setNeighborhoodRadius((Integer) jSpinner.getValue());
             } else if (name.equals(Commands.CHANGE_ONE_DIM_RULES.toString())) {
                 automaton.setRuleOneDim((Integer) jSpinner.getValue());
+            } else if (name.equals(Commands.CHANGE_CELL_COUNT.toString())) {
+                automaton.setCellCount((Integer)jSpinner.getValue());
             }
         }
     }

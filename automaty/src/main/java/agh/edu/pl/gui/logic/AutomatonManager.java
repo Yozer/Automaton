@@ -38,10 +38,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 // TODO check adding monster
 // TODO fix adding struct for ant
-// TODO change selector for cell count
 // TODO fix alpha for new struct preview (border maybe)?
 // TODO add "jumping" for inserting new structs
-// TODO add preview and rotation for inserting structs
+// TODO add rotation for inserting structs
+// TODO add painting
 // TODO add controlling distribution of each cell type during rand
 // TODO make drawing 60fps - check if it would be faster then drawing each generation
 

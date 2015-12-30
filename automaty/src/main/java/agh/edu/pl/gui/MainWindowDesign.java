@@ -99,18 +99,18 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         settingsPanel.add(panel);
 
         // ------------------------------------------------------------------------ \\
-        panel = new JPanel(new GridLayout(2, 1));
-        panel.add(new BoldLabel("Rozmiar komórki"));
+        panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panel.add(new BoldLabel("Ilość komórek"));
 
-        JSlider slider = new JSlider((int) 1, (int) 5, (int) (automatonSettings.getCellCount()/1e5));
-        slider.setMinorTickSpacing(1);
-        slider.setMajorTickSpacing(1);
-        slider.setPaintTicks(true);
-        slider.setPaintLabels(true);
-        slider.setName(Commands.CHANGE_CELL_COUNT.toString());
-        slider.addChangeListener(this);
-        panel.add(slider);
-        disabledWhenRunning.add(slider);
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(automatonSettings.getCellCount(), 4, 5000000, 1);
+        JSpinner spinner = new JSpinner(spinnerModel);
+        JComponent editor = spinner.getEditor();
+        JFormattedTextField ftf = ((JSpinner.DefaultEditor) editor).getTextField();
+        ftf.setColumns(10);
+        spinner.setName(Commands.CHANGE_CELL_COUNT.toString());
+        spinner.addChangeListener(this);
+        panel.add(spinner);
+        disabledWhenRunning.add(spinner);
         settingsPanel.add(panel);
         // ------------------------------------------------------------------------ \\
         panel = new JPanel(new GridLayout(3, 1));
@@ -118,7 +118,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
         JPanel tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         tmpPanel.add(new Label("Zasada dla jednowymiarowego [0-255]:"));
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(automatonSettings.getOneDimRule(), 0, 255, 1);
+        spinnerModel = new SpinnerNumberModel(automatonSettings.getOneDimRule(), 0, 255, 1);
         radiusSpinnerOneDimRule = new JSpinner(spinnerModel);
         radiusSpinnerOneDimRule.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy);
         radiusSpinnerOneDimRule.addChangeListener(this);
@@ -199,7 +199,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         Label tmpLabel = new BoldLabel("Opóźnienie między kolejnymi symulacjami: " + automatonSettings.getSimulationDelay() + " [ms]");
         panel.add(tmpLabel);
 
-        slider = new JSlider(0, 1000, 0);
+        JSlider slider = new JSlider(0, 1000, 0);
         slider.setMinorTickSpacing(50);
         slider.setMajorTickSpacing(250);
         slider.setPaintTicks(true);

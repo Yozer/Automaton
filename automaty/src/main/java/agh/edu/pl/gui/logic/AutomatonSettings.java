@@ -8,7 +8,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AutomatonSettings {
-    //private float cellSize = 5;
     private int cellCount = (int) 1e5;
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLife;
     private int simulationDelay = 0;
