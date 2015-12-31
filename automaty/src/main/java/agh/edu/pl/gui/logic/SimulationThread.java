@@ -57,11 +57,13 @@ class SimulationThread implements Runnable {
             statistics.setTimeOfOnePass(timerTotal.getElapsed());
 
             int currentDelay = manager.getSimulationDelay() - 2 * timerTotal.getElapsed();
-            if (currentDelay > 1) {
+            while (currentDelay > 1) {
                 try {
-                    Thread.sleep(currentDelay);
+                    Thread.sleep(10);
+                    currentDelay -= 10;
                 } catch (InterruptedException ignored) {
                 }
+                checkForPausedAndWait();
             }
         }
     }

@@ -116,8 +116,8 @@ public class AutomatonPanel extends JPanel {
     }
     private void calculateGridTranslation() {
         if(transformCells.getScaleX() >= SHOW_GRID_MIN_SCALE) {
-            double modX = Math.floorMod((int) (transformCells.getTranslateX() + 0.5), cellWidth);
-            double modY = Math.floorMod((int) (transformCells.getTranslateY() + 0.5), cellHeight);
+            double modX = Math.floorMod(round(transformCells.getTranslateX()), cellWidth);
+            double modY = Math.floorMod(round(transformCells.getTranslateY()), cellHeight);
             transformGrid.setToTranslation(-cellWidth + modX - 1, -cellHeight + modY - 1);
         }
     }
@@ -174,6 +174,7 @@ public class AutomatonPanel extends JPanel {
             if (bufferedImage != null) {
                 g2d.drawImage(bufferedImage, transformCells, null);
             }
+            // draw struct preview
             if (structurePreview != null) {
                 Composite composite = g2d.getComposite();
                 g2d.setComposite(compositeStructPreview);
@@ -181,6 +182,7 @@ public class AutomatonPanel extends JPanel {
                 g2d.setComposite(composite);
 
             }
+            // draw grid
             if (transformCells.getScaleX() > SHOW_GRID_MIN_SCALE) {
                 Composite composite = g2d.getComposite();
                 g2d.setComposite(compositeGrid);
@@ -201,9 +203,9 @@ public class AutomatonPanel extends JPanel {
 
             g2d.setColor(BORDER_COLOR);
             g2d.setStroke(new BasicStroke(BORDER_WIDTH));
-            g2d.drawRect((int)(x - BORDER_WIDTH + 0.5), (int)(y - BORDER_WIDTH + 0.5),
-                    (int) (getAutomatonWidth() * transformCells.getScaleX() + 2*BORDER_WIDTH + .5),
-                    (int) (getAutomatonHeight() * transformCells.getScaleY() + 2*BORDER_WIDTH + .5));
+            g2d.drawRect(round(x - BORDER_WIDTH), round(y - BORDER_WIDTH),
+                    round(getAutomatonWidth() * transformCells.getScaleX() + 2*BORDER_WIDTH),
+                    round(getAutomatonHeight() * transformCells.getScaleY() + 2*BORDER_WIDTH));
         }
     }
 
@@ -218,8 +220,8 @@ public class AutomatonPanel extends JPanel {
         }
 
         Point2D cellSize = getCellSizeAfterScale();
-        cellWidth = (int) (cellSize.getX() + 0.5);
-        cellHeight = (int) (cellSize.getY() + 0.5);
+        cellWidth = round(cellSize.getX());
+        cellHeight = round(cellSize.getY());
 
         BufferedImage image = new BufferedImage(getWidth() + 2 * (cellWidth), getHeight() + 2 * (cellHeight), BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
@@ -243,7 +245,7 @@ public class AutomatonPanel extends JPanel {
     }
 
     private Point2D getCellSizeAfterScale() {
-        return new Point2D.Double((int) (transformCells.getScaleX() + 0.5), (int) (transformCells.getScaleY() + 0.5));
+        return new Point2D.Double(round(transformCells.getScaleX()), round(transformCells.getScaleY()));
 
     }
 
@@ -252,8 +254,8 @@ public class AutomatonPanel extends JPanel {
         double heightD = Math.sqrt(cellCount / ratio);
         double widthD = ratio * heightD;
 
-        int width = (int) (widthD + 0.5);
-        int height = (int) (heightD + 0.5);
+        int width = round(widthD);
+        int height = round(heightD);
 
         if (bufferedImage != null && bufferedImage.getWidth() == width && bufferedImage.getHeight() == height) {
             // just clear
@@ -269,9 +271,9 @@ public class AutomatonPanel extends JPanel {
         transformGrid.setToIdentity();
         // center plane if needed
         if (width < getWidth())
-            transformCells.translate((int) ((getWidth() - width) / 2f + 0.5), 0);
+            transformCells.translate(round((getWidth() - width) / 2f), 0);
         if (height < getHeight())
-            transformCells.translate(0, (int) ((getHeight() - height) / 2f + 0.5));
+            transformCells.translate(0, round((getHeight() - height) / 2f));
 
         bufferedImageGrid = createGrid();
     }
@@ -308,32 +310,42 @@ public class AutomatonPanel extends JPanel {
         }
     }
 
+    private int round(double number) {
+        return (int) Math.round(number);
+    }
+
     private void handleZoom(double zoom) {
-        zoom = 0.25 * -zoom;
+        final int scaleFactor = 1;
+        final double accelerationFactor = 0.05;
+        final double scaleZoom = 0.25;
+        final double scaleFactorDown = 0.8;
+
+        zoom = scaleZoom * -zoom;
         zoom += 1;
 
         transformCells.translate(zoomCenterX, zoomCenterY);
         double newScale = transformCells.getScaleX();
 
-        int acceleration = (int) (newScale * 0.05 + 0.5);
+        int acceleration = round(newScale * accelerationFactor);
         if (zoom > 1) {
             if(transformCells.getScaleX() > 0.95) {
-                newScale = (newScale + 1 + acceleration) / newScale;
+                newScale = (newScale + scaleFactor + acceleration) / newScale;
             } else {
-                newScale = 1/0.8;
+                newScale = 1/scaleFactorDown;
             }
         }
         else if (zoom < 1) {
-            if(transformCells.getScaleX() > 1.5) {
-                newScale = (newScale - 1 - acceleration) / newScale;
+            if(transformCells.getScaleX() > 1.05) {
+                newScale = (newScale - scaleFactor - acceleration) / newScale;
             }
             else {
-                newScale = 0.8;
+                newScale = scaleFactorDown;
             }
         }
 
-        if (transformCells.getScaleX() * newScale >= MIN_SCALE && transformCells.getScaleX() * newScale <= MAX_SCALE)
+        if (transformCells.getScaleX() * newScale >= MIN_SCALE && transformCells.getScaleX() * newScale <= MAX_SCALE) {
             transformCells.scale(newScale, newScale);
+        }
         transformCells.translate(-zoomCenterX, -zoomCenterY);
 
         if (previewTransform != null) {
@@ -341,7 +353,6 @@ public class AutomatonPanel extends JPanel {
         }
 
         bufferedImageGrid = createGrid();
-
         repaint();
     }
 
