@@ -3,6 +3,7 @@ package agh.edu.pl.gui.logic;
 import agh.edu.pl.automaton.Automaton1Dim;
 import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.BinaryState;
@@ -86,12 +87,24 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
             manager.init();
 
         manager.resetAutomatonIfSettingsHasChanged();
-        Coords2D atPoint = new Coords2D(x, y);
-        if (atPoint.getX() + structureInfo.getWidth() > manager.getSettings().getWidth()
-                || atPoint.getY() + structureInfo.getHeight() > manager.getSettings().getHeight())
-            return null;
-
         List<Cell> cells = structureInfo.getCells(x, y, structRotation);
+
+        // verify if we can insert struct
+        for(Cell cell : cells) {
+            CellCoordinates coords = cell.getCoords();
+            int x, y;
+            if(coords instanceof Coords1D) {
+                x = ((Coords1D) coords).getX();
+                y = 0;
+            } else {
+                x = ((Coords2D) coords).getX();
+                y = ((Coords2D) coords).getY();
+            }
+
+            if(x < 0 || x >= manager.getSettings().getWidth() || y < 0 || y >= manager.getSettings().getHeight()) {
+                return null;
+            }
+        }
 
         boolean isRunning = manager.isRunning();
         if (isRunning)

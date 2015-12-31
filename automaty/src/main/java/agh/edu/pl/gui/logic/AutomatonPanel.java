@@ -123,12 +123,9 @@ public class AutomatonPanel extends JPanel {
     }
     private Point2D calculateInsertionPoint(Point2D point) {
         Point2D translatedPoint = getTranslatedPoint(point.getX(), point.getY());
-        int halfWidth = (int) (structurePreview.getWidth() / 2f + 0.5);
-        int halfHeight = (int) (structurePreview.getHeight() / 2f + 0.5);
-
         // jumping
-        double x = (translatedPoint.getX() -halfWidth) % 1;
-        double y = (translatedPoint.getY() -halfHeight) % 1;
+        double x = translatedPoint.getX() % 1;
+        double y = translatedPoint.getY() % 1;
         if(x >= 1/2d) {
             x = 1 - x;
         }
@@ -142,33 +139,15 @@ public class AutomatonPanel extends JPanel {
             y = -y;
         }
 
-        x += translatedPoint.getX()-halfWidth;
-        y += translatedPoint.getY()-halfHeight;
-
-        double degreeRotation = getDegreeRotation();
-        if(Math.abs(degreeRotation - 90) < 0.001 || Math.abs(degreeRotation - 270) < 0.001) {
-            x += (int)(Math.abs(structurePreview.getWidth() - structurePreview.getHeight()) / 2f + 0.5);
-            y -= (int)(Math.abs(structurePreview.getWidth() - structurePreview.getHeight()) / 2f + 0.5);
-        }
-
+        x += translatedPoint.getX();
+        y += translatedPoint.getY();
         return new Point2D.Double(x, y);
     }
     private void calculatePreviewTranslation() {
-
         Point2D point = calculateInsertionPoint(previewPoint);
         previewTransform = (AffineTransform) transformCells.clone();
         previewTransform.translate(point.getX(), point.getY());
-        double degreeRotation = getDegreeRotation();
-        if(Math.abs(degreeRotation - 90) < 0.001 || Math.abs(degreeRotation - 270) < 0.001) {
-            previewTransform.translate(-(int)(Math.abs(structurePreview.getWidth() - structurePreview.getHeight()) / 2f + 0.5),
-                    (int)(Math.abs(structurePreview.getWidth() - structurePreview.getHeight()) / 2f + 0.5));
-        }
-
-        previewTransform.rotate(previewRotation, (int)(structurePreview.getWidth()/2f + 0.5),  (int)(structurePreview.getHeight()/2f + 0.5));
-    }
-
-    private double getDegreeRotation() {
-        return Math.toDegrees(previewRotation) % 360d;
+        previewTransform.rotate(previewRotation, 0, 0);
     }
 
     @Override

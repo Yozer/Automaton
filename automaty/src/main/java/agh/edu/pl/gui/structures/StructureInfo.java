@@ -84,19 +84,15 @@ public class StructureInfo {
             Coords2D coords2D;
 
             double degreeRotation = Math.toDegrees(rotation) % 360d;
-            AffineTransform rotationMatrix = new AffineTransform();
-            rotationMatrix.translate(x, y);
-            if(Math.abs(degreeRotation - 90) < 0.001 || Math.abs(degreeRotation - 270) < 0.001) {
-                rotationMatrix.translate(-(int)(Math.abs(getWidth() - getHeight()) / 2f + 0.5),
-                        (int)(Math.abs(getWidth() - getHeight()) / 2f + 0.5));
-            }
-            rotationMatrix.rotate(rotation, (int)(getWidth()/2f + 0.5),  (int)(getHeight()/2f + 0.5));
+            AffineTransform transform = new AffineTransform();
+            transform.translate(x, y);
+            transform.rotate(rotation, 0, 0);
 
             for(Cell cell : cells) {
                 coords2D = (Coords2D) cell.getCoords();
                 Point2D coords = new Point2D.Double(coords2D.getX(), coords2D.getY());
                 Point2D rotatedPoint = new Point2D.Double();
-                rotationMatrix.transform(coords, rotatedPoint);
+                transform.transform(coords, rotatedPoint);
 
                 if(Math.abs(degreeRotation - 90) < 0.001) {
                     rotatedPoint.setLocation(rotatedPoint.getX() - 1, rotatedPoint.getY());
