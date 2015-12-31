@@ -42,8 +42,11 @@ public class MainWindow extends MainWindowDesign {
         this.addKeyListener(this);
     }
 
-    private void initAutomaton() {
-        automaton.init(this::setStatePaused);
+//    private void initAutomaton(Runnable invokeAfter) {
+//        automaton.init(invokeAfter);
+//    }
+    private void clearAutomaton() {
+        automaton.clearAutomaton(() -> {});
     }
 
     private void randCells() {
@@ -116,7 +119,7 @@ public class MainWindow extends MainWindowDesign {
         } else if (cmd.equals(Commands.RAND_CELLS.toString())) {
             randCells();
         } else if (cmd.equals(Commands.CLEAR_AUTOMATON.toString())) {
-            initAutomaton();
+            clearAutomaton();
         } else if (cmd.equals(Commands.INSERT_STRUCT.toString())) {
             setStateSelectingStruct();
             structureInfo = getSelectedStructure();

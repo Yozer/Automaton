@@ -154,7 +154,7 @@ public class AutomatonPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        synchronized (LOCKER) {
+
             Graphics2D g2d = ((Graphics2D) g);
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                     RenderingHints.VALUE_RENDER_SPEED);
@@ -171,8 +171,10 @@ public class AutomatonPanel extends JPanel {
             g2d.setColor(Color.BLACK);
             g2d.fillRect(0, 0, getWidth(), getHeight());
 
-            if (bufferedImage != null) {
-                g2d.drawImage(bufferedImage, transformCells, null);
+            synchronized (LOCKER) {
+                if (bufferedImage != null) {
+                    g2d.drawImage(bufferedImage, transformCells, null);
+                }
             }
             // draw struct preview
             if (structurePreview != null) {
@@ -206,7 +208,6 @@ public class AutomatonPanel extends JPanel {
             g2d.drawRect(round(x - BORDER_WIDTH), round(y - BORDER_WIDTH),
                     round(getAutomatonWidth() * transformCells.getScaleX() + 2*BORDER_WIDTH),
                     round(getAutomatonHeight() * transformCells.getScaleY() + 2*BORDER_WIDTH));
-        }
     }
 
 

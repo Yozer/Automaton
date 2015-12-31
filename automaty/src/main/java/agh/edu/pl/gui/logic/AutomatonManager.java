@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-// TODO fix GUI grid
 // TODO add controlling distribution of each cell type during rand
 // TODO make drawing 60fps - check if it would be faster then drawing each generation
 
@@ -66,7 +65,11 @@ public class AutomatonManager {
     }
 
     public void init(Runnable invokeAfter) {
-        SwingWorker swingWorker = new InitSwingWorker(this, invokeAfter);
+        SwingWorker swingWorker = new InitSwingWorker(this, invokeAfter, false);
+        swingWorker.execute();
+    }
+    public void clearAutomaton(Runnable invokeAfter) {
+        SwingWorker swingWorker = new InitSwingWorker(this, invokeAfter, true);
         swingWorker.execute();
     }
 
@@ -104,7 +107,7 @@ public class AutomatonManager {
         worker.execute();
     }
 
-    void init() {
+    private void init() {
         pause();
         statistics.resetStatistics();
         initAutomatonPanelAndUpdateDimensions();
@@ -244,7 +247,10 @@ public class AutomatonManager {
     }
 
     void resetAutomatonIfSettingsHasChanged() {
-        if (settingsHasChanged) {
+        resetAutomatonIfSettingsHasChanged(false);
+    }
+    void resetAutomatonIfSettingsHasChanged(boolean force) {
+        if (settingsHasChanged || force || automaton == null) {
             init();
             settingsHasChanged = false;
         }

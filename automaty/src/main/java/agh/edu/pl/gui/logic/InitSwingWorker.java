@@ -27,15 +27,17 @@ import java.util.stream.Collectors;
 class InitSwingWorker extends SwingWorker<Void, Void> {
     private final AutomatonManager automatonManager;
     private final Runnable invokeAfter;
+    private final boolean force;
 
-    public InitSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter) {
+    public InitSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter, boolean force) {
         this.automatonManager = automatonManager;
         this.invokeAfter = invokeAfter;
+        this.force = force;
     }
 
     @Override
     protected Void doInBackground() {
-        automatonManager.init();
+        automatonManager.resetAutomatonIfSettingsHasChanged(force);
         return null;
     }
 
@@ -83,9 +85,6 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
 
     @Override
     protected Void doInBackground() throws IOException {
-        if (manager.getAutomaton() == null)
-            manager.init();
-
         manager.resetAutomatonIfSettingsHasChanged();
         List<Cell> cells = structureInfo.getCells(x, y, structRotation);
 
@@ -147,7 +146,7 @@ class RandCellsWorker extends SwingWorker<Void, Void> {
 
         Random random = new Random();
 
-        manager.init();
+        manager.resetAutomatonIfSettingsHasChanged(true);
         List<CellState> values;
         if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
                 manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy) {
