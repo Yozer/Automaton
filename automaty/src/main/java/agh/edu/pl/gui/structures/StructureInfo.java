@@ -105,7 +105,6 @@ public class StructureInfo {
                 } else if(Math.abs(degreeRotation - 270) < 0.001) {
                     rotatedPoint.setLocation(rotatedPoint.getX(), rotatedPoint.getY() - 1);
                 }
-                //Point2D resultPoint = new Point.Double(coords2D.getX(), coords2D.getY());
 
                 coords2D = new Coords2D((int)(rotatedPoint.getX() + 0.5), (int)(rotatedPoint.getY() + 0.5));
                 result.add(new Cell(cell.getState(), coords2D));

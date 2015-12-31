@@ -379,14 +379,27 @@ public class AutomatonPanel extends JPanel {
         repaint();
     }
 
+    private void loopRotation() {
+        if(previewRotation < 0) {
+            previewRotation = Math.toRadians(270);
+        }
+        else if(previewRotation >= 2*Math.PI) {
+            previewRotation = 0;
+        }
+        if(structurePreview.getWidth() == 1 && structurePreview.getHeight() == 1) {
+            previewRotation = 0;
+        }
+    }
     public void rotateStructPreviewLeft() {
         previewRotation += Math.toRadians(-90);
+        loopRotation();
         calculatePreviewTranslation();
         repaint();
     }
 
     public void rotateStructPreviewRight() {
         previewRotation += Math.toRadians(90);
+        loopRotation();
         calculatePreviewTranslation();
         repaint();
     }

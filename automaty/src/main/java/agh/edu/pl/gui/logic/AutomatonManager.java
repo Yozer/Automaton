@@ -35,6 +35,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
+// TODO remove delay in struct inserting
+// TODO fix rotating and rounding
+// TODO check monster inserting
 // TODO add painting
 // TODO fix GUI grid
 // TODO add controlling distribution of each cell type during rand
