@@ -10,6 +10,8 @@ import agh.edu.pl.gui.logic.AutomatonPanel;
 import agh.edu.pl.gui.logic.AutomatonSettings;
 import agh.edu.pl.gui.structures.*;
 import com.horstmann.corejava.GBC;
+import net.miginfocom.layout.*;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -30,14 +32,19 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private final ArrayList<Component> disabledWhenRunning = new ArrayList<>();
     private final ArrayList<Component> disabledWhenNotRunning = new ArrayList<>();
     AutomatonPanel automatonPanel;
-    private Label generationCountLabel, simulationTimeLabel, aliveCellsCountLabel, deadCellsLabel, totalCellsLabel, onePassTimeLabel;
-    private Label renderTimeLabel;
+    private JLabel generationCountLabel;
+    private JLabel simulationTimeLabel;
+    private JLabel aliveCellsCountLabel;
+    private JLabel deadCellsLabel;
+    private JLabel totalCellsLabel;
+    private JLabel onePassTimeLabel;
+    private JLabel renderTimeLabel;
     private JPanel settingsPanel;
     private JCheckBox wrappingCheckBox;
     private JComboBox<StructureInfo> structuresList;
     private JButton insertStructButton, applyRulesButton;
     private JSpinner radiusSpinnerOneDimRule, radiusSpinner;
-    private TextField textFieldRules;
+    private JTextField textFieldRules;
     private JRadioButton radioButtonMoore, radioButtonVonNeumann, radioButtonOneDim;
     private JRadioButton oneDimAutomatonRadioButton, langtonAutomatonRadioButton, gameOfLifeAutomatonRadioButton;
     private JButton colorPicker;
@@ -63,24 +70,18 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
+        JPanel mainPanel = new JPanel(new MigLayout());
 
         // automata window
         automatonPanel = new AutomatonPanel();
-        mainPanel.add(automatonPanel, new GBC(0, 0).setFill(GridBagConstraints.BOTH).setWeight(0.99, 1));
-
-        settingsPanel = new JPanel();
-        settingsPanel.setLayout(new GridLayout(12, 1));
-        settingsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        mainPanel.add(settingsPanel, new GBC(1, 0).setFill(GridBagConstraints.BOTH).setWeight(0.01, 1));
+        settingsPanel = new JPanel(new MigLayout());
 
         // ------------------------------------------------------------------------ \\
-        JPanel panel = new JPanel(new GridLayout(2, 1));
-        panel.add(new BoldLabel("Typ automatu"));
+        JPanel panel = new JPanel(new MigLayout());
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        panel.add(new BoldLabel("Typ automatu"), new CC().wrap().alignX("left"));
         ButtonGroup group = new ButtonGroup();
-        JPanel panelRadio = new JPanel();
+        JPanel panelRadio = new JPanel(new MigLayout());
         for (PossibleAutomaton automaton : PossibleAutomaton.values()) {
             JRadioButton radio = new JRadioButton(automaton.toString());
             if (automaton == PossibleAutomaton.Jednowymiarowy)
@@ -101,59 +102,47 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
             panelRadio.add(radio);
         }
-        panel.add(panelRadio);
-        settingsPanel.add(panel);
+        panel.add(panelRadio, "wrap");
 
-        // ------------------------------------------------------------------------ \\
-        panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new BoldLabel("Ilość komórek"));
+        panel.add(new BoldLabel("Ilość komórek:"), new CC().alignX("left"));
 
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(automatonSettings.getCellCount(), 4, 5000000, 1);
         JSpinner spinner = new JSpinner(spinnerModel);
-        JComponent editor = spinner.getEditor();
-        JFormattedTextField ftf = ((JSpinner.DefaultEditor) editor).getTextField();
-        ftf.setColumns(10);
         spinner.setName(Commands.CHANGE_CELL_COUNT.toString());
         spinner.addChangeListener(this);
-        panel.add(spinner);
+        panel.add(spinner,  new CC().alignX("left").cell(0, 2));
         disabledWhenRunning.add(spinner);
-        settingsPanel.add(panel);
+        settingsPanel.add(panel, new CC().alignX("left").wrap());
         // ------------------------------------------------------------------------ \\
-        panel = new JPanel(new GridLayout(3, 1));
-        panel.add(new BoldLabel("Wybierz zasady"));
+        panel = new JPanel(new MigLayout());
+        panel.add(new BoldLabel("Wybierz zasady"), new CC().alignX("left").wrap());
 
-        JPanel tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        tmpPanel.add(new Label("Zasada dla jednowymiarowego [0-255]:"));
+        panel.add(new Label("Zasada dla jednowymiarowego [0-255]:"), new CC().alignX("left"));
         spinnerModel = new SpinnerNumberModel(automatonSettings.getOneDimRule(), 0, 255, 1);
         radiusSpinnerOneDimRule = new JSpinner(spinnerModel);
         radiusSpinnerOneDimRule.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy);
         radiusSpinnerOneDimRule.addChangeListener(this);
         radiusSpinnerOneDimRule.setName(Commands.CHANGE_ONE_DIM_RULES.toString());
-        tmpPanel.add(radiusSpinnerOneDimRule);
-        panel.add(tmpPanel);
+        panel.add(radiusSpinnerOneDimRule, "wrap");
 
-        tmpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        tmpPanel.add(new Label("Zasada dla GameOfLife:"));
-        textFieldRules = new TextField(automatonSettings.getFormattedRules(), 25);
+        panel.add(new Label("Zasada dla GameOfLife:"), new CC().alignX("left"));
+        textFieldRules = new JTextField(automatonSettings.getFormattedRules(), 13);
         textFieldRules.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
                 automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
-        tmpPanel.add(textFieldRules);
+        panel.add(textFieldRules);
         applyRulesButton = new JButton("Zastosuj zasadę");
         applyRulesButton.setEnabled(automatonSettings.getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
                 automatonSettings.getSelectedAutomaton() == PossibleAutomaton.QuadLife);
         applyRulesButton.addActionListener(this);
         applyRulesButton.setActionCommand(Commands.CHANGE_TWO_DIM_RULES.toString());
-        tmpPanel.add(applyRulesButton);
-        panel.add(tmpPanel);
+        panel.add(applyRulesButton, new CC().wrap());
 
-        settingsPanel.add(panel);
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        settingsPanel.add(panel, new CC().alignX("left").wrap().grow());
         // ------------------------------------------------------------------------ \\
-
-        panel = new JPanel(new GridLayout(2, 1));
-        panel.add(new BoldLabel("Typ sąsiedztwa"));
+        panel = new JPanel(new MigLayout());
+        panel.add(new BoldLabel("Sąsiedztwa"), new CC().wrap().alignX("left"));
         group = new ButtonGroup();
-
-        tmpPanel = new JPanel(new GridLayout(1, 3));
 
         radioButtonMoore = new JRadioButton("Moore");
         radioButtonMoore.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
@@ -161,7 +150,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         radioButtonMoore.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.Moore);
         radioButtonMoore.setEnabled(automatonSettings.getNeighborHood() != CellNeighborhoodType.OneDim);
         group.add(radioButtonMoore);
-        tmpPanel.add(radioButtonMoore);
+        panel.add(radioButtonMoore, new CC().alignX("center"));
 
         radioButtonVonNeumann = new JRadioButton("von Neumann");
         radioButtonVonNeumann.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
@@ -169,7 +158,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         radioButtonVonNeumann.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.VonNeumann);
         radioButtonVonNeumann.setEnabled(automatonSettings.getNeighborHood() != CellNeighborhoodType.OneDim);
         group.add(radioButtonVonNeumann);
-        tmpPanel.add(radioButtonVonNeumann);
+        panel.add(radioButtonVonNeumann, new CC().alignX("center"));
 
         radioButtonOneDim = new JRadioButton("Jednowymiarowe");
         radioButtonOneDim.setActionCommand(Commands.CHANGE_NEIGHBORHOOD_TYPE.toString());
@@ -177,19 +166,15 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         radioButtonOneDim.setSelected(automatonSettings.getNeighborHood() == CellNeighborhoodType.OneDim);
         radioButtonOneDim.setEnabled(automatonSettings.getNeighborHood() == CellNeighborhoodType.OneDim);
         group.add(radioButtonOneDim);
-        tmpPanel.add(radioButtonOneDim);
+        panel.add(radioButtonOneDim, new CC().alignX("center").wrap());
 
-        panel.add(tmpPanel);
-        settingsPanel.add(panel);
-        // ------------------------------------------------------------------------ \\
-        panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new BoldLabel("Promień sąsiedztwa (r)"));
+        panel.add(new Label("Promień sąsiedztwa (r):"), new CC().alignX("left"));
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         spinnerModel = new SpinnerNumberModel(automatonSettings.getNeighborhoodRadius(), 0, 100, 1);
 
         radiusSpinner = new JSpinner(spinnerModel);
         radiusSpinner.addChangeListener(this);
         radiusSpinner.setName(Commands.CHANGE_NEIGHBORHOOD_RADIUS.toString());
-        radiusSpinner.setMaximumSize(new Dimension(25, 25));
         radiusSpinner.setEnabled(automatonSettings.getSelectedAutomaton() != PossibleAutomaton.Jednowymiarowy);
         panel.add(radiusSpinner);
 
@@ -198,12 +183,11 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         wrappingCheckBox.setSelected(automatonSettings.getWrap());
         wrappingCheckBox.setActionCommand(Commands.SET_WRAP.toString());
         panel.add(wrappingCheckBox);
-
-        settingsPanel.add(panel);
+        settingsPanel.add(panel, new CC().alignX("left").wrap().grow());
         // ------------------------------------------------------------------------ \\
-        panel = new JPanel(new GridLayout(2, 1));
+        panel = new JPanel(new MigLayout());
         Label tmpLabel = new BoldLabel("Opóźnienie między kolejnymi symulacjami: " + automatonSettings.getSimulationDelay() + " [ms]");
-        panel.add(tmpLabel);
+        panel.add(tmpLabel, new CC().alignX("left").cell(0, 0));
 
         JSlider slider = new JSlider(0, 1000, 0);
         slider.setMinorTickSpacing(50);
@@ -215,47 +199,49 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         slider.addChangeListener(this);
         final JSlider finalSlider = slider;
         slider.addChangeListener(e1 -> tmpLabel.setText("Opóźnienie między kolejnymi symulacjami: " + finalSlider.getValue() + " [ms]"));
-        panel.add(slider);
-        settingsPanel.add(panel);
+        panel.add(slider, new CC().push().cell(0, 1).grow());
+        //panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        settingsPanel.add(panel, new CC().wrap().grow());
         // ------------------------------------------------------------------------ \\
-        JPanel navigationButtonsPanel = new JPanel(new GridLayout(4, 2));
+        JPanel navigationButtonsPanel = new JPanel(new MigLayout());
         JButton startButton = new JButton("Start");
         startButton.setActionCommand(Commands.START_AUTOMATON.toString());
         startButton.addActionListener(this);
         startButton.setEnabled(false);
-        navigationButtonsPanel.add(startButton);
+        navigationButtonsPanel.add(startButton, new CC().grow().push());
         disabledWhenRunning.add(startButton);
 
         JButton pauseButton = new JButton("Pauza");
         pauseButton.setActionCommand(Commands.PAUSE_AUTOMATON.toString());
         pauseButton.addActionListener(this);
         pauseButton.setEnabled(false);
-        navigationButtonsPanel.add(pauseButton);
+        navigationButtonsPanel.add(pauseButton, new CC().grow().push().wrap());
         disabledWhenNotRunning.add(pauseButton);
 
         JButton randButton = new JButton("Losuj");
         randButton.setActionCommand(Commands.RAND_CELLS.toString());
         randButton.addActionListener(this);
-        navigationButtonsPanel.add(randButton);
+        navigationButtonsPanel.add(randButton, new CC().grow().push());
         disabledWhenRunning.add(randButton);
 
         JButton clearButton = new JButton("Wyczyść");
         clearButton.setActionCommand(Commands.CLEAR_AUTOMATON.toString());
         clearButton.addActionListener(this);
-        navigationButtonsPanel.add(clearButton);
+        navigationButtonsPanel.add(clearButton, new CC().grow().push().wrap());
         disabledWhenRunning.add(clearButton);
 
         structuresList = new JComboBox<>();
         setStructureList(automatonSettings.getSelectedAutomaton());
         structuresList.setActionCommand(Commands.CHANGE_STRUCTURE.toString());
         structuresList.addActionListener(this);
-        navigationButtonsPanel.add(structuresList);
+        navigationButtonsPanel.add(structuresList, new CC().grow().push());
+        structuresList.setOpaque(true);
 
         insertStructButton = new JButton("Wstaw strukturę");
         insertStructButton.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         insertStructButton.setActionCommand(Commands.INSERT_STRUCT.toString());
         insertStructButton.addActionListener(this);
-        navigationButtonsPanel.add(insertStructButton);
+        navigationButtonsPanel.add(insertStructButton, new CC().grow().push().wrap());
 
         colorPicker = new JButton("Wybierz kolor");
         colorPicker.setEnabled(false);
@@ -266,19 +252,20 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
             if (c != null)
                 choosedColor = c;
         });
-        navigationButtonsPanel.add(colorPicker);
+        navigationButtonsPanel.add(colorPicker, new CC().grow().push());
 
 
         // ------------------------------------------------------------------------ \\
         JPanel statisticsPanel = new JPanel(new GridLayout(4, 2));
         statisticsPanel.setName("statisticPanel");
-        generationCountLabel = new Label("Liczba generacji: 0");
-        simulationTimeLabel = new Label("Czas symulacji jednej: 0");
-        aliveCellsCountLabel = new Label("Liczba żywych komórek: 0");
-        renderTimeLabel = new Label("Czas renderowania: 0");
-        totalCellsLabel = new Label("Wszystkich komórek: 0");
-        deadCellsLabel = new Label("Martwych komórek: 0");
-        onePassTimeLabel = new Label("Czas jednego przejścia: 0");
+        //statisticsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        generationCountLabel = new JLabel("Liczba generacji: 0");
+        simulationTimeLabel = new JLabel("Czas symulacji jednej: 0");
+        aliveCellsCountLabel = new JLabel("Liczba żywych komórek: 0");
+        renderTimeLabel = new JLabel("Czas renderowania: 0");
+        totalCellsLabel = new JLabel("Wszystkich komórek: 0");
+        deadCellsLabel = new JLabel("Martwych komórek: 0");
+        onePassTimeLabel = new JLabel("Czas jednego przejścia: 0");
         statisticsPanel.add(generationCountLabel);
         statisticsPanel.add(simulationTimeLabel);
         statisticsPanel.add(aliveCellsCountLabel);
@@ -286,10 +273,14 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         statisticsPanel.add(deadCellsLabel);
         statisticsPanel.add(onePassTimeLabel);
         statisticsPanel.add(totalCellsLabel);
-        settingsPanel.add(statisticsPanel);
-        settingsPanel.add(navigationButtonsPanel);
-        // ------------------------------------------------------------------------ \\
+        //settingsPanel.add(statisticsPanel, new CC().wrap().pushX().growX());
+        settingsPanel.add(navigationButtonsPanel, new CC().wrap().pushX().growX());
+        settingsPanel.add(statisticsPanel, new CC().wrap().pushX().growX().dockSouth());
+       //  ------------------------------------------------------------------------ \\
 
+        mainPanel.setLayout(new MigLayout("", "[grow, 80%][grow, 20%]", "[grow]"));
+        mainPanel.add(automatonPanel, new CC().grow());
+        mainPanel.add(settingsPanel, new CC().grow());
         add(mainPanel);
     }
 
