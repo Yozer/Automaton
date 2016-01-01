@@ -165,8 +165,10 @@ public class MainWindow extends MainWindowDesign {
                 automaton.setNeighborhoodRadius((Integer) jSpinner.getValue());
             } else if (name.equals(Commands.CHANGE_ONE_DIM_RULES.toString())) {
                 automaton.setRuleOneDim((Integer) jSpinner.getValue());
-            } else if (name.equals(Commands.CHANGE_CELL_COUNT.toString())) {
-                automaton.setCellCount((Integer)jSpinner.getValue());
+            } else if (name.equals(Commands.CHANGE_PLANE_HEIGHT.toString())) {
+                automaton.setHeight((Integer)jSpinner.getValue());
+            } else if (name.equals(Commands.CHANGE_PLANE_WIDTH.toString())) {
+                automaton.setWidth((Integer)jSpinner.getValue());
             }
         }
     }

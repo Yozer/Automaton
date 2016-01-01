@@ -8,7 +8,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AutomatonSettings {
-    private int cellCount = (int) 1e5;
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLife;
     private int simulationDelay = 0;
     private Set<Integer> surviveFactors = new HashSet<>(Arrays.asList(2, 3));
@@ -18,8 +17,8 @@ public class AutomatonSettings {
     private int neighborhoodRadius = 1;
     private boolean wrap = true;
 
-    private int width;
-    private int height;
+    private int width = 400;
+    private int height = 300;
 
     public PossibleAutomaton getSelectedAutomaton() {
         return selectedAutomaton;
@@ -27,14 +26,6 @@ public class AutomatonSettings {
 
     void setSelectedAutomaton(PossibleAutomaton selectedAutomaton) {
         this.selectedAutomaton = selectedAutomaton;
-    }
-
-    public int getCellCount() {
-        return cellCount;
-    }
-
-    void setCellCount(int cellCount) {
-        this.cellCount = cellCount;
     }
 
     public int getSimulationDelay() {

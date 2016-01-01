@@ -94,7 +94,7 @@ public class AutomatonPanel extends JPanel {
                 }
                 else {
                     // init plane with default settings
-                    createBufferedImage(new AutomatonSettings().getCellCount());
+                    createBufferedImage(new AutomatonSettings().getWidth(), new AutomatonSettings().getHeight());
                     repaint();
                 }
             }
@@ -250,14 +250,7 @@ public class AutomatonPanel extends JPanel {
 
     }
 
-    void createBufferedImage(int cellCount) {
-        final double ratio = 1.3;
-        double heightD = Math.sqrt(cellCount / ratio);
-        double widthD = ratio * heightD;
-
-        int width = round(widthD);
-        int height = round(heightD);
-
+    void createBufferedImage(final int width, final int height) {
         if (bufferedImage != null && bufferedImage.getWidth() == width && bufferedImage.getHeight() == height) {
             // just clear
             clearPlane(Color.BLACK);

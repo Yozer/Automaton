@@ -105,7 +105,7 @@ public class AutomatonManager {
     private void init() {
         pause();
         statistics.resetStatistics();
-        initAutomatonPanelAndUpdateDimensions();
+        initAutomatonPanel();
         statistics.setTotalCellsCount(settings.getWidth() * settings.getHeight());
 
         // get automaton from settings
@@ -179,10 +179,8 @@ public class AutomatonManager {
         automatonPanel.repaint();
     }
 
-    private void initAutomatonPanelAndUpdateDimensions() {
-        automatonPanel.createBufferedImage(settings.getCellCount());
-        settings.setWidth(automatonPanel.getAutomatonWidth());
-        settings.setHeight(automatonPanel.getAutomatonHeight());
+    private void initAutomatonPanel() {
+        automatonPanel.createBufferedImage(settings.getWidth(), settings.getHeight());
         automatonPanel.repaint();
     }
 
@@ -272,13 +270,18 @@ public class AutomatonManager {
     public void setSelectedAutomaton(PossibleAutomaton selectedAutomaton) {
         settings.setSelectedAutomaton(selectedAutomaton);
         settingsHasChanged = true;
-        initAutomatonPanelAndUpdateDimensions();
+        initAutomatonPanel();
     }
 
-    public void setCellCount(int cellCount) {
-        settings.setCellCount(cellCount);
+    public void setWidth(int width) {
+        settings.setWidth(width);
         settingsHasChanged = true;
-        initAutomatonPanelAndUpdateDimensions();
+        initAutomatonPanel();
+    }
+    public void setHeight(int height) {
+        settings.setHeight(height);
+        settingsHasChanged = true;
+        initAutomatonPanel();
     }
 
     public void setNeighborhoodType(CellNeighborhoodType neighborhoodType) {

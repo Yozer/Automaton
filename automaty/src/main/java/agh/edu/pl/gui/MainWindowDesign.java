@@ -104,13 +104,21 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         }
         panel.add(panelRadio, "wrap");
 
-        panel.add(new BoldLabel("Ilość komórek:"), new CC().alignX("left"));
+        panel.add(new BoldLabel("Szerokość planszy:"), new CC().alignX("left"));
 
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(automatonSettings.getCellCount(), 4, 5000000, 1);
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(automatonSettings.getWidth(), 1, 1000000, 1);
         JSpinner spinner = new JSpinner(spinnerModel);
-        spinner.setName(Commands.CHANGE_CELL_COUNT.toString());
+        spinner.setName(Commands.CHANGE_PLANE_WIDTH.toString());
         spinner.addChangeListener(this);
         panel.add(spinner,  new CC().alignX("left").cell(0, 2));
+        disabledWhenRunning.add(spinner);
+
+        panel.add(new BoldLabel("Wysokość planszy:"), new CC().alignX("left").cell(0, 3));
+        spinnerModel = new SpinnerNumberModel(automatonSettings.getHeight(), 1, 1000000, 1);
+        spinner = new JSpinner(spinnerModel);
+        spinner.setName(Commands.CHANGE_PLANE_HEIGHT.toString());
+        spinner.addChangeListener(this);
+        panel.add(spinner,  new CC().alignX("left").cell(0, 3));
         disabledWhenRunning.add(spinner);
         settingsPanel.add(panel, new CC().alignX("left").wrap());
         // ------------------------------------------------------------------------ \\
