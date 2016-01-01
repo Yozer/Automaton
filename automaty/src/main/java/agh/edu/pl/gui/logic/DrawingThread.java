@@ -1,6 +1,5 @@
 package agh.edu.pl.gui.logic;
 
-import javax.swing.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -32,7 +31,7 @@ class DrawingThread implements Runnable {
             timer.stop();
             statistics.setRenderTime(timer.getElapsed());
 
-            SwingUtilities.invokeLater(manager::repaint);
+            manager.repaint();
 
             shouldStartDraw.set(false);
             synchronized (DRAWING_MONITOR) {

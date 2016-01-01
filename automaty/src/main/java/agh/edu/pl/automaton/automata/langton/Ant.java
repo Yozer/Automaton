@@ -91,4 +91,16 @@ public class Ant extends Cell {
         Coords2D coords2D = new Coords2D(coordinates.getX(), coordinates.getY());
         return new Ant(coords2D, getAntState(), getAntColor(), this.automatonWidth, this.automatonHeight, this.id);
     }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        return obj == this || ((Ant) obj).coordinates.equals(this.coordinates);
+    }
+    @Override
+    public int hashCode() {
+        return coordinates.hashCode();
+    }
 }

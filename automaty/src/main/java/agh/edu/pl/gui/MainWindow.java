@@ -42,9 +42,6 @@ public class MainWindow extends MainWindowDesign {
         this.addKeyListener(this);
     }
 
-//    private void initAutomaton(Runnable invokeAfter) {
-//        automaton.init(invokeAfter);
-//    }
     private void clearAutomaton() {
         automaton.clearAutomaton(() -> {});
     }

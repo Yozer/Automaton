@@ -9,6 +9,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AutomatonPanel extends JPanel {
     static final Object LOCKER = new Object();
@@ -154,60 +155,59 @@ public class AutomatonPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        Graphics2D g2d = ((Graphics2D) g);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_SPEED);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_OFF);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+                RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+        g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+                RenderingHints.VALUE_COLOR_RENDER_SPEED);
+        g2d.setRenderingHint(RenderingHints.KEY_DITHERING,
+                RenderingHints.VALUE_DITHER_DISABLE);
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, getWidth(), getHeight());
 
-            Graphics2D g2d = ((Graphics2D) g);
-            g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                    RenderingHints.VALUE_RENDER_SPEED);
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_OFF);
-            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-            g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-                    RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-            g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
-                    RenderingHints.VALUE_COLOR_RENDER_SPEED);
-            g2d.setRenderingHint(RenderingHints.KEY_DITHERING,
-                    RenderingHints.VALUE_DITHER_DISABLE);
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
-
+        if (bufferedImage != null) {
             synchronized (LOCKER) {
-                if (bufferedImage != null) {
-                    g2d.drawImage(bufferedImage, transformCells, null);
-                }
+                g2d.drawImage(bufferedImage, transformCells, null);
             }
-            // draw struct preview
-            if (structurePreview != null) {
-                Composite composite = g2d.getComposite();
-                g2d.setComposite(compositeStructPreview);
-                g2d.drawImage(structurePreview, previewTransform, null);
-                g2d.setComposite(composite);
+        }
+        // draw struct preview
+        if (structurePreview != null) {
+            Composite composite = g2d.getComposite();
+            g2d.setComposite(compositeStructPreview);
+            g2d.drawImage(structurePreview, previewTransform, null);
+            g2d.setComposite(composite);
 
-            }
-            // draw grid
-            if (transformCells.getScaleX() > SHOW_GRID_MIN_SCALE) {
-                Composite composite = g2d.getComposite();
-                g2d.setComposite(compositeGrid);
-                g2d.drawImage(bufferedImageGrid, transformGrid, null);
-                g2d.setComposite(composite);
-            }
-            // draw border for preview
-            if(structurePreview != null && Math.abs(transformCells.getScaleX()) >= 0.95) {
-                Shape shape = new Rectangle(0, 0, structurePreview.getWidth(), structurePreview.getHeight());
-                shape = previewTransform.createTransformedShape(shape);
-                g2d.setColor(Color.RED);
-                g2d.draw(shape);
-            }
+        }
+        // draw grid
+        if (transformCells.getScaleX() > SHOW_GRID_MIN_SCALE) {
+            Composite composite = g2d.getComposite();
+            g2d.setComposite(compositeGrid);
+            g2d.drawImage(bufferedImageGrid, transformGrid, null);
+            g2d.setComposite(composite);
+        }
+        // draw border for preview
+        if(structurePreview != null && Math.abs(transformCells.getScaleX()) >= 0.95) {
+            Shape shape = new Rectangle(0, 0, structurePreview.getWidth(), structurePreview.getHeight());
+            shape = previewTransform.createTransformedShape(shape);
+            g2d.setColor(Color.RED);
+            g2d.draw(shape);
+        }
 
-            // draw border
-            double x = transformCells.getTranslateX();
-            double y = transformCells.getTranslateY();
+        // draw border
+        double x = transformCells.getTranslateX();
+        double y = transformCells.getTranslateY();
 
-            g2d.setColor(BORDER_COLOR);
-            g2d.setStroke(new BasicStroke(BORDER_WIDTH));
-            g2d.drawRect(round(x - BORDER_WIDTH), round(y - BORDER_WIDTH),
-                    round(getAutomatonWidth() * transformCells.getScaleX() + 2*BORDER_WIDTH),
-                    round(getAutomatonHeight() * transformCells.getScaleY() + 2*BORDER_WIDTH));
+        g2d.setColor(BORDER_COLOR);
+        g2d.setStroke(new BasicStroke(BORDER_WIDTH));
+        g2d.drawRect(round(x - BORDER_WIDTH), round(y - BORDER_WIDTH),
+                round(getAutomatonWidth() * transformCells.getScaleX() + 2*BORDER_WIDTH),
+                round(getAutomatonHeight() * transformCells.getScaleY() + 2*BORDER_WIDTH));
     }
 
 
@@ -251,7 +251,7 @@ public class AutomatonPanel extends JPanel {
     }
 
     void createBufferedImage(int cellCount) {
-        double ratio = 1;
+        final double ratio = 1.3;
         double heightD = Math.sqrt(cellCount / ratio);
         double widthD = ratio * heightD;
 
@@ -281,8 +281,10 @@ public class AutomatonPanel extends JPanel {
 
     private void clearPlane(Color color) {
         int black = color.getRGB();
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = black;
+        synchronized (LOCKER) {
+            for (int i = 0; i < pixels.length; i++) {
+                pixels[i] = black;
+            }
         }
     }
 

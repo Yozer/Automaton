@@ -35,8 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-// TODO add controlling distribution of each cell type during rand
-// TODO make drawing 60fps - check if it would be faster then drawing each generation
+// TODO add x,y instead of cell count
 
 public class AutomatonManager {
     private final SimulationThread simulationThread;
@@ -64,12 +63,8 @@ public class AutomatonManager {
         invokeAfter.run();
     }
 
-    public void init(Runnable invokeAfter) {
-        SwingWorker swingWorker = new InitSwingWorker(this, invokeAfter, false);
-        swingWorker.execute();
-    }
     public void clearAutomaton(Runnable invokeAfter) {
-        SwingWorker swingWorker = new InitSwingWorker(this, invokeAfter, true);
+        SwingWorker swingWorker = new ClearSwingWorker(this, invokeAfter);
         swingWorker.execute();
     }
 
@@ -140,25 +135,30 @@ public class AutomatonManager {
     }
 
     void drawCurrentAutomaton() {
-        synchronized (AutomatonPanel.LOCKER) {
-            int[] pixels = automatonPanel.getPixelsForDrawing();
+        int[] pixels = automatonPanel.getPixelsForDrawing();
 
-            if (automaton instanceof Automaton2Dim) {
-                Iterator<Cell> cellIterator = automaton.iteratorChangedOnly();
-                Cell cell;
+
+        if (automaton instanceof Automaton2Dim) {
+            Iterator<Cell> cellIterator = automaton.iteratorChangedOnly();
+            Cell cell;
+            synchronized (automatonPanel.LOCKER) {
                 while (cellIterator.hasNext()) {
                     cell = cellIterator.next();
                     Coords2D coords = (Coords2D) cell.getCoords();
                     pixels[coords.getY() * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
                 }
+            }
 
-                if (settings.getSelectedAutomaton() == PossibleAutomaton.Langton) {
-                    LangtonAnt langtonAnt = ((LangtonAnt) automaton);
+            if (settings.getSelectedAutomaton() == PossibleAutomaton.Langton) {
+                LangtonAnt langtonAnt = ((LangtonAnt) automaton);
+                synchronized (automatonPanel.LOCKER) {
                     for (Ant ant : langtonAnt.getAnts()) {
                         pixels[ant.getCoordinates().getY() * settings.getWidth() + ant.getCoordinates().getX()] = Color.YELLOW.getRGB();
                     }
                 }
-            } else if (automaton instanceof Automaton1Dim) {
+            }
+        } else if (automaton instanceof Automaton1Dim) {
+            synchronized (automatonPanel.LOCKER) {
                 if (automaton1DimCurrentRow == settings.getHeight()) {
                     for (int row = 1; row < settings.getHeight(); row++) {
                         System.arraycopy(pixels, row * settings.getWidth(), pixels, (row - 1) * settings.getWidth(), settings.getWidth());
@@ -170,8 +170,8 @@ public class AutomatonManager {
                     Coords1D coords = (Coords1D) cell.getCoords();
                     pixels[automaton1DimCurrentRow * settings.getWidth() + coords.getX()] = cell.getState().toColor().getRGB();
                 }
-                ++automaton1DimCurrentRow;
             }
+            ++automaton1DimCurrentRow;
         }
     }
 

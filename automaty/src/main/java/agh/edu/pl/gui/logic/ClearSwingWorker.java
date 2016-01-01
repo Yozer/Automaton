@@ -24,20 +24,18 @@ import java.util.stream.Collectors;
 /**
  * Created by Dominik on 2015-12-18.
  */
-class InitSwingWorker extends SwingWorker<Void, Void> {
+class ClearSwingWorker extends SwingWorker<Void, Void> {
     private final AutomatonManager automatonManager;
     private final Runnable invokeAfter;
-    private final boolean force;
 
-    public InitSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter, boolean force) {
+    public ClearSwingWorker(AutomatonManager automatonManager, Runnable invokeAfter) {
         this.automatonManager = automatonManager;
         this.invokeAfter = invokeAfter;
-        this.force = force;
     }
 
     @Override
     protected Void doInBackground() {
-        automatonManager.resetAutomatonIfSettingsHasChanged(force);
+        automatonManager.resetAutomatonIfSettingsHasChanged(true);
         return null;
     }
 
