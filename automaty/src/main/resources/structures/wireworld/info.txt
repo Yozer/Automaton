@@ -1,7 +1,8 @@
+Elektron głowa:1:1:elektron
+Elektron ogon:1:1:elektron_tail
+Void:1:1:void
+Konduktor:1:1:conductor
 Dioda włączona:20:3:dioda_on
 Dioda wyłączona:20:3:dioda_off
 Generator liczb pierwszych 1:568:903:primes
 Generator liczb pierwszych 2:568:903:primes2
-Elektron:1:1:elektron
-Void:1:1:void
-Konduktor:1:1:conductor
