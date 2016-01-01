@@ -3,7 +3,7 @@ package agh.edu.pl.automaton.automata;
 import agh.edu.pl.automaton.Automaton1Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
-import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodList;
 import agh.edu.pl.automaton.cells.neighborhoods.OneDimensionalNeighborhood;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
@@ -29,7 +29,7 @@ public class ElementaryAutomaton extends Automaton1Dim {
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates) {
+    protected CellState nextCellState(Cell cell, NeighborhoodList neighborsStates) {
         BinaryState[] neighborStates = new BinaryState[3];
         neighborStates[1] = (BinaryState) cell.getState();
 

@@ -3,7 +3,7 @@ package agh.edu.pl.automaton;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
-import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodList;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
 
@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public abstract class Automaton implements Iterable<Cell> {
-    private final NeighborhoodArray[] neighborhoodArrays;
+    private final NeighborhoodList[] neighborhoodLists;
     private final int cellCount;
     private final int processorsCount;
     private final ForkJoinPool threadPool;
@@ -50,7 +50,7 @@ public abstract class Automaton implements Iterable<Cell> {
 
         processorsCount = Runtime.getRuntime().availableProcessors() == 1 ? 1 : Runtime.getRuntime().availableProcessors() - 1;
         threadPool = new ForkJoinPool(processorsCount);
-        neighborhoodArrays = new NeighborhoodArray[processorsCount];
+        neighborhoodLists = new NeighborhoodList[processorsCount];
     }
 
     private class CellIteratorChangedOnly implements Iterator<Cell> {
@@ -106,8 +106,8 @@ public abstract class Automaton implements Iterable<Cell> {
         this.neighborhoodStrategy = neighborhood;
 
         initIfNotInitiated();
-        for (int i = 0; i < neighborhoodArrays.length; ++i)
-            neighborhoodArrays[i] = neighborhood.createArray();
+        for (int i = 0; i < neighborhoodLists.length; ++i)
+            neighborhoodLists[i] = neighborhood.createArray();
         forceCheckAllCellsInNextGeneration();
     }
 
@@ -176,7 +176,7 @@ public abstract class Automaton implements Iterable<Cell> {
     public void insertStructure(List<Cell> structure) {
         initIfNotInitiated();
 
-        NeighborhoodArray neighborhoodArray = neighborhoodArrays[0];
+        NeighborhoodList neighborhoodList = neighborhoodLists[0];
         for (Cell cell : structure) {
             int index = getCoordsIndex(cell.getCoords());
 
@@ -191,10 +191,10 @@ public abstract class Automaton implements Iterable<Cell> {
             if (!currentSet[index].getAndSet(true)) {
                 currentChangeList[currentChangeListSize++] = index;
             }
-            neighborhoodStrategy.cellNeighbors(cell.getCoords(), neighborhoodArray);
+            neighborhoodStrategy.cellNeighbors(cell.getCoords(), neighborhoodList);
 
-            for (int i = 0; i < neighborhoodArray.getLength(); ++i) {
-                int indexN = neighborhoodArray.get(i);
+            for (int i = 0; i < neighborhoodList.getLength(); ++i) {
+                int indexN = neighborhoodList.get(i);
                 if (!currentSet[indexN].getAndSet(true)) {
                     currentChangeList[currentChangeListSize++] = indexN;
                 }
@@ -203,13 +203,13 @@ public abstract class Automaton implements Iterable<Cell> {
     }
 
     private void simulateSlice(int from, int to, int procId) {
-        NeighborhoodArray neighborhoodArray = neighborhoodArrays[procId];
+        NeighborhoodList neighborhoodList = neighborhoodLists[procId];
         for (int j = from; j < to; j++) {
             int cellIndex = currentChangeList[j];
             Cell cell = currentCells[cellIndex];
 
-            neighborhoodStrategy.cellNeighbors(cell.getCoords(), neighborhoodArray);
-            CellState newState = nextCellState(cell, neighborhoodArray);
+            neighborhoodStrategy.cellNeighbors(cell.getCoords(), neighborhoodList);
+            CellState newState = nextCellState(cell, neighborhoodList);
 
             Cell nextGenerationCell = setNextGenerationCellState(cell, newState);
             if (nextGenerationCell.hasChanged()) {
@@ -222,8 +222,8 @@ public abstract class Automaton implements Iterable<Cell> {
                     nextGenerationChangeList[nextGenerationChangeListSize.getAndIncrement()] = cellIndex;
                 }
 
-                for (int i = 0; i < neighborhoodArray.getLength(); i++) {
-                    int index = neighborhoodArray.get(i);
+                for (int i = 0; i < neighborhoodList.getLength(); i++) {
+                    int index = neighborhoodList.get(i);
 
                     if (!nextGenerationSet[index].getAndSet(true)) {
                         nextGenerationChangeList[nextGenerationChangeListSize.getAndIncrement()] = index;
@@ -281,7 +281,7 @@ public abstract class Automaton implements Iterable<Cell> {
 
         // get buffers from neighborhood
         for (int i = 0; i < processorsCount; i++) {
-            neighborhoodArrays[i] = neighborhoodStrategy.createArray();
+            neighborhoodLists[i] = neighborhoodStrategy.createArray();
         }
 
         // iterate over all coordinates and get initial state for each cell
@@ -301,7 +301,7 @@ public abstract class Automaton implements Iterable<Cell> {
         }
     }
 
-    protected abstract CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates);
+    protected abstract CellState nextCellState(Cell cell, NeighborhoodList neighborsStates);
 
     protected abstract boolean hasNextCoordinates(CellCoordinates coords);
 

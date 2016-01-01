@@ -4,7 +4,7 @@ import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
-import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodList;
 import agh.edu.pl.automaton.cells.states.BinaryAntState;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import agh.edu.pl.automaton.cells.states.CellState;
@@ -53,7 +53,7 @@ public class LangtonAnt extends Automaton2Dim {
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates) {
+    protected CellState nextCellState(Cell cell, NeighborhoodList neighborsStates) {
         Ant currentAnt = null, nextStateAnt = null;
         for (Ant tmpAnt : currentAnts) {
             if (tmpAnt.getCoordinates().equals(cell.getCoords())) {

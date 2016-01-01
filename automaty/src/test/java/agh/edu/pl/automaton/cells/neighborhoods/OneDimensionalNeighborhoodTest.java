@@ -12,32 +12,32 @@ public class OneDimensionalNeighborhoodTest {
     @Test
     public void testCellNeighbors_r_equal_1_nowrap() throws Exception {
         CellNeighborhood neighborhood = new OneDimensionalNeighborhood(false, 100);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords1D(0), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords1D(0), neighborhoodList);
 
-        assertEquals(1, neighborhoodArray.getLength());
-        assertEquals(neighborhoodArray.get(0), 1);
+        assertEquals(1, neighborhoodList.getLength());
+        assertEquals(neighborhoodList.get(0), 1);
     }
 
     @Test
     public void testCellNeighbors_r_equal_1_wrap() throws Exception {
         CellNeighborhood neighborhood = new OneDimensionalNeighborhood(true, 7);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords1D(0), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords1D(0), neighborhoodList);
 
-        assertEquals(2, neighborhoodArray.getLength());
-        assertEquals(neighborhoodArray.get(0), 6);
-        assertEquals(neighborhoodArray.get(1), 1);
+        assertEquals(2, neighborhoodList.getLength());
+        assertEquals(neighborhoodList.get(0), 6);
+        assertEquals(neighborhoodList.get(1), 1);
     }
 
     @Test
     public void testCellNeighbors_r_equal_1() throws Exception {
         CellNeighborhood neighborhood = new OneDimensionalNeighborhood(false, 7);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords1D(2), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords1D(2), neighborhoodList);
 
-        assertEquals(2, neighborhoodArray.getLength());
-        assertEquals(neighborhoodArray.get(0), 1);
-        assertEquals(neighborhoodArray.get(1), 3);
+        assertEquals(2, neighborhoodList.getLength());
+        assertEquals(neighborhoodList.get(0), 1);
+        assertEquals(neighborhoodList.get(1), 3);
     }
 }

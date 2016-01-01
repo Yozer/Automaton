@@ -17,17 +17,17 @@ public class MoorNeighborhoodTest {
     @Test
     public void testCellNeighbors_r_equal_0() {
         CellNeighborhood neighborhood = new MoorNeighborhood(0, false, 500, 500);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodList);
 
-        assertEquals(0, neighborhoodArray.getLength());
+        assertEquals(0, neighborhoodList.getLength());
     }
 
     @Test
     public void testCellNeighbors_r_equal_1() {
         MoorNeighborhood neighborhood = new MoorNeighborhood(1, false, 500, 500);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodList);
 
         List<Integer> expected = new ArrayList<>(
                 Arrays.asList(
@@ -41,16 +41,16 @@ public class MoorNeighborhoodTest {
                         new Coords2D(11, 9)
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
-        assertEquals(8, neighborhoodArray.getLength());
-        for (int i = 0; i < neighborhoodArray.getLength(); i++)
-            assertTrue(expected.contains(neighborhoodArray.get(i)));
+        assertEquals(8, neighborhoodList.getLength());
+        for (int i = 0; i < neighborhoodList.getLength(); i++)
+            assertTrue(expected.contains(neighborhoodList.get(i)));
     }
 
     @Test
     public void testCellNeighbors_r_equal_2_outOfPlane() {
         MoorNeighborhood neighborhood = new MoorNeighborhood(2, false, 500, 500);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(0, 0), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(0, 0), neighborhoodList);
 
         List<Integer> expected = new ArrayList<>(
                 Arrays.asList(
@@ -64,16 +64,16 @@ public class MoorNeighborhoodTest {
                         new Coords2D(2, 2)
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
-        assertEquals(8, neighborhoodArray.getLength());
-        for (int i = 0; i < neighborhoodArray.getLength(); i++)
-            assertTrue(expected.contains(neighborhoodArray.get(i)));
+        assertEquals(8, neighborhoodList.getLength());
+        for (int i = 0; i < neighborhoodList.getLength(); i++)
+            assertTrue(expected.contains(neighborhoodList.get(i)));
     }
 
     @Test
     public void testCellNeighbors_r_equal_2_outOfPlane_wrap() {
         MoorNeighborhood neighborhood = new MoorNeighborhood(1, true, 5, 5);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(0, 0), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(0, 0), neighborhoodList);
 
         List<Integer> expected = new ArrayList<>(
                 Arrays.asList(
@@ -87,8 +87,8 @@ public class MoorNeighborhoodTest {
                         new Coords2D(4, 1)
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
-        assertEquals(8, neighborhoodArray.getLength());
-        for (int i = 0; i < neighborhoodArray.getLength(); i++)
-            assertTrue(expected.contains(neighborhoodArray.get(i)));
+        assertEquals(8, neighborhoodList.getLength());
+        for (int i = 0; i < neighborhoodList.getLength(); i++)
+            assertTrue(expected.contains(neighborhoodList.get(i)));
     }
 }

@@ -2,7 +2,7 @@ package agh.edu.pl.automaton.automata;
 
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
-import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodList;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.states.QuadState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
@@ -18,7 +18,7 @@ public class QuadLife extends GameOfLife {
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates) {
+    protected CellState nextCellState(Cell cell, NeighborhoodList neighborsStates) {
         int countAlive = 0;
         int[][] tab = new int[][]{{0, 0}, {0, 1}, {0, 2}, {0, 3}};
         int length = neighborsStates.getLength();

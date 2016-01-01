@@ -4,28 +4,43 @@ package agh.edu.pl.automaton.cells.neighborhoods;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
+/**
+ * {@code MoorNeighborhood} calculates neighbors using Moore rule for given coordinates.
+ * @see CellCoordinates
+ * @author Dominik Baran
+ * @see <a href="http://mathworld.wolfram.com/MooreNeighborhood.html">Moore Neighborhood</a>
+ */
 public class MoorNeighborhood implements CellNeighborhood {
     private final int radius;
     private final boolean wrap;
     private final int width;
     private final int height;
 
+    /**
+     * Creates {@code MooreNeighborhood} instance.
+     * @param radius Neighborhood radius
+     * @param wrap Determines if coordinates should be wrapped
+     * @param width Plane width
+     * @param height Plane height
+     */
     public MoorNeighborhood(int radius, boolean wrap, int width, int height) {
         this.radius = radius;
         this.wrap = wrap;
         this.width = width;
         this.height = height;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
-    public NeighborhoodArray createArray() {
-        return new NeighborhoodArray((2 * radius + 1) * (2 * radius + 1) - 1);
+    public NeighborhoodList createArray() {
+        return new NeighborhoodList((2 * radius + 1) * (2 * radius + 1) - 1);
     }
-
+    /** {@inheritDoc}
+     */
     @SuppressWarnings({"SuspiciousNameCombination", "Duplicates"})
     @Override
-    public NeighborhoodArray cellNeighbors(CellCoordinates cell, NeighborhoodArray result) {
-        result.clear();
+    public NeighborhoodList cellNeighbors(CellCoordinates cell, NeighborhoodList neighborhoodList) {
+        neighborhoodList.clear();
         Coords2D initialCoords = (Coords2D) cell;
 
         int xOriginal = initialCoords.getX();
@@ -45,15 +60,15 @@ public class MoorNeighborhood implements CellNeighborhood {
                             xN = Math.floorMod(xN, width);
                         if (yN < 0 || yN >= height)
                             yN = Math.floorMod(yN, height);
-                        result.push(yN * width + xN);
+                        neighborhoodList.push(yN * width + xN);
                     } else if (x >= 0 && x < width && y >= 0 && y < height) {
-                        result.push(y * width + x);
+                        neighborhoodList.push(y * width + x);
                     }
                 }
             }
         }
 
-        return result;
+        return neighborhoodList;
     }
 
     public int getHeight() {

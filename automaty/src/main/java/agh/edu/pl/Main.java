@@ -1,6 +1,5 @@
 package agh.edu.pl;
 
-
 import agh.edu.pl.gui.MainWindow;
 
 import javax.swing.*;

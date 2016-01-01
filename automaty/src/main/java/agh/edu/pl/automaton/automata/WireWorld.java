@@ -3,7 +3,7 @@ package agh.edu.pl.automaton.automata;
 import agh.edu.pl.automaton.Automaton2Dim;
 import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
-import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodArray;
+import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodList;
 import agh.edu.pl.automaton.cells.states.CellState;
 import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
@@ -14,7 +14,7 @@ public class WireWorld extends Automaton2Dim {
     }
 
     @Override
-    protected CellState nextCellState(Cell cell, NeighborhoodArray neighborsStates) {
+    protected CellState nextCellState(Cell cell, NeighborhoodList neighborsStates) {
         WireElectronState state = ((WireElectronState) cell.getState());
 
         if (state == WireElectronState.ELECTRON_HEAD) {

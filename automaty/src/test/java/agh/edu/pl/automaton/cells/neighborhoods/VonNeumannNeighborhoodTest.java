@@ -19,17 +19,17 @@ public class VonNeumannNeighborhoodTest {
     @Test
     public void testCellNeighbors_r_equal_0() {
         CellNeighborhood neighborhood = new VonNeumannNeighborhood(0, false, 500, 500);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(4, 4), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(4, 4), neighborhoodList);
 
-        assertEquals(0, neighborhoodArray.getLength());
+        assertEquals(0, neighborhoodList.getLength());
     }
 
     @Test
     public void testCellNeighbors_r_equal_1() {
         VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(1, false, 500, 500);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodList);
 
         List<Integer> expected = new ArrayList<>(
                 Arrays.asList(
@@ -39,16 +39,16 @@ public class VonNeumannNeighborhoodTest {
                         new Coords2D(10, 11)
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
-        assertEquals(4, neighborhoodArray.getLength());
-        for (int i = 0; i < neighborhoodArray.getLength(); i++)
-            assertTrue(expected.contains(neighborhoodArray.get(i)));
+        assertEquals(4, neighborhoodList.getLength());
+        for (int i = 0; i < neighborhoodList.getLength(); i++)
+            assertTrue(expected.contains(neighborhoodList.get(i)));
     }
 
     @Test
     public void testCellNeighbors_r_equal_2() {
         VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(2, false, 500, 500);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodList);
 
         List<Integer> expected = new ArrayList<>(
                 Arrays.asList(
@@ -66,16 +66,16 @@ public class VonNeumannNeighborhoodTest {
                         new Coords2D(12, 10)
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
-        assertEquals(12, neighborhoodArray.getLength());
-        for (int i = 0; i < neighborhoodArray.getLength(); i++)
-            assertTrue(expected.contains(neighborhoodArray.get(i)));
+        assertEquals(12, neighborhoodList.getLength());
+        for (int i = 0; i < neighborhoodList.getLength(); i++)
+            assertTrue(expected.contains(neighborhoodList.get(i)));
     }
 
     @Test
     public void testCellNeighbors_r_equal_2_outOfPlane_wrap() {
         VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(2, true, 100, 100);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(1, 1), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(1, 1), neighborhoodList);
 
         List<Integer> expected = new ArrayList<>(
                 Arrays.asList(
@@ -93,16 +93,16 @@ public class VonNeumannNeighborhoodTest {
                         new Coords2D(3, 1)
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
-        assertEquals(12, neighborhoodArray.getLength());
-        for (int i = 0; i < neighborhoodArray.getLength(); i++)
-            assertTrue(expected.contains(neighborhoodArray.get(i)));
+        assertEquals(12, neighborhoodList.getLength());
+        for (int i = 0; i < neighborhoodList.getLength(); i++)
+            assertTrue(expected.contains(neighborhoodList.get(i)));
     }
 
     @Test
     public void testCellNeighbors_r_equal_2_outOfPlane() {
         VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(2, false, 100, 100);
-        NeighborhoodArray neighborhoodArray = neighborhood.createArray();
-        neighborhoodArray = neighborhood.cellNeighbors(new Coords2D(1, 1), neighborhoodArray);
+        NeighborhoodList neighborhoodList = neighborhood.createArray();
+        neighborhoodList = neighborhood.cellNeighbors(new Coords2D(1, 1), neighborhoodList);
 
         List<Integer> expected = new ArrayList<>(
                 Arrays.asList(
@@ -118,8 +118,8 @@ public class VonNeumannNeighborhoodTest {
                         new Coords2D(3, 1)
                 )).stream().map(t -> t.getY() * neighborhood.getWidth() + t.getX()).collect(Collectors.toList());
 
-        assertEquals(10, neighborhoodArray.getLength());
-        for (int i = 0; i < neighborhoodArray.getLength(); i++)
-            assertTrue(expected.contains(neighborhoodArray.get(i)));
+        assertEquals(10, neighborhoodList.getLength());
+        for (int i = 0; i < neighborhoodList.getLength(); i++)
+            assertTrue(expected.contains(neighborhoodList.get(i)));
     }
 }
