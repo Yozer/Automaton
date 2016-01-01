@@ -9,8 +9,8 @@ public class Ant extends Cell {
     private final Color antColor;
     private final int automatonWidth;
     private final int automatonHeight;
+    private final int id;
     private Coords2D coordinates;
-    private int id;
 
     public Ant(Coords2D coordinates, AntState antState, Color antColor, int automatonWidth, int automatonHeight, int id) {
         super(antState, coordinates);
@@ -91,14 +91,12 @@ public class Ant extends Cell {
         Coords2D coords2D = new Coords2D(coordinates.getX(), coordinates.getY());
         return new Ant(coords2D, getAntState(), getAntColor(), this.automatonWidth, this.automatonHeight, this.id);
     }
+
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        return obj == this || ((Ant) obj).coordinates.equals(this.coordinates);
+        return !(obj == null || getClass() != obj.getClass()) && (obj == this || ((Ant) obj).coordinates.equals(this.coordinates));
     }
+
     @Override
     public int hashCode() {
         return coordinates.hashCode();

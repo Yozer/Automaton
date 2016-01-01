@@ -51,7 +51,7 @@ public class RLEFormatStructureLoader extends StructureLoader {
                 Matcher matcher = pattern.matcher(splitedLine);
                 while (matcher.find()) {
                     int number = -1;
-                    if(!matcher.group(1).equals(""))
+                    if (!matcher.group(1).equals(""))
                         number = Integer.parseInt(matcher.group(1));
 
                     if (number == -1) {

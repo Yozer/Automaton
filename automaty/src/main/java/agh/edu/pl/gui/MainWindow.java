@@ -13,7 +13,10 @@ import agh.edu.pl.gui.structures.StructureInfo;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.Objects;
@@ -43,7 +46,8 @@ public class MainWindow extends MainWindowDesign {
     }
 
     private void clearAutomaton() {
-        automaton.clearAutomaton(() -> {});
+        automaton.clearAutomaton(() -> {
+        });
     }
 
     private void randCells() {
@@ -141,7 +145,7 @@ public class MainWindow extends MainWindowDesign {
                 JOptionPane.showMessageDialog(null, "Niepoprawny format! Przykład: 23/3!", "Ostrzeżenie", JOptionPane.WARNING_MESSAGE);
             }
         } else if (cmd.equals(Commands.CHANGE_STRUCTURE.toString())) {
-            if(structureInfo != null) {
+            if (structureInfo != null) {
                 structureInfo = getSelectedStructure();
             }
             this.requestFocus();
@@ -166,9 +170,9 @@ public class MainWindow extends MainWindowDesign {
             } else if (name.equals(Commands.CHANGE_ONE_DIM_RULES.toString())) {
                 automaton.setRuleOneDim((Integer) jSpinner.getValue());
             } else if (name.equals(Commands.CHANGE_PLANE_HEIGHT.toString())) {
-                automaton.setHeight((Integer)jSpinner.getValue());
+                automaton.setHeight((Integer) jSpinner.getValue());
             } else if (name.equals(Commands.CHANGE_PLANE_WIDTH.toString())) {
-                automaton.setWidth((Integer)jSpinner.getValue());
+                automaton.setWidth((Integer) jSpinner.getValue());
             }
         }
     }
@@ -183,7 +187,7 @@ public class MainWindow extends MainWindowDesign {
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e) && getCurrentState() == AutomatonState.INSERTING_STRUCT) {
             Point2D point2D = automatonPanel.getStructInsertionPoint(e.getPoint());
-            insertStructure(structureInfo, (int)(point2D.getX() + 0.5), (int)(point2D.getY() + 0.5), automatonPanel.getStructRotation());
+            insertStructure(structureInfo, (int) (point2D.getX() + 0.5), (int) (point2D.getY() + 0.5), automatonPanel.getStructRotation());
         }
     }
 
@@ -220,10 +224,10 @@ public class MainWindow extends MainWindowDesign {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(getCurrentState() == AutomatonState.INSERTING_STRUCT && structureInfo != null) {
+        if (getCurrentState() == AutomatonState.INSERTING_STRUCT && structureInfo != null) {
             if (e.getKeyCode() == KeyEvent.VK_KP_LEFT || e.getKeyCode() == KeyEvent.VK_LEFT) {
                 automatonPanel.rotateStructPreviewLeft();
-            } else if(e.getKeyCode() == KeyEvent.VK_KP_RIGHT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            } else if (e.getKeyCode() == KeyEvent.VK_KP_RIGHT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
                 automatonPanel.rotateStructPreviewRight();
             }
         }

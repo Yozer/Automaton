@@ -87,10 +87,10 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
         List<Cell> cells = structureInfo.getCells(x, y, structRotation);
 
         // verify if we can insert struct
-        for(Cell cell : cells) {
+        for (Cell cell : cells) {
             CellCoordinates coords = cell.getCoords();
             int x, y;
-            if(coords instanceof Coords1D) {
+            if (coords instanceof Coords1D) {
                 x = ((Coords1D) coords).getX();
                 y = 0;
             } else {
@@ -98,7 +98,7 @@ class InsertStructureSwingWorker extends SwingWorker<Void, Void> {
                 y = ((Coords2D) coords).getY();
             }
 
-            if(x < 0 || x >= manager.getSettings().getWidth() || y < 0 || y >= manager.getSettings().getHeight()) {
+            if (x < 0 || x >= manager.getSettings().getWidth() || y < 0 || y >= manager.getSettings().getHeight()) {
                 return null;
             }
         }

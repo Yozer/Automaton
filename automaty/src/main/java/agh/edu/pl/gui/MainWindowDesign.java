@@ -9,12 +9,10 @@ import agh.edu.pl.gui.enums.PossibleAutomaton;
 import agh.edu.pl.gui.logic.AutomatonPanel;
 import agh.edu.pl.gui.logic.AutomatonSettings;
 import agh.edu.pl.gui.structures.*;
-import com.horstmann.corejava.GBC;
-import net.miginfocom.layout.*;
+import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
@@ -31,6 +29,9 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private final AutomatonSettings automatonSettings = new AutomatonSettings();
     private final ArrayList<Component> disabledWhenRunning = new ArrayList<>();
     private final ArrayList<Component> disabledWhenNotRunning = new ArrayList<>();
+    @SuppressWarnings("FieldCanBeLocal")
+    private final BufferedImage cursorImg;
+    private final Cursor blankCursor;
     AutomatonPanel automatonPanel;
     private JLabel generationCountLabel;
     private JLabel simulationTimeLabel;
@@ -51,9 +52,6 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     private Color choosedColor = Color.RED;
     private AutomatonState automatonState;
     private AutomatonState rememberState;
-
-    private BufferedImage cursorImg;
-    private Cursor blankCursor;
 
     MainWindowDesign() {
         initUI();
@@ -110,7 +108,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         JSpinner spinner = new JSpinner(spinnerModel);
         spinner.setName(Commands.CHANGE_PLANE_WIDTH.toString());
         spinner.addChangeListener(this);
-        panel.add(spinner,  new CC().alignX("left").cell(0, 2));
+        panel.add(spinner, new CC().alignX("left").cell(0, 2));
         disabledWhenRunning.add(spinner);
 
         panel.add(new BoldLabel("Wysokość planszy:"), new CC().alignX("left").cell(0, 3));
@@ -118,7 +116,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         spinner = new JSpinner(spinnerModel);
         spinner.setName(Commands.CHANGE_PLANE_HEIGHT.toString());
         spinner.addChangeListener(this);
-        panel.add(spinner,  new CC().alignX("left").cell(0, 3));
+        panel.add(spinner, new CC().alignX("left").cell(0, 3));
         disabledWhenRunning.add(spinner);
         settingsPanel.add(panel, new CC().alignX("left").wrap());
         // ------------------------------------------------------------------------ \\
@@ -284,7 +282,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         //settingsPanel.add(statisticsPanel, new CC().wrap().pushX().growX());
         settingsPanel.add(navigationButtonsPanel, new CC().wrap().pushX().growX());
         settingsPanel.add(statisticsPanel, new CC().wrap().pushX().growX().dockSouth());
-       //  ------------------------------------------------------------------------ \\
+        //  ------------------------------------------------------------------------ \\
 
         mainPanel.setLayout(new MigLayout("", "[grow, 80%][grow, 20%]", "[grow]"));
         mainPanel.add(automatonPanel, new CC().grow());
@@ -310,16 +308,16 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
     void setStructureList(PossibleAutomaton selectedAutomaton) {
         structuresList.removeAllItems();
-        StructureLoader structureLoader = null;
-        if(selectedAutomaton == PossibleAutomaton.GameOfLife) {
+        StructureLoader structureLoader;
+        if (selectedAutomaton == PossibleAutomaton.GameOfLife) {
             structureLoader = new RLEFormatStructureLoader(BinaryState.ALIVE, BinaryState.DEAD);
-        } else if(selectedAutomaton == PossibleAutomaton.QuadLife) {
+        } else if (selectedAutomaton == PossibleAutomaton.QuadLife) {
             structureLoader = new RLEFormatStructureLoader(QuadState.BLUE, QuadState.DEAD);
-        } else if(selectedAutomaton == PossibleAutomaton.WireWorld) {
+        } else if (selectedAutomaton == PossibleAutomaton.WireWorld) {
             structureLoader = new WireWorldStructureLoader();
-        } else if(selectedAutomaton == PossibleAutomaton.Jednowymiarowy) {
+        } else if (selectedAutomaton == PossibleAutomaton.Jednowymiarowy) {
             structureLoader = new OneDimStructureLoader();
-        } else if(selectedAutomaton == PossibleAutomaton.Langton) {
+        } else if (selectedAutomaton == PossibleAutomaton.Langton) {
             structureLoader = new LangtonAntStructureLoader();
         } else {
             throw new IllegalArgumentException("Invalid automaton type");
@@ -423,12 +421,12 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
 
 
     private void disableListOfComponents(ArrayList<Component> componentList) {
-        switchState(componentList, false);
+        disableComponentList(componentList);
     }
 
-    private void switchState(ArrayList<Component> componentList, boolean state) {
+    private void disableComponentList(ArrayList<Component> componentList) {
         for (Component component : componentList)
-            component.setEnabled(state);
+            component.setEnabled(false);
     }
 
     private void disableSettingsPanel() {

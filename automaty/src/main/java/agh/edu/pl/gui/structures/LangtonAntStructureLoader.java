@@ -8,7 +8,6 @@ import agh.edu.pl.automaton.cells.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,7 +27,7 @@ public class LangtonAntStructureLoader extends StructureLoader {
             String line = reader.readLine();
             if (line == null)
                 throw new IOException();
-            AntState antState = null;
+            AntState antState;
             switch (line) {
                 case "L":
                     antState = AntState.WEST;

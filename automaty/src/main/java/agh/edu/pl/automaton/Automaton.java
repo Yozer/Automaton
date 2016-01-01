@@ -53,6 +53,55 @@ public abstract class Automaton implements Iterable<Cell> {
         neighborhoodArrays = new NeighborhoodArray[processorsCount];
     }
 
+    private class CellIteratorChangedOnly implements Iterator<Cell> {
+        int i = -1;
+
+        @Override
+        public boolean hasNext() {
+            return i < currentChangeListSize - 1;
+        }
+
+        @Override
+        public Cell next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+            return currentCells[currentChangeList[++i]];
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("remove method not implemented");
+        }
+
+    }
+
+    private class CellIterator implements java.util.Iterator<Cell> {
+        private int cellIndex;
+
+        public CellIterator() {
+            cellIndex = -1;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cellIndex < cellCount - 1;
+        }
+
+        @Override
+        public Cell next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("There is no next cell");
+            }
+
+            return currentCells[++cellIndex];
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("remove method not implemented");
+        }
+    }
+
     public void setNeighborhood(CellNeighborhood neighborhood) {
         this.neighborhoodStrategy = neighborhood;
 
@@ -270,55 +319,6 @@ public abstract class Automaton implements Iterable<Cell> {
 
     protected CellState getCellStateByIndex(int i) {
         return currentCells[i].getState();
-    }
-
-    private class CellIteratorChangedOnly implements Iterator<Cell> {
-        int i = -1;
-
-        @Override
-        public boolean hasNext() {
-            return i < currentChangeListSize - 1;
-        }
-
-        @Override
-        public Cell next() {
-            if (!hasNext())
-                throw new NoSuchElementException();
-            return currentCells[currentChangeList[++i]];
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("remove method not implemented");
-        }
-
-    }
-
-    private class CellIterator implements java.util.Iterator<Cell> {
-        private int cellIndex;
-
-        public CellIterator() {
-            cellIndex = -1;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return cellIndex < cellCount - 1;
-        }
-
-        @Override
-        public Cell next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException("There is no next cell");
-            }
-
-            return currentCells[++cellIndex];
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("remove method not implemented");
-        }
     }
 }
 

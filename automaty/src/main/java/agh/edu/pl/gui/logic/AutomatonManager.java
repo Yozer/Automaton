@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dominik on 2015-12-13.
  */
-// TODO add x,y instead of cell count
 
 public class AutomatonManager {
     private final SimulationThread simulationThread;
@@ -129,8 +128,9 @@ public class AutomatonManager {
     void resetAutomatonOneDimRow() {
         automaton1DimCurrentRow = 0;
     }
+
     void decrementAutomatonOneDimRow() {
-        if(automaton1DimCurrentRow > 0)
+        if (automaton1DimCurrentRow > 0)
             automaton1DimCurrentRow--;
     }
 
@@ -247,6 +247,7 @@ public class AutomatonManager {
     void resetAutomatonIfSettingsHasChanged() {
         resetAutomatonIfSettingsHasChanged(false);
     }
+
     void resetAutomatonIfSettingsHasChanged(boolean force) {
         if (settingsHasChanged || force || automaton == null) {
             init();
@@ -278,6 +279,7 @@ public class AutomatonManager {
         settingsHasChanged = true;
         initAutomatonPanel();
     }
+
     public void setHeight(int height) {
         settings.setHeight(height);
         settingsHasChanged = true;

@@ -20,7 +20,7 @@ public class StructureInfo {
     private final int width;
     private final int height;
     private final List<Cell> cells;
-    protected BufferedImage previewImage = null;
+    BufferedImage previewImage = null;
 
     StructureInfo(String name, int width, int height, List<Cell> cells) {
         this.name = name;
@@ -49,7 +49,7 @@ public class StructureInfo {
         return previewImage;
     }
 
-    protected void createImage() {
+    void createImage() {
         previewImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = previewImage.createGraphics();
         g2d.setColor(Color.BLACK);

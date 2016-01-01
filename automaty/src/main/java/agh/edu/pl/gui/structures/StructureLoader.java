@@ -46,12 +46,11 @@ public abstract class StructureLoader {
                 String path = directoryName + splited[3];
                 List<Cell> cells = loadStructureCells(width * height, path);
 
-                StructureInfo structureInfo = null;
-                if(automaton == PossibleAutomaton.Langton) {
+                StructureInfo structureInfo;
+                if (automaton == PossibleAutomaton.Langton) {
                     Ant ant = ((Ant) cells.get(0));
                     structureInfo = new AntStructureInfo(name, ant.getAntState());
-                }
-                else {
+                } else {
                     structureInfo = new StructureInfo(name, width, height, cells);
                 }
                 structuresInfo.add(structureInfo);
