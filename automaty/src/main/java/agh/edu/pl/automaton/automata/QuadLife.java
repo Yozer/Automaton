@@ -11,12 +11,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
+/**
+ * Implements QuadLife a variation of GameOfLife using four colors.
+ * QuadOfLife always uses 23/3 rule
+ * @author Dominik Baran
+ * @see GameOfLife
+ */
 public class QuadLife extends GameOfLife {
-
+    /**
+     * @param width Automaton width
+     * @param height Automaton height
+     * @param cellNeighborhood Neighborhood for automaton
+     * @param cellStateFactory State factory for initial state of each cell in automaton
+     */
     public QuadLife(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood) {
         super(new HashSet<>(Arrays.asList(2, 3)), new HashSet<>(Collections.singletonList(3)), width, height, cellStateFactory, cellNeighborhood);
     }
-
+    /** {@inheritDoc}
+     */
     @Override
     protected CellState nextCellState(Cell cell, NeighborhoodList neighborsStates) {
         int countAlive = 0;
@@ -79,19 +91,22 @@ public class QuadLife extends GameOfLife {
 
         return currentState;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
     protected boolean cellIsAlive(CellState state) {
         return state != QuadState.DEAD;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
-    protected boolean cellChangedToAlive(CellState newState, CellState oldState) {
+    protected boolean cellChangedStateFromDeadToAlive(CellState newState, CellState oldState) {
         return newState != QuadState.DEAD;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
-    protected boolean cellChangedToDead(CellState newState, CellState oldState) {
+    protected boolean cellChangedStateFromAliveToDead(CellState newState, CellState oldState) {
         return newState == QuadState.DEAD;
     }
 }

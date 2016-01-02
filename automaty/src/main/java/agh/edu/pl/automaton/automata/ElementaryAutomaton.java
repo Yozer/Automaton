@@ -12,11 +12,21 @@ import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implements elementary, one dimensional automaton.
+ * @author Dominik Baran
+ * @see Automaton1Dim
+ */
 public class ElementaryAutomaton extends Automaton1Dim {
     private final List<BinaryState> ruleMapper;
     private int rule;
     private List<Integer> neighborList;
 
+    /**
+     * @param rule Automaton rule
+     * @param size Automaton size
+     * @param stateFactory State factory for initial state of each cell in automaton
+     */
     public ElementaryAutomaton(int size, int rule, CellStateFactory stateFactory) {
         super(size, new OneDimensionalNeighborhood(false, size), stateFactory);
         this.generateNeighborList();
@@ -27,7 +37,8 @@ public class ElementaryAutomaton extends Automaton1Dim {
 
         this.setRule(rule);
     }
-
+    /** {@inheritDoc}
+     */
     @Override
     protected CellState nextCellState(Cell cell, NeighborhoodList neighborsStates) {
         BinaryState[] neighborStates = new BinaryState[3];
@@ -55,19 +66,22 @@ public class ElementaryAutomaton extends Automaton1Dim {
 
         return ruleMapper.get(getHashStates(neighborStates));
     }
-
+    /** {@inheritDoc}
+     */
     @Override
     protected boolean cellIsAlive(CellState state) {
         return state == BinaryState.ALIVE;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
-    protected boolean cellChangedToAlive(CellState newState, CellState oldState) {
+    protected boolean cellChangedStateFromDeadToAlive(CellState newState, CellState oldState) {
         return newState == BinaryState.ALIVE;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
-    protected boolean cellChangedToDead(CellState newState, CellState oldState) {
+    protected boolean cellChangedStateFromAliveToDead(CellState newState, CellState oldState) {
         return newState == BinaryState.DEAD;
     }
 
@@ -75,6 +89,10 @@ public class ElementaryAutomaton extends Automaton1Dim {
         return rule;
     }
 
+    /**
+     * Set rules for elementary automaton
+     * @param rule Rule to set. Should be greater or equal 0 and less than 256
+     */
     public void setRule(int rule) {
         if (rule < 0 || rule > 255)
             throw new IllegalArgumentException("Rule should be in range [0;255]");
@@ -84,12 +102,12 @@ public class ElementaryAutomaton extends Automaton1Dim {
         for (int i = 0; i < 8; i++) {
             ruleMapper.set(neighborList.get(i), getBit(rule, 7 - i) == 1 ? BinaryState.ALIVE : BinaryState.DEAD);
         }
-        forceCheckAllCellsInNextGeneration();
+        forceToCheckAllCellsInNextGeneration();
     }
 
     private int getHashStates(BinaryState[] states) {
         if (states.length != 3)
-            throw new IllegalArgumentException("states has have size 3");
+            throw new IllegalArgumentException("states has to have size 3");
 
         return (states[0] == BinaryState.ALIVE ? 1 : 0) +
                 (states[1] == BinaryState.ALIVE ? 1 : 0) * 2 +

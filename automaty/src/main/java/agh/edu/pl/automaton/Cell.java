@@ -6,7 +6,6 @@ import agh.edu.pl.automaton.cells.states.CellState;
 /**
  * {@code Cell} represents one cell in automaton.
  * It has two fields {@code CellState} and {@code CellCoordinates}.
- *
  * @author Dominik Baran
  * @see CellCoordinates
  * @see CellState
@@ -21,8 +20,7 @@ public class Cell {
         this.coords = coords;
         this.hasChanged = true;
     }
-
-
+    
     public CellState getState() {
         return state;
     }

@@ -3,7 +3,7 @@ package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.Main;
 import agh.edu.pl.automaton.automata.langton.Ant;
-import agh.edu.pl.automaton.automata.langton.AntState;
+import agh.edu.pl.automaton.automata.langton.AntDirection;
 import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
@@ -27,25 +27,25 @@ public class LangtonAntStructureLoader extends StructureLoader {
             String line = reader.readLine();
             if (line == null)
                 throw new IOException();
-            AntState antState;
+            AntDirection antDirection;
             switch (line) {
                 case "L":
-                    antState = AntState.WEST;
+                    antDirection = AntDirection.WEST;
                     break;
                 case "U":
-                    antState = AntState.NORTH;
+                    antDirection = AntDirection.NORTH;
                     break;
                 case "D":
-                    antState = AntState.SOUTH;
+                    antDirection = AntDirection.SOUTH;
                     break;
                 case "R":
-                    antState = AntState.EAST;
+                    antDirection = AntDirection.EAST;
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid ant states");
             }
 
-            return Collections.singletonList(new Ant(new Coords2D(0, 0), antState, Color.BLACK, 0, 0, 0));
+            return Collections.singletonList(new Ant(new Coords2D(0, 0), antDirection, Color.BLACK, 0, 0, 0));
         }
     }
 }

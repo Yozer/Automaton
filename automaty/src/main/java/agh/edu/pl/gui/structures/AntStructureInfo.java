@@ -1,6 +1,6 @@
 package agh.edu.pl.gui.structures;
 
-import agh.edu.pl.automaton.automata.langton.AntState;
+import agh.edu.pl.automaton.automata.langton.AntDirection;
 import agh.edu.pl.automaton.Cell;
 
 import java.awt.*;
@@ -9,9 +9,9 @@ import java.util.List;
 
 public class AntStructureInfo extends StructureInfo {
 
-    private final AntState state;
+    private final AntDirection state;
 
-    AntStructureInfo(String name, AntState state) {
+    AntStructureInfo(String name, AntDirection state) {
         super(name, 1, 1, null);
         this.state = state;
     }
@@ -30,7 +30,7 @@ public class AntStructureInfo extends StructureInfo {
         g2d.dispose();
     }
 
-    public AntState getState() {
+    public AntDirection getState() {
         return state;
     }
 }

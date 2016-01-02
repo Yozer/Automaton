@@ -3,7 +3,7 @@ package agh.edu.pl.automaton.cells.neighborhoods;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 
 /**
- * This class is used as light-weight List<> in {@code CellNeighborhood}.
+ * This class is used as light-weight {@code List} in {@code CellNeighborhood}.
  * @author Dominik Baran
  * @see CellNeighborhood#createArray()
  * @see CellNeighborhood#cellNeighbors(CellCoordinates, NeighborhoodList)
@@ -24,7 +24,7 @@ public class NeighborhoodList {
         return length;
     }
 
-    public void clear() {
+    void clear() {
         this.length = 0;
     }
 

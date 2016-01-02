@@ -4,7 +4,12 @@ import agh.edu.pl.automaton.cells.states.CellState;
 
 import java.awt.*;
 
-public enum AntState implements CellState {
+/**
+ * Represent a direction in which ant is directed
+ * @author Dominik Baran
+ * @see Ant
+ */
+public enum AntDirection implements CellState {
     NORTH {
         @Override
         public Color toColor() {

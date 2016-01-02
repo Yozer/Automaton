@@ -16,16 +16,37 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implements Langton automaton. It's a two dimensional automaton with ants that change states of cell.
+ * @author Dominik Baran
+ * @see Automaton2Dim
+ * @see Ant
+ * @see AntDirection
+ * @see BinaryAntState
+ */
 public class LangtonAnt extends Automaton2Dim {
     private List<Ant> currentAnts = new ArrayList<>();
     private List<Ant> nextStateAnts = new ArrayList<>();
     private int idCounter = 0;
 
+    /**
+     * @param width Automaton width
+     * @param height Automaton height
+     * @param cellNeighborhood Neighborhood for automaton
+     * @param cellStateFactory State factory for initial state of each cell in automaton
+     */
     public LangtonAnt(int width, int height, CellStateFactory cellStateFactory, CellNeighborhood cellNeighborhood) {
         super(width, height, cellStateFactory, cellNeighborhood);
     }
 
-    public Ant addAnt(Coords2D antCoords, Color antColor, AntState antRotation) {
+    /**
+     * Creates and adds new ant to automaton
+     * @param antCoords Coords for ant
+     * @param antColor Color that ant will be painting alive cells
+     * @param antRotation Initial roration of ant
+     * @return Created ant
+     */
+    public Ant addAnt(Coords2D antCoords, Color antColor, AntDirection antRotation) {
         if (antCoords.getX() < 0 || antCoords.getY() < 0 || antCoords.getX() >= getWidth() || antCoords.getY() >= getHeight()) {
             throw new IllegalArgumentException("Ant has to be inside plane");
         }
@@ -44,6 +65,8 @@ public class LangtonAnt extends Automaton2Dim {
         return antsList;
     }
 
+    /** {@inheritDoc}
+     */
     @Override
     public void endCalculatingNextState() {
         super.endCalculatingNextState();
@@ -51,7 +74,8 @@ public class LangtonAnt extends Automaton2Dim {
         currentAnts = nextStateAnts;
         nextStateAnts = tmp;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
     protected CellState nextCellState(Cell cell, NeighborhoodList neighborsStates) {
         Ant currentAnt = null, nextStateAnt = null;
@@ -84,19 +108,22 @@ public class LangtonAnt extends Automaton2Dim {
         nextStateAnt.move();
         return state;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
     protected boolean cellIsAlive(CellState state) {
         return state == BinaryState.ALIVE;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
-    protected boolean cellChangedToAlive(CellState newState, CellState oldState) {
+    protected boolean cellChangedStateFromDeadToAlive(CellState newState, CellState oldState) {
         return oldState == BinaryState.DEAD && newState == BinaryState.ALIVE;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
-    protected boolean cellChangedToDead(CellState newState, CellState oldState) {
+    protected boolean cellChangedStateFromAliveToDead(CellState newState, CellState oldState) {
         return newState == BinaryState.DEAD && oldState == BinaryState.ALIVE;
     }
 }

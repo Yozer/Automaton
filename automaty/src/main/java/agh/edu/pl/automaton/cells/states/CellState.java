@@ -12,7 +12,7 @@ import java.awt.*;
  */
 public interface CellState {
     /**
-     * This method is used to simplify CellState > Color conversion.
+     * This method is used to obtain Color for give {@code CellState}
      * @return Returned color will be used to draw cell
      */
     Color toColor();

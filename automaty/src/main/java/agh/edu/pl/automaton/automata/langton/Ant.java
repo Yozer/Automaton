@@ -5,6 +5,11 @@ import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.awt.*;
 
+/**
+ * Represent ant which is used in LangtonAnt automaton
+ * @see LangtonAnt
+ * @author Dominik Baran
+ */
 public class Ant extends Cell {
     private final Color antColor;
     private final int automatonWidth;
@@ -12,8 +17,17 @@ public class Ant extends Cell {
     private final int id;
     private Coords2D coordinates;
 
-    public Ant(Coords2D coordinates, AntState antState, Color antColor, int automatonWidth, int automatonHeight, int id) {
-        super(antState, coordinates);
+    /**
+     *
+     * @param coordinates Initial coordinates
+     * @param antDirection Initial direction
+     * @param antColor Color that ant will be painting alive cells
+     * @param automatonWidth Width of automaton in which ant will be traveling
+     * @param automatonHeight Height of automaton in which ant will be traveling
+     * @param id Unique id for ant
+     */
+    public Ant(Coords2D coordinates, AntDirection antDirection, Color antColor, int automatonWidth, int automatonHeight, int id) {
+        super(antDirection, coordinates);
         this.antColor = antColor;
         this.automatonWidth = automatonWidth;
         this.automatonHeight = automatonHeight;
@@ -22,29 +36,29 @@ public class Ant extends Cell {
     }
 
     void rotateLeft() {
-        AntState antState = (AntState) getState();
-        if (antState == AntState.NORTH)
-            antState = AntState.WEST;
-        else if (antState == AntState.WEST)
-            antState = AntState.SOUTH;
-        else if (antState == AntState.SOUTH)
-            antState = AntState.EAST;
-        else if (antState == AntState.EAST)
-            antState = AntState.NORTH;
-        setState(antState);
+        AntDirection antDirection = (AntDirection) getState();
+        if (antDirection == AntDirection.NORTH)
+            antDirection = AntDirection.WEST;
+        else if (antDirection == AntDirection.WEST)
+            antDirection = AntDirection.SOUTH;
+        else if (antDirection == AntDirection.SOUTH)
+            antDirection = AntDirection.EAST;
+        else if (antDirection == AntDirection.EAST)
+            antDirection = AntDirection.NORTH;
+        setState(antDirection);
     }
 
     void rotateRight() {
-        AntState antState = (AntState) getState();
-        if (antState == AntState.NORTH)
-            antState = AntState.EAST;
-        else if (antState == AntState.WEST)
-            antState = AntState.NORTH;
-        else if (antState == AntState.SOUTH)
-            antState = AntState.WEST;
-        else if (antState == AntState.EAST)
-            antState = AntState.SOUTH;
-        setState(antState);
+        AntDirection antDirection = (AntDirection) getState();
+        if (antDirection == AntDirection.NORTH)
+            antDirection = AntDirection.EAST;
+        else if (antDirection == AntDirection.WEST)
+            antDirection = AntDirection.NORTH;
+        else if (antDirection == AntDirection.SOUTH)
+            antDirection = AntDirection.WEST;
+        else if (antDirection == AntDirection.EAST)
+            antDirection = AntDirection.SOUTH;
+        setState(antDirection);
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
@@ -52,15 +66,15 @@ public class Ant extends Cell {
         int x = coordinates.getX();
         int y = coordinates.getY();
 
-        AntState antState = (AntState) getState();
+        AntDirection antDirection = (AntDirection) getState();
 
-        if (antState == AntState.NORTH)
+        if (antDirection == AntDirection.NORTH)
             y--;
-        else if (antState == AntState.SOUTH)
+        else if (antDirection == AntDirection.SOUTH)
             y++;
-        else if (antState == AntState.WEST)
+        else if (antDirection == AntDirection.WEST)
             x--;
-        else if (antState == AntState.EAST)
+        else if (antDirection == AntDirection.EAST)
             x++;
 
         if (x < 0 || x >= automatonWidth)
@@ -75,8 +89,8 @@ public class Ant extends Cell {
         return antColor;
     }
 
-    public AntState getAntState() {
-        return (AntState) getState();
+    public AntDirection getAntState() {
+        return (AntDirection) getState();
     }
 
     public Coords2D getCoordinates() {
