@@ -1,7 +1,5 @@
 package agh.edu.pl.gui.logic;
 
-import agh.edu.pl.gui.helpers.Timer;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**

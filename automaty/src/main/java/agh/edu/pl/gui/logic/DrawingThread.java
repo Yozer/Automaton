@@ -20,7 +20,7 @@ class DrawingThread implements Runnable {
 
     @Override
     public void run() {
-        agh.edu.pl.gui.helpers.Timer timer = new agh.edu.pl.gui.helpers.Timer();
+        Timer timer = new Timer();
 
         //noinspection InfiniteLoopStatement
         while (true) {

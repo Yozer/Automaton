@@ -1,6 +1,6 @@
-package agh.edu.pl.gui.helpers;
+package agh.edu.pl.gui.logic;
 
-public class Timer {
+class Timer {
     private long before, after;
     private int elapsed;
 
