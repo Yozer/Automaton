@@ -1,7 +1,8 @@
 package agh.edu.pl.gui.enums;
 
 /**
- * Created by Dominik on 2015-12-20.
+ * Possible states of automaton window
+ * @author Dominik Baran
  */
 public enum AutomatonState {
     BUSY,

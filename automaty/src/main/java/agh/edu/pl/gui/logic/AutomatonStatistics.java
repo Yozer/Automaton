@@ -2,6 +2,10 @@ package agh.edu.pl.gui.logic;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Hold statistics for automaton.
+ * @author Dominik Baran
+ */
 public class AutomatonStatistics {
     private final AtomicInteger generationsCount = new AtomicInteger();
     private final AtomicInteger aliveCellsCount = new AtomicInteger();

@@ -33,9 +33,9 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by Dominik on 2015-12-13.
+ * This class is a bridge between gui and {@code Automaton}.
+ * @author Dominik Baran
  */
-
 public class AutomatonManager {
     private final SimulationThread simulationThread;
     @SuppressWarnings("FieldCanBeLocal")
@@ -48,6 +48,9 @@ public class AutomatonManager {
     private int automaton1DimCurrentRow;
     private boolean settingsHasChanged = true;
 
+    /**
+     * @param automatonPanel AutomatonPanel where cells should be rendered
+     */
     public AutomatonManager(AutomatonPanel automatonPanel) {
         this.simulationDelay.set(settings.getSimulationDelay());
         this.automatonPanel = automatonPanel;
@@ -56,27 +59,52 @@ public class AutomatonManager {
         simulationThreadObject.start();
     }
 
+    /**
+     * Starts automaton. This method returns immediately.
+     * @param invokeAfter {@code Runnable to invoke after execution finishes}
+     */
     public void start(Runnable invokeAfter) {
         resetAutomatonIfSettingsHasChanged();
         simulationThread.resumeThread();
         invokeAfter.run();
     }
-
+    /**
+     * Clears automaton. Sets all cells to dead. This method returns immediately - it's invoked in another thread.
+     * @param invokeAfter {@code Runnable to invoke after execution finishes}
+     */
     public void clearAutomaton(Runnable invokeAfter) {
         SwingWorker swingWorker = new ClearSwingWorker(this, invokeAfter);
         swingWorker.execute();
     }
-
+    /**
+     * Pauses automaton. This method returns immediately - it's invoked in another thread.
+     * @param invokeAfter {@code Runnable to invoke after execution finishes}
+     */
     public void pause(Runnable invokeAfter) {
         SwingWorker swingWorker = new PauseSwingWorker(this, invokeAfter);
         swingWorker.execute();
     }
 
+    /**
+     * Insert structure to current automaton. You can invoke it even when automaton is running.
+     * This method returns immediately - it's invoked in another thread.
+     * @param structureInfo Structure to insert
+     * @param x x coordinate relative to automaton coordinates
+     * @param y y coordinate relative to automaton coordinates
+     * @param structRotation Structure rotation in radians. Should be 0, 90, 180 or 270 degree.
+     */
     public void insertStructure(StructureInfo structureInfo, int x, int y, double structRotation) {
         SwingWorker swingWorker = new InsertStructureSwingWorker(this, structureInfo, x, y, structRotation);
         swingWorker.execute();
     }
 
+    /**
+     * Insert ant to current automaton. You can invoke it even when automaton is running.
+     * @param structureInfo Structure to insert
+     * @param x x coordinate relative to automaton coordinates
+     * @param y y coordinate relative to automaton coordinates
+     * @param antColor Color for ant
+     */
     public void insertAnt(AntStructureInfo structureInfo, int x, int y, Color antColor) {
         resetAutomatonIfSettingsHasChanged();
         Coords2D atPoint = new Coords2D(x, y);
@@ -94,9 +122,11 @@ public class AutomatonManager {
         if (isRunning)
             start();
     }
-
+    /**
+     * Rands cell states for given automaton. This method returns immediately - it's invoked in another thread.
+     * @param invokeAfter {@code Runnable to invoke after execution finishes}
+     */
     public void randCells(Runnable invokeAfter) {
-        resetAutomatonIfSettingsHasChanged();
         SwingWorker worker = new RandCellsWorker(this, invokeAfter);
         worker.execute();
     }

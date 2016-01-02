@@ -3,7 +3,8 @@ package agh.edu.pl.gui.logic;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Created by Dominik on 2015-12-18.
+ * Thread which is responsible for drawing automaton.
+ * @author Dominik Baran
  */
 class DrawingThread implements Runnable {
     private final AutomatonManager manager;

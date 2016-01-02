@@ -3,7 +3,8 @@ package agh.edu.pl.gui.logic;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Created by Dominik on 2015-12-18.
+ * Thread which is responsible for simulation current automaton.
+ * @author Dominik Baran
  */
 class SimulationThread implements Runnable {
     private final Object PAUSE_MONITOR = new Object();

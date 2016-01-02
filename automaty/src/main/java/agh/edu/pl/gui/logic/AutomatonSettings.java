@@ -7,6 +7,10 @@ import agh.edu.pl.gui.logic.exceptions.IllegalRulesFormatException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Holds settings for automaton.
+ * @author Dominik Baran
+ */
 public class AutomatonSettings {
     private PossibleAutomaton selectedAutomaton = PossibleAutomaton.GameOfLife;
     private int simulationDelay = 0;

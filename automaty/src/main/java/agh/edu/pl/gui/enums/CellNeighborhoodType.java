@@ -1,7 +1,8 @@
 package agh.edu.pl.gui.enums;
 
 /**
- * Created by Dominik on 2015-12-13.
+ * Possible cell neighbors types
+ * @author Dominik Baran
  */
 public enum CellNeighborhoodType {
     Moore,
