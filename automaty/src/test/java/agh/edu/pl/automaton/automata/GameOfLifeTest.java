@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class GameOfLifeTest {
@@ -89,7 +90,50 @@ public class GameOfLifeTest {
         assertEquals(result.get(4).getState(), BinaryState.ALIVE);
         assertEquals(result.get(5).getState(), BinaryState.ALIVE);
     }
+    @Test
+    public void testNextState_500AliveMultithreaded() {
+        int width = 100;
+        int height = 100;
+        CellStateFactory stateFactory = new UniformStateFactory(BinaryState.DEAD);
+        CellNeighborhood neighborhood = new MoorNeighborhood(1, false, width, height);
 
+        gameOfLifeStandard = new GameOfLife(new HashSet<>(Arrays.asList(2, 3)), new HashSet<>(Collections.singletonList(3)), width, height, stateFactory, neighborhood);
+        List<Cell> neighborsStates = new ArrayList<>(6);
+
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(0, 0)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(0, 1)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(1, 0)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(1, 1)));
+
+        assertEquals(0, gameOfLifeStandard.getAliveCount());
+        gameOfLifeStandard.insertStructure(neighborsStates);
+        assertEquals(4, gameOfLifeStandard.getAliveCount());
+        gameOfLifeStandard.beginCalculatingNextState();
+        assertEquals(4, gameOfLifeStandard.getAliveCount());
+        gameOfLifeStandard.endCalculatingNextState();
+        assertEquals(4, gameOfLifeStandard.getAliveCount());
+
+        for(int i = 0; i < 100; i++) {
+            assertEquals(4, gameOfLifeStandard.getAliveCount());
+            gameOfLifeStandard.beginCalculatingNextState();
+            assertEquals(4, gameOfLifeStandard.getAliveCount());
+            gameOfLifeStandard.endCalculatingNextState();
+            assertEquals(4, gameOfLifeStandard.getAliveCount());
+
+            List<Cell> result = new ArrayList<>();
+            for (Cell cell : gameOfLifeStandard)
+                result.add(cell);
+
+            assertEquals(result.get(0).getState(), BinaryState.ALIVE);
+            assertEquals(result.get(1).getState(), BinaryState.ALIVE);
+            assertEquals(result.get(100).getState(), BinaryState.ALIVE);
+            assertEquals(result.get(101).getState(), BinaryState.ALIVE);
+            for(int j = 0; j < width*height; j++) {
+                if(j == 0 || j == 1 || j == 100 || j == 101) continue;
+                assertEquals(BinaryState.DEAD, result.get(j).getState());
+            }
+        }
+    }
     @Test
     public void testNextState_fourAlive() {
         List<Cell> neighborsStates = new ArrayList<>(6);
@@ -117,5 +161,56 @@ public class GameOfLifeTest {
         assertEquals(result.get(3).getState(), BinaryState.ALIVE);
         assertEquals(result.get(4).getState(), BinaryState.DEAD);
         assertEquals(result.get(5).getState(), BinaryState.DEAD);
+    }
+    @Test
+    public void testNextState_changeNeighborhood() {
+        List<Cell> neighborsStates = new ArrayList<>(6);
+
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(0, 0)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(0, 1)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(1, 0)));
+        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(1, 1)));
+
+        assertEquals(0, gameOfLifeStandard.getAliveCount());
+        gameOfLifeStandard.insertStructure(neighborsStates);
+        assertEquals(4, gameOfLifeStandard.getAliveCount());
+        gameOfLifeStandard.beginCalculatingNextState();
+        assertEquals(4, gameOfLifeStandard.getAliveCount());
+        gameOfLifeStandard.endCalculatingNextState();
+        assertEquals(4, gameOfLifeStandard.getAliveCount());
+
+        List<Cell> result = new ArrayList<>();
+        for (Cell cell : gameOfLifeStandard)
+            result.add(cell);
+
+        assertEquals(result.get(0).getState(), BinaryState.ALIVE);
+        assertEquals(result.get(1).getState(), BinaryState.ALIVE);
+        assertEquals(result.get(2).getState(), BinaryState.ALIVE);
+        assertEquals(result.get(3).getState(), BinaryState.ALIVE);
+        assertEquals(result.get(4).getState(), BinaryState.DEAD);
+        assertEquals(result.get(5).getState(), BinaryState.DEAD);
+
+        gameOfLifeStandard.setNeighborhood(new MoorNeighborhood(0, false, 2, 3));
+        gameOfLifeStandard.calculateNextState();
+        for (Cell cell : gameOfLifeStandard)
+            assertEquals(BinaryState.DEAD, cell.getState());
+
+        int count = 0;
+        Iterator<Cell> cellIterator = gameOfLifeStandard.iteratorChangedOnly();
+        while (cellIterator.hasNext()) {
+            count++;
+            cellIterator.next();
+        }
+        assertEquals(4, count);
+        try {
+            cellIterator.next();
+            assertTrue(false);
+        } catch (NoSuchElementException e) {
+        }
+        try {
+            cellIterator.remove();
+            assertTrue(false);
+        } catch (UnsupportedOperationException e) {
+        }
     }
 }

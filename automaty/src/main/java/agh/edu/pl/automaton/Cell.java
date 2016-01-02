@@ -25,7 +25,7 @@ public class Cell {
         return state;
     }
 
-    public void setState(CellState state) {
+    protected void setState(CellState state) {
         this.state = state;
     }
 

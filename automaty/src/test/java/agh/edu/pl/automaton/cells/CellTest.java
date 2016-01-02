@@ -34,4 +34,17 @@ public class CellTest {
         Cell cell2 = new Cell(BinaryState.DEAD, new Coords2D(5, 5));
         assertTrue(cell1.equals(cell2));
     }
+
+    @Test
+    public void testHashCode_Equal() throws Exception {
+        Cell cell1 = new Cell(BinaryState.DEAD, new Coords2D(5, 5));
+        Cell cell2 = new Cell(BinaryState.DEAD, new Coords2D(5, 5));
+        assertTrue(cell1.hashCode() == cell2.hashCode());
+    }
+    @Test
+    public void testHashCode_NotEqual() throws Exception {
+        Cell cell1 = new Cell(BinaryState.DEAD, new Coords2D(5, 5));
+        Cell cell2 = new Cell(BinaryState.DEAD, new Coords2D(4, 5));
+        assertTrue(cell1.hashCode() != cell2.hashCode());
+    }
 }
