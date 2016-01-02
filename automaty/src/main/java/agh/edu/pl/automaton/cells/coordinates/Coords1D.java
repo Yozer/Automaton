@@ -1,7 +1,10 @@
 package agh.edu.pl.automaton.cells.coordinates;
 
 /**
- * Created by Dominik on 2015-11-29.
+ * Represents coordinates in one dimensional space.
+ * {@code Coords1D} is immutable.
+ * @author Dominik Baran
+ * @see CellCoordinates
  */
 public class Coords1D implements CellCoordinates {
     private final int x;
@@ -23,7 +26,10 @@ public class Coords1D implements CellCoordinates {
     public boolean equals(Object obj) {
         return obj != null && obj instanceof Coords1D && ((Coords1D) obj).getX() == x;
     }
-
+    /**
+     * Returns formatted coordinates.
+     * @return
+     */
     @Override
     public String toString() {
         return "X: " + x;

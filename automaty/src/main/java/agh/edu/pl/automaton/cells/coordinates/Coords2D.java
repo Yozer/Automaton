@@ -1,7 +1,10 @@
 package agh.edu.pl.automaton.cells.coordinates;
 
 /**
- * Created by Dominik on 2015-11-29.
+ * Represents coordinates on two dimensional space.
+ * {@code Coords2D} is immutable.
+ * @author Dominik Baran
+ * @see CellCoordinates
  */
 public class Coords2D implements CellCoordinates {
     private final int x;
@@ -33,6 +36,10 @@ public class Coords2D implements CellCoordinates {
         return x == c.getX() && y == c.getY();
     }
 
+    /**
+     * Returns formatted coordinates.
+     * @return
+     */
     @Override
     public String toString() {
         return "X: " + x + " Y: " + y;
