@@ -15,7 +15,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Dominik on 2015-12-20.
+ * Struct loader for Game of Life and QuadLife automaton structures
+ * @author Dominik Baran
+ * @see StructureLoader
  */
 public class RLEFormatStructureLoader extends StructureLoader {
     private static final Pattern pattern = Pattern.compile("([0-9]*)([bo])");
@@ -27,7 +29,8 @@ public class RLEFormatStructureLoader extends StructureLoader {
         this.aliveCellState = aliveCellState;
         this.deadCellState = deadCellState;
     }
-
+    /** {@inheritDoc}
+     */
     @Override
     protected List<Cell> loadStructureCells(int size, String path) throws IOException {
         StringBuilder source = new StringBuilder();

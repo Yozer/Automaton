@@ -13,9 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Dominik on 2015-12-26.
+ * Struct loader for Elementary automaton structures
+ * @author Dominik Baran
+ * @see StructureLoader
  */
 public class OneDimStructureLoader extends StructureLoader {
+    /** {@inheritDoc}
+     */
     @Override
     protected List<Cell> loadStructureCells(int size, String path) throws IOException {
         InputStreamReader streamReader = new InputStreamReader(Main.class.getResourceAsStream(path), Charset.forName("UTF-8"));

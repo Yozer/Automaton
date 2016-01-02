@@ -10,6 +10,9 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+/**
+ * Implements Panel on which you can draw cells
+ */
 public class AutomatonPanel extends JPanel {
     private static final AlphaComposite compositeGrid = AlphaComposite.getInstance(AlphaComposite.DST_OUT);
     private static final AlphaComposite compositeStructPreview = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
@@ -348,6 +351,11 @@ public class AutomatonPanel extends JPanel {
         repaint();
     }
 
+    /**
+     *
+     * @param structurePreview Buffered image of structure preview
+     * @param point Preview point relative to this panel
+     */
     public void setStructurePreview(BufferedImage structurePreview, Point point) {
         previewPoint = point;
         this.structurePreview = structurePreview;
@@ -355,9 +363,13 @@ public class AutomatonPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Disables structure preview
+     */
     public void disableStructurePreview() {
         this.structurePreview = null;
         this.previewTransform = null;
+        previewRotation = 0;
         repaint();
     }
 
@@ -372,13 +384,18 @@ public class AutomatonPanel extends JPanel {
         }
     }
 
+    /**
+     * Rotates struct preview by -90 degrees
+     */
     public void rotateStructPreviewLeft() {
         previewRotation += Math.toRadians(-90);
         loopRotation();
         calculatePreviewTranslation();
         repaint();
     }
-
+    /**
+     * Rotates struct preview by 90 degrees
+     */
     public void rotateStructPreviewRight() {
         previewRotation += Math.toRadians(90);
         loopRotation();
@@ -386,10 +403,18 @@ public class AutomatonPanel extends JPanel {
         repaint();
     }
 
+    /**
+     *
+     * @return Current rotation fo structure
+     */
     public double getStructRotation() {
         return previewRotation;
     }
 
+    /**
+     * @param point Point relative to this panel
+     * @return Point relative to automaton coordinates
+     */
     public Point2D getStructInsertionPoint(Point point) {
         return calculateInsertionPoint(point);
     }

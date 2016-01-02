@@ -43,7 +43,7 @@ public class LangtonAnt extends Automaton2Dim {
      * Creates and adds new ant to automaton
      * @param antCoords Coords for ant
      * @param antColor Color that ant will be painting alive cells
-     * @param antRotation Initial roration of ant
+     * @param antRotation Initial rotation of ant
      * @return Created ant
      */
     public Ant addAnt(Coords2D antCoords, Color antColor, AntDirection antRotation) {

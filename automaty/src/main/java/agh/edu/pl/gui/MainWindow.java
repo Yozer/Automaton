@@ -21,6 +21,11 @@ import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Window with visual representation of automaton
+ * @author Dominik Baran
+ * @see agh.edu.pl.gui.logic.AutomatonPanel
+ */
 public class MainWindow extends MainWindowDesign {
     private static final int statisticUpdateEvery = 500; // ms
     private final Timer timerStatistics;

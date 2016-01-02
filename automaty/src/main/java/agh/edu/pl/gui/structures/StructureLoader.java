@@ -14,9 +14,15 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by Dominik on 2015-12-20.
+ *
+ * This abstract class is used to load list of available structures for given automaton.
+ * @author Dominik Baran
  */
 public abstract class StructureLoader {
+    /**
+     * @param automaton Automaton for which method should load list of structures
+     * @return List of loaded structures
+     */
     public List<StructureInfo> getAvailableStructures(PossibleAutomaton automaton) {
         String directoryName = "/structures/";
         List<StructureInfo> structuresInfo = new ArrayList<>();
@@ -63,5 +69,12 @@ public abstract class StructureLoader {
         return structuresInfo;
     }
 
+    /**
+     * This method should return list of loaded cells from given file
+     * @param size Structure size
+     * @param path Structure absolute path
+     * @return List of loaded cell
+     * @throws IOException
+     */
     protected abstract List<Cell> loadStructureCells(int size, String path) throws IOException;
 }

@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Dominik on 2015-12-20.
+ * This class hold details about structure.
+ * @author Dominik Baran
  */
 public class StructureInfo {
     private final String name;
@@ -22,13 +23,19 @@ public class StructureInfo {
     private final List<Cell> cells;
     BufferedImage previewImage = null;
 
+    /**
+     *
+     * @param name Struct display name
+     * @param width Struct width
+     * @param height Struct height
+     * @param cells Struct cells
+     */
     StructureInfo(String name, int width, int height, List<Cell> cells) {
         this.name = name;
         this.width = width;
         this.height = height;
         this.cells = cells;
     }
-
 
     public int getWidth() {
         return width;
@@ -43,6 +50,10 @@ public class StructureInfo {
         return name;
     }
 
+    /**
+     *
+     * @return {@code BufferedImage} with structure
+     */
     public BufferedImage getPreviewImage() {
         if (previewImage == null)
             createImage();
@@ -75,6 +86,13 @@ public class StructureInfo {
 
     }
 
+    /**
+     *
+     * @param x Insert point x
+     * @param y Insert point y
+     * @param rotation Roration in radians
+     * @return Cell list after translate and rotate
+     */
     public List<Cell> getCells(int x, int y, double rotation) {
         List<Cell> result = new ArrayList<>(cells.size());
 
