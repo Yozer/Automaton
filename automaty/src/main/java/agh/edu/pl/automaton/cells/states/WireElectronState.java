@@ -3,7 +3,10 @@ package agh.edu.pl.automaton.cells.states;
 import java.awt.*;
 
 /**
- * Created by Dominik on 2015-11-29.
+ * {@code WireElectronState} represents all possible states for {@code WireWorld} automaton.
+ * @author Dominik Baran
+ * @see CellState
+ * @see agh.edu.pl.automaton.automata.WireWorld
  */
 public enum WireElectronState implements CellState {
     VOID {

@@ -4,7 +4,7 @@ package agh.edu.pl.gui.structures;
 import agh.edu.pl.Main;
 import agh.edu.pl.automaton.automata.langton.Ant;
 import agh.edu.pl.automaton.automata.langton.AntState;
-import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.awt.*;

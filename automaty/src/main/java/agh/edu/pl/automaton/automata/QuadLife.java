@@ -1,6 +1,6 @@
 package agh.edu.pl.automaton.automata;
 
-import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodList;
 import agh.edu.pl.automaton.cells.states.CellState;

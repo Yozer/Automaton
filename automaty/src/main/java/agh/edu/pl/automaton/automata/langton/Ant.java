@@ -1,6 +1,6 @@
 package agh.edu.pl.automaton.automata.langton;
 
-import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 
 import java.awt.*;

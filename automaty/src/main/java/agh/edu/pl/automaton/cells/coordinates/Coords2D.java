@@ -37,8 +37,7 @@ public class Coords2D implements CellCoordinates {
     }
 
     /**
-     * Returns formatted coordinates.
-     * @return
+     * @return Returns formatted coordinates.
      */
     @Override
     public String toString() {

@@ -1,7 +1,7 @@
 package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.automaton.automata.langton.AntState;
-import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.Cell;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

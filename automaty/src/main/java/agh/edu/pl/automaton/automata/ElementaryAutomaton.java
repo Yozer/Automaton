@@ -1,7 +1,7 @@
 package agh.edu.pl.automaton.automata;
 
 import agh.edu.pl.automaton.Automaton1Dim;
-import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.neighborhoods.NeighborhoodList;
 import agh.edu.pl.automaton.cells.neighborhoods.OneDimensionalNeighborhood;

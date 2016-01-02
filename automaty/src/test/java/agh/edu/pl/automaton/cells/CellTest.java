@@ -1,5 +1,6 @@
 package agh.edu.pl.automaton.cells;
 
+import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.states.BinaryState;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

@@ -1,10 +1,15 @@
-package agh.edu.pl.automaton.cells;
+package agh.edu.pl.automaton;
 
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.states.CellState;
 
 /**
- * Created by Dominik on 2015-11-29.
+ * {@code Cell} represents one cell in automaton.
+ * It has two fields {@code CellState} and {@code CellCoordinates}.
+ *
+ * @author Dominik Baran
+ * @see CellCoordinates
+ * @see CellState
  */
 public class Cell {
     private final CellCoordinates coords;
@@ -40,16 +45,11 @@ public class Cell {
         return obj instanceof Cell && ((Cell) obj).getCoords().equals(this.getCoords());
     }
 
-    @Override
-    public String toString() {
-        return "State: " + state.toString() + " pos: " + getCoords().toString();
-    }
-
     public boolean hasChanged() {
         return hasChanged;
     }
 
-    public void isChanged(boolean value) {
+    void isChanged(boolean value) {
         this.hasChanged = value;
     }
 }

@@ -3,7 +3,10 @@ package agh.edu.pl.automaton.cells.states;
 import java.awt.*;
 
 /**
- * Created by Dominik on 2015-11-29.
+ * {@code QuadState} represents all possible states for {@code QuadLife} automaton.
+ * @author Dominik Baran
+ * @see CellState
+ * @see agh.edu.pl.automaton.automata.QuadLife
  */
 public enum QuadState implements CellState {
     DEAD {

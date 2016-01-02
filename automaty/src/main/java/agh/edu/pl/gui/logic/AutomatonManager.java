@@ -9,7 +9,7 @@ import agh.edu.pl.automaton.automata.QuadLife;
 import agh.edu.pl.automaton.automata.WireWorld;
 import agh.edu.pl.automaton.automata.langton.Ant;
 import agh.edu.pl.automaton.automata.langton.LangtonAnt;
-import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;

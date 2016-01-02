@@ -2,7 +2,7 @@ package agh.edu.pl.gui.logic;
 
 import agh.edu.pl.automaton.Automaton1Dim;
 import agh.edu.pl.automaton.Automaton2Dim;
-import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;

@@ -27,8 +27,7 @@ public class Coords1D implements CellCoordinates {
         return obj != null && obj instanceof Coords1D && ((Coords1D) obj).getX() == x;
     }
     /**
-     * Returns formatted coordinates.
-     * @return
+     * @return Returns formatted coordinates.
      */
     @Override
     public String toString() {

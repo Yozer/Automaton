@@ -2,7 +2,7 @@ package agh.edu.pl.gui.structures;
 
 import agh.edu.pl.Main;
 import agh.edu.pl.automaton.automata.langton.Ant;
-import agh.edu.pl.automaton.cells.Cell;
+import agh.edu.pl.automaton.Cell;
 import agh.edu.pl.gui.enums.PossibleAutomaton;
 
 import java.io.BufferedReader;

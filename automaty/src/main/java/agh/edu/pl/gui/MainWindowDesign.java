@@ -192,7 +192,7 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
         settingsPanel.add(panel, new CC().alignX("left").wrap().grow());
         // ------------------------------------------------------------------------ \\
         panel = new JPanel(new MigLayout());
-        Label tmpLabel = new BoldLabel("Opóźnienie między kolejnymi symulacjami: " + automatonSettings.getSimulationDelay() + " [ms]");
+        Label tmpLabel = new BoldLabel("Opóźnienie: " + automatonSettings.getSimulationDelay() + " [ms]");
         panel.add(tmpLabel, new CC().alignX("left").cell(0, 0));
 
         JSlider slider = new JSlider(0, 1000, 0);
