@@ -130,6 +130,7 @@ public abstract class Automaton implements Iterable<Cell> {
      * @see Automaton#cellChangedStateFromDeadToAlive(CellState, CellState)
      */
     public int getAliveCount() {
+        initIfNotInitiated();
         return currentAliveCount.get();
     }
 

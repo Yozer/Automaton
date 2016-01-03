@@ -26,6 +26,18 @@ public class QuadLifeTest {
     }
 
     @Test
+    public void testNextCellState_oneAlive_died() throws Exception {
+        List<Cell> neighborsStates = new ArrayList<>(1);
+
+        neighborsStates.add(new Cell(QuadState.YELLOW, new Coords2D(2, 2)));
+        quadLife.insertStructure(neighborsStates);
+        assertEquals(1, quadLife.getAliveCount());
+        quadLife.calculateNextState();
+        for (Cell cell : quadLife) {
+            assertEquals(QuadState.DEAD, cell.getState());
+        }
+    }
+    @Test
     public void testNextCellState_block() throws Exception {
         List<Cell> neighborsStates = new ArrayList<>(4);
 

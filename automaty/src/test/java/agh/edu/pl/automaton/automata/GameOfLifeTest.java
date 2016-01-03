@@ -67,6 +67,15 @@ public class GameOfLifeTest {
         assertEquals(result.get(3).getState(), BinaryState.ALIVE);
         assertEquals(result.get(4).getState(), BinaryState.DEAD);
         assertEquals(result.get(5).getState(), BinaryState.DEAD);
+        ((GameOfLife) gameOfLifeStandard).setSurviveFactors(new HashSet<>(Collections.singletonList(9)));
+        ((GameOfLife) gameOfLifeStandard).setComeAliveFactors(new HashSet<>(Collections.singletonList(9)));
+        assertEquals(1, ((GameOfLife) gameOfLifeStandard).getSurviveFactors().toArray().length);
+        assertEquals(9, ((GameOfLife) gameOfLifeStandard).getSurviveFactors().toArray()[0]);
+        assertEquals(1, ((GameOfLife) gameOfLifeStandard).getComeAliveFactors().toArray().length);
+        assertEquals(9, ((GameOfLife) gameOfLifeStandard).getComeAliveFactors().toArray()[0]);
+        gameOfLifeStandard.calculateNextState();
+        for (Cell cell : gameOfLifeStandard)
+            assertEquals(BinaryState.DEAD, cell.getState());
     }
 
     @Test
@@ -111,19 +120,15 @@ public class GameOfLifeTest {
                 initStates.put(new Coords2D(i, j), BinaryState.DEAD);
             }
         }
+        initStates.put(new Coords2D(0, 0), BinaryState.ALIVE);
+        initStates.put(new Coords2D(0, 1), BinaryState.ALIVE);
+        initStates.put(new Coords2D(1, 0), BinaryState.ALIVE);
+        initStates.put(new Coords2D(1, 1), BinaryState.ALIVE);
         CellStateFactory stateFactory = new GeneralStateFactory(initStates);
         CellNeighborhood neighborhood = new MoorNeighborhood(1, false, width, height);
 
         gameOfLifeStandard = new GameOfLife(new HashSet<>(Arrays.asList(2, 3)), new HashSet<>(Collections.singletonList(3)), width, height, stateFactory, neighborhood);
-        List<Cell> neighborsStates = new ArrayList<>(6);
 
-        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(0, 0)));
-        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(0, 1)));
-        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(1, 0)));
-        neighborsStates.add(new Cell(BinaryState.ALIVE, new Coords2D(1, 1)));
-
-        assertEquals(0, gameOfLifeStandard.getAliveCount());
-        gameOfLifeStandard.insertStructure(neighborsStates);
         assertEquals(4, gameOfLifeStandard.getAliveCount());
         gameOfLifeStandard.beginCalculatingNextState();
         assertEquals(4, gameOfLifeStandard.getAliveCount());
@@ -223,11 +228,13 @@ public class GameOfLifeTest {
             cellIterator.next();
             assertTrue(false);
         } catch (NoSuchElementException e) {
+            assertTrue(true);
         }
         try {
             cellIterator.remove();
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
+            assertTrue(true);
         }
     }
 }

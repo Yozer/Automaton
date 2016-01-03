@@ -106,9 +106,6 @@ public class ElementaryAutomaton extends Automaton1Dim {
     }
 
     private int getHashStates(BinaryState[] states) {
-        if (states.length != 3)
-            throw new IllegalArgumentException("states has to have size 3");
-
         return (states[0] == BinaryState.ALIVE ? 1 : 0) +
                 (states[1] == BinaryState.ALIVE ? 1 : 0) * 2 +
                 (states[2] == BinaryState.ALIVE ? 1 : 0) * 4;

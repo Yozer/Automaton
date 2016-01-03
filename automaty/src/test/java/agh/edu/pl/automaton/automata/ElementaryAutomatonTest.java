@@ -8,6 +8,7 @@ import agh.edu.pl.automaton.satefactory.CellStateFactory;
 import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -251,5 +252,24 @@ public class ElementaryAutomatonTest {
         assertEquals(BinaryState.DEAD, cellIterator.next().getState());
         assertEquals(BinaryState.ALIVE, cellIterator.next().getState());
         assertEquals(2, automaton.getAliveCount());
+    }
+
+    @Test
+    public void testGetRule() throws Exception {
+        ElementaryAutomaton automaton = new ElementaryAutomaton(3, 114, cellStateFactory);
+        assertEquals(114, automaton.getRule());
+        automaton.setRule(5);
+        assertEquals(5, automaton.getRule());
+    }
+
+    @Test(expected  = IllegalArgumentException.class)
+    public void testSetRule_ruleBiggerThan255() throws Exception {
+        ElementaryAutomaton automaton = new ElementaryAutomaton(3, 114, cellStateFactory);
+        automaton.setRule(268);
+    }
+    @Test(expected  = IllegalArgumentException.class)
+    public void testSetRule_ruleBiggerLessThan0() throws Exception {
+        ElementaryAutomaton automaton = new ElementaryAutomaton(3, 114, cellStateFactory);
+        automaton.setRule(-1);
     }
 }
