@@ -134,6 +134,8 @@ class RandCellsWorker extends SwingWorker<Void, Void> {
 
     @Override
     protected Void doInBackground() {
+        manager.resetAutomatonIfSettingsHasChanged(true);
+
         List<Cell> someRand;
         if (manager.getAutomaton() instanceof Automaton2Dim)
             someRand = new ArrayList<>(manager.getSettings().getHeight() * manager.getSettings().getWidth());
@@ -144,7 +146,6 @@ class RandCellsWorker extends SwingWorker<Void, Void> {
 
         Random random = new Random();
 
-        manager.resetAutomatonIfSettingsHasChanged(true);
         List<CellState> values;
         if (manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.GameOfLife ||
                 manager.getSettings().getSelectedAutomaton() == PossibleAutomaton.Jednowymiarowy) {
