@@ -51,9 +51,6 @@ public class OneDimensionalNeighborhood implements CellNeighborhood {
         return wrap;
     }
 
-    public int getRadius() {
-        return radius;
-    }
     /** {@inheritDoc}
      */
     @Override

@@ -2,16 +2,22 @@ package agh.edu.pl.automaton.automata;
 
 import agh.edu.pl.automaton.Automaton;
 import agh.edu.pl.automaton.Cell;
+import agh.edu.pl.automaton.cells.coordinates.CellCoordinates;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.neighborhoods.MoorNeighborhood;
 import agh.edu.pl.automaton.cells.states.BinaryState;
+import agh.edu.pl.automaton.cells.states.CellState;
+import agh.edu.pl.automaton.cells.states.WireElectronState;
 import agh.edu.pl.automaton.satefactory.CellStateFactory;
+import agh.edu.pl.automaton.satefactory.GeneralStateFactory;
 import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -91,10 +97,21 @@ public class GameOfLifeTest {
         assertEquals(result.get(5).getState(), BinaryState.ALIVE);
     }
     @Test
+    public void testStateColors() {
+        assertEquals(Color.BLACK, BinaryState.DEAD.toColor());
+        assertEquals(Color.WHITE, BinaryState.ALIVE.toColor());
+    }
+    @Test
     public void testNextState_500AliveMultithreaded() {
         int width = 100;
         int height = 100;
-        CellStateFactory stateFactory = new UniformStateFactory(BinaryState.DEAD);
+        Map<CellCoordinates, CellState> initStates = new HashMap<>();
+        for(int i = 0; i < 100; i++) {
+            for(int j = 0; j < 100; j++) {
+                initStates.put(new Coords2D(i, j), BinaryState.DEAD);
+            }
+        }
+        CellStateFactory stateFactory = new GeneralStateFactory(initStates);
         CellNeighborhood neighborhood = new MoorNeighborhood(1, false, width, height);
 
         gameOfLifeStandard = new GameOfLife(new HashSet<>(Arrays.asList(2, 3)), new HashSet<>(Collections.singletonList(3)), width, height, stateFactory, neighborhood);

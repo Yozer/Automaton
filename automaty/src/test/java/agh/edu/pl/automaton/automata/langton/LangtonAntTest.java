@@ -1,5 +1,7 @@
 package agh.edu.pl.automaton.automata.langton;
 
+import agh.edu.pl.automaton.Cell;
+import agh.edu.pl.automaton.cells.coordinates.Coords1D;
 import agh.edu.pl.automaton.cells.coordinates.Coords2D;
 import agh.edu.pl.automaton.cells.neighborhoods.CellNeighborhood;
 import agh.edu.pl.automaton.cells.neighborhoods.MoorNeighborhood;
@@ -45,6 +47,21 @@ public class LangtonAntTest {
         automaton.addAnt(new Coords2D(1, 1), Color.red, AntDirection.NORTH);
         assertEquals(1, automaton.getAnts().size());
         automaton.addAnt(new Coords2D(2, 3), Color.blue, AntDirection.NORTH);
+    }
+    @Test
+    public void testNextCellStates_color() throws Exception {
+        automaton.addAnt(new Coords2D(1, 1), Color.red, AntDirection.NORTH);
+        automaton.calculateNextState();
+
+        for(Cell cell : automaton) {
+            Coords2D coords2D = ((Coords2D) cell.getCoords());
+            if(coords2D.equals(new Coords2D(1, 1))) {
+                assertEquals(Color.red, cell.getState().toColor());
+            } else {
+                assertEquals(Color.BLACK, cell.getState().toColor());
+            }
+        }
+
     }
 
     @Test

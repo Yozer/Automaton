@@ -16,11 +16,15 @@ public class MoorNeighborhoodTest {
 
     @Test
     public void testCellNeighbors_r_equal_0() {
-        CellNeighborhood neighborhood = new MoorNeighborhood(0, false, 500, 500);
+        MoorNeighborhood neighborhood = new MoorNeighborhood(0, false, 50, 234);
         NeighborhoodList neighborhoodList = neighborhood.createArray();
         neighborhoodList = neighborhood.cellNeighbors(new Coords2D(10, 10), neighborhoodList);
 
         assertEquals(0, neighborhoodList.getLength());
+        assertEquals(false, neighborhood.isWrap());
+        assertEquals(50, neighborhood.getWidth());
+        assertEquals(234, neighborhood.getHeight());
+        assertEquals(0, neighborhood.getRadius());
     }
 
     @Test

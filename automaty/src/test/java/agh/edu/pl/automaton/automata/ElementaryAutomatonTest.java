@@ -22,9 +22,7 @@ public class ElementaryAutomatonTest {
     CellStateFactory cellStateFactory;
 
     @Before
-    public void init() {
-        cellStateFactory = new UniformStateFactory(BinaryState.DEAD);
-    }
+    public void init() { cellStateFactory = new UniformStateFactory(BinaryState.DEAD); }
 
     @Test
     public void testNextCellState_rule30_cellAlive_neighborsAlive() throws Exception {

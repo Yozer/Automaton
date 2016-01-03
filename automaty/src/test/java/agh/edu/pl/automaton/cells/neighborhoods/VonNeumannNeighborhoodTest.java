@@ -18,11 +18,15 @@ public class VonNeumannNeighborhoodTest {
 
     @Test
     public void testCellNeighbors_r_equal_0() {
-        CellNeighborhood neighborhood = new VonNeumannNeighborhood(0, false, 500, 500);
+        VonNeumannNeighborhood neighborhood = new VonNeumannNeighborhood(0, false, 241, 5212);
         NeighborhoodList neighborhoodList = neighborhood.createArray();
         neighborhoodList = neighborhood.cellNeighbors(new Coords2D(4, 4), neighborhoodList);
 
         assertEquals(0, neighborhoodList.getLength());
+        assertEquals(false, neighborhood.isWrap());
+        assertEquals(241, neighborhood.getWidth());
+        assertEquals(5212, neighborhood.getHeight());
+        assertEquals(0, neighborhood.getRadius());
     }
 
     @Test

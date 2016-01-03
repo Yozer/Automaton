@@ -10,6 +10,7 @@ import agh.edu.pl.automaton.satefactory.UniformStateFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,13 @@ public class WireWorldTest {
         assertEquals(WireElectronState.VOID, cells.get(3).getState());
         assertEquals(WireElectronState.VOID, cells.get(4).getState());
         assertEquals(WireElectronState.VOID, cells.get(5).getState());
+    }
+    @Test
+    public void testStateColors() {
+        assertEquals(new Color(255, 122, 17), WireElectronState.WIRE.toColor());
+        assertEquals(Color.BLACK, WireElectronState.VOID.toColor());
+        assertEquals(Color.BLUE, WireElectronState.ELECTRON_HEAD.toColor());
+        assertEquals(Color.WHITE, WireElectronState.ELECTRON_TAIL.toColor());
     }
 
     @Test

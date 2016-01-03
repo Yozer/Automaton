@@ -53,21 +53,15 @@ public class QuadLife extends GameOfLife {
         CellState currentState = cell.getState();
 
         if (currentState == QuadState.DEAD && super.comeAliveFactors.contains(countAlive)) {
-            int[] t;
-            if (tab[0][0] < tab[1][0]) {
-                t = tab[0];
-                tab[0] = tab[1];
-                tab[1] = t;
-            }
-            if (tab[0][0] < tab[2][0]) {
-                t = tab[0];
-                tab[0] = tab[2];
-                tab[2] = t;
-            }
-            if (tab[1][0] < tab[2][0]) {
-                t = tab[1];
-                tab[1] = tab[2];
-                tab[2] = t;
+            int[] tmp;
+            for (int i = 1; i < tab.length; i++) {
+                for(int j = i ; j > 0 ; j--) {
+                    if(tab[j][0] > tab[j - 1][0]){
+                        tmp = tab[j];
+                        tab[j] = tab[j - 1];
+                        tab[j - 1] = tmp;
+                    }
+                }
             }
 
             int[] result;
