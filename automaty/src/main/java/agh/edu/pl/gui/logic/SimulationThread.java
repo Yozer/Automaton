@@ -16,8 +16,8 @@ class SimulationThread implements Runnable {
     @SuppressWarnings("FieldCanBeLocal")
     private final Thread drawingThreadObject;
     private final AtomicBoolean isDrawing = new AtomicBoolean();
-    private volatile boolean pauseThreadFlag = true;
-    private volatile boolean isPausedFlag = true;
+    private AtomicBoolean pauseThreadFlag = new AtomicBoolean(true);
+    private AtomicBoolean isPausedFlag = new AtomicBoolean(true);
 
     public SimulationThread(AutomatonManager manager) {
         this.manager = manager;
@@ -82,9 +82,9 @@ class SimulationThread implements Runnable {
     private void checkForPausedAndWait() {
         synchronized (PAUSE_MONITOR) {
             boolean wasNotified = false;
-            while (pauseThreadFlag) {
+            while (pauseThreadFlag.get()) {
                 if (!wasNotified) {
-                    isPausedFlag = true;
+                    isPausedFlag.set(true);
                     synchronized (IS_PAUSED_MONITOR) {
                         IS_PAUSED_MONITOR.notify();
                     }
@@ -100,13 +100,13 @@ class SimulationThread implements Runnable {
     }
 
     public void pauseThread() {
-        if (pauseThreadFlag)
+        if (pauseThreadFlag.get())
             return;
 
-        pauseThreadFlag = true;
-        isPausedFlag = false;
+        isPausedFlag.set(false);
+        pauseThreadFlag.set(true);
         synchronized (IS_PAUSED_MONITOR) {
-            while (!isPausedFlag) {
+            while (!isPausedFlag.get()) {
                 try {
                     IS_PAUSED_MONITOR.wait();
                 } catch (InterruptedException ignored) {
@@ -117,14 +117,14 @@ class SimulationThread implements Runnable {
     }
 
     public void resumeThread() {
+        pauseThreadFlag.set(false);
         synchronized (PAUSE_MONITOR) {
-            pauseThreadFlag = false;
             PAUSE_MONITOR.notify();
         }
     }
 
     public boolean isRunning() {
-        return !pauseThreadFlag;
+        return !pauseThreadFlag.get();
     }
 }
 

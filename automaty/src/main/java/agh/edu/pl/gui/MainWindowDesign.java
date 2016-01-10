@@ -299,7 +299,13 @@ abstract class MainWindowDesign extends JFrame implements ActionListener, Change
     }
 
     void setProperGuiSettings() {
-        enableSettingsPanel();
+        if(getCurrentState() == AutomatonState.RUNNING) {
+            setStateRunning();
+        } else if(getCurrentState() == AutomatonState.PAUSED) {
+            setStatePaused();
+        } else if(getCurrentState() == AutomatonState.BUSY) {
+            setStateBusy();
+        }
     }
 
     String getRulesString() {
